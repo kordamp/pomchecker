@@ -40,6 +40,10 @@
         <product.name>PomChecker Maven Plugin</product.name>
     </properties>
 
+    <prerequisites>
+        <maven>${maven.version}</maven>
+    </prerequisites>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.maven</groupId>

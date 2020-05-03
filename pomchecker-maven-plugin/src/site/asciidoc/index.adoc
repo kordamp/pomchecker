@@ -37,14 +37,14 @@ plugin, for example
       <build>
         <plugins>
           <plugin>
-            <groupId>{project-group-id</groupId>
-            <artifactId>maven-enforcer-plugin</artifactId>
+            <groupId>{project-group-id}</groupId>
+            <artifactId>pomchecker-maven-plugin</artifactId>
             <version>{project-version}</version>
             <executions>
               <execution>
                 <id>check-release</id>
                 <goals>
-                  <goal>maven-central-check</goal>
+                  <goal>check-maven-central</goal>
                 </goals>
               </execution>
             </executions>
