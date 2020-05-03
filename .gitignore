@@ -11,3 +11,4 @@ target/
 samples/
 userHome/
 tmp/
+.DS_Store
