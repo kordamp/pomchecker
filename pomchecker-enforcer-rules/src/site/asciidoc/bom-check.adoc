@@ -1,0 +1,44 @@
+
+= BomCheck
+
+Checks that a POM is a valid link:http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#importing-dependencies[BOM].
+
+Sample plugin configuration
+[source,xml,options="nowrap"]
+[subs="attributes,verbatim"]
+----
+<project>
+  [...]
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0-M3</version>
+        <dependencies>
+          <dependency>
+            <groupId>{project-group-id}</groupId>
+            <artifactId>{project-artifact-id}</artifactId>
+            <version>{project-version}</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <id>enforce</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <BomCheck implementation="org.kordamp.maven.enforcer.checker.BomCheck"/>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  [...]
+</project>
+----
+

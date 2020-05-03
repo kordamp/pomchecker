@@ -1,0 +1,18 @@
+= PomChecker
+:linkattrs:
+:project-owner:   kordamp
+:project-repo:    maven
+:project-name:    pomchecker
+:project-group:   org.kordamp.maven
+:project-version: 1.0.0
+
+image:https://github.com/{project-owner}/{project-name}/workflows/Build/badge.svg["Build Status", link="https://github.com/{project-owner}/{project-name}/actions"]
+image:http://img.shields.io/badge/license-ASL2-blue.svg["ASL2 Licensed", link="http://opensource.org/licenses/ASL2"]
+image:https://img.shields.io/maven-central/v/{project-group}/{project-name}-core.svg?label=maven[link="https://search.maven.org/#search|ga|1|{project-group}"]
+image:https://api.bintray.com/packages/{project-owner}/{project-repo}/{project-name}/images/download.svg[link="https://bintray.com/{project-owner}/{project-repo}/{project-name}/_latestVersion"]
+image:https://img.shields.io/badge/donations-Patreon-orange.svg[link="https://www.patreon.com/user?u=6609318"]
+
+---
+
+Refer to the link:http://{project-owner}.github.io/{project-name}[guide, window="_blank"] for further information on configuration
+and usage.

@@ -1,0 +1,62 @@
+
+= PomChecker Maven Plugin
+
+The PomChecker plugin provides goals to check the contents of a POM file.
+
+The PomChecker plugin has two goals:
+
+ * link:check-bom-mojo.html[pomchecker:check-bom] - Checks if a POM file is a valid BOM file.
+ * link:check-maven-central-mojo.html[pomchecker:check-maven-central] - Checks if a POM complies with the rules for uploading to Maven Central.
+
+== Checking BOM Files
+
+You are not allowed to directly configure this plugin in a BOM file Given that these files should not include the `<build>` element.
+You may however apply this plugin to a parent POM file and link said parent to the BOM _or_
+invoke link:check-bom-mojo.html[pomchecker:check-bom] manually from the command line, such as
+
+[source]
+[subs="attributes"]
+----
+$ mvn {project-group-id}:{project-artifact-id}:{project-version}:check-bom
+----
+
+== Checking for Maven Central compliance
+
+You may configure the plugin in your project. Taking into account that `release` and `strict` are set to `true` by default
+you may find your build might fail during development. If this is the cas then we recommend using a profile to guard this
+plugin, for example
+
+[source,xml]
+[subs="attributes,verbatim"]
+----
+<project>
+  [...]
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>{project-group-id</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <version>{project-version}</version>
+            <executions>
+              <execution>
+                <id>check-release</id>
+                <goals>
+                  <goal>maven-central-check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+  [...]
+</project>
+----
+
+You may also pass additional parameters using the `checker.release` and `checker.strict` properties when invoking the
+`pomchecker:check-maven-central` from the command line without previously applying this plugin to the POM.
+

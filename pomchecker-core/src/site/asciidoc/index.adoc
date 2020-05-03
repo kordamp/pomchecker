@@ -1,0 +1,8 @@
+
+= PomChecker Core
+
+Provides base behavior for other PomChecker projects
+
+ * link:../pomchecker-enforcer-rules/index.html[pomchecker-enforcer-rules]
+ * link:../pomchecker-maven-plugin/index.html[pomchecker-maven-plugin]
+ 

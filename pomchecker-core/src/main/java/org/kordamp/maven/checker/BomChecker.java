@@ -1,0 +1,111 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright 2020 Andres Almiray.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.kordamp.maven.checker;
+
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Model;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Checks if a POM file is a valid BOM file.
+ *
+ * The following blocks are required:
+ * <ul>
+ *   <li>&lt;dependencyManagement&gt;</li>
+ * </ul>
+ *
+ * The following blocks are forbidden:
+ * <ul>
+ *   <li>&lt;build&gt;</li>
+ *   <li>&lt;reporting&gt;</li>
+ *   <li>&lt;dependencies&gt;</li>
+ *   <li>&lt;repositories&gt;</li>
+ *   <li>&lt;pluginRepositories&gt;</li>
+ *   <li>&lt;profiles&gt;</li>
+ *   <li>&lt;modules&gt;</li>
+ * </ul>
+ *
+ * @author Andres Almiray
+ * @since 1.0.0
+ */
+public class BomChecker {
+    /**
+     * Checks the resolved model of the given MaveProject for compliance.
+     *
+     * @param log     the logger to use.
+     * @param project the project to be checked.
+     * @throws PomCheckException if the POM is invalid
+     */
+    public static void check(Log log, MavenProject project) throws PomCheckException {
+        Model model = project.getOriginalModel();
+
+        List<String> errors = new ArrayList<>();
+
+        // 1. is it packaged as 'pom'?
+        if (!"pom".equals(model.getPackaging())) {
+            errors.add("The value of <packaging> must be 'pom'.");
+        }
+
+        // 2. must have a <dependencyManagement> block
+        if (null != model.getDependencyManagement()) {
+            List<Dependency> dependencies = model.getDependencyManagement().getDependencies();
+            if (dependencies == null || dependencies.isEmpty()) {
+                errors.add("No dependencies have been defined in <dependencyManagement>.");
+            }
+        } else {
+            errors.add("No <dependencyManagement> block has been defined.");
+        }
+
+        if (null != model.getBuild()) {
+            errors.add("The <build> block should not be present.");
+        }
+        if (null != model.getReporting()) {
+            errors.add("The <reporting> block should not be present.");
+        }
+        if (null != model.getDependencies() && !model.getDependencies().isEmpty()) {
+            errors.add("The <dependencies> block should not be present.");
+        }
+        if (null != model.getRepositories() && !model.getRepositories().isEmpty()) {
+            errors.add("The <repositories> block should not be present.");
+        }
+        if (null != model.getPluginRepositories() && !model.getPluginRepositories().isEmpty()) {
+            errors.add("The <pluginRepositories> block should not be present.");
+        }
+        if (null != model.getProfiles() && !model.getProfiles().isEmpty()) {
+            errors.add("The <profiles> block should not be present.");
+        }
+        if (null != model.getModules() && !model.getModules().isEmpty()) {
+            errors.add("The <modules> block should not be present.");
+        }
+
+        if (!errors.isEmpty()) {
+            StringBuilder b = new StringBuilder("\nThe POM file\n")
+                .append(project.getFile().getAbsolutePath())
+                .append("\nis not a valid BOM due to the following reasons:\n");
+            for (String s : errors) {
+                b.append(" * ").append(s).append("\n");
+            }
+
+            throw new PomCheckException(b.toString());
+        }
+    }
+}

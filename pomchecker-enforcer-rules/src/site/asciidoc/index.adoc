@@ -1,0 +1,9 @@
+
+= PomChecker Enforcer Rules
+
+Provides rules that can be used with the link:https://maven.apache.org/enforcer/maven-enforcer-plugin/index.html[Maven Enforcer plugin].
+
+ * link:bom-check.html[bomCheck] - Checks that a POM is a valid link:http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#importing-dependencies[BOM].
+ * link:maven-central-check.html[mavenCentralCheck] - Checks that the POM complies with the link:https://central.sonatype.org/pages/requirements.html[rules]
+ required for link:http://maven.apache.org/repository/guide-central-repository-upload.html[uploading] to Maven Central.
+ 
