@@ -41,7 +41,7 @@
     </properties>
 
     <prerequisites>
-        <maven>${maven.version}</maven>
+        <maven>3.1.0</maven>
     </prerequisites>
 
     <dependencies>
