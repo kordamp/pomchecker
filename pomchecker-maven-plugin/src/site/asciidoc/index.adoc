@@ -10,7 +10,7 @@ The PomChecker plugin has two goals:
 
 == Checking BOM Files
 
-You are not allowed to directly configure this plugin in a BOM file Given that these files should not include the `<build>` element.
+You are not allowed to directly configure this plugin in a BOM file given that these files should not include the `<build>` element.
 You may however apply this plugin to a parent POM file and link said parent to the BOM _or_
 invoke link:check-bom-mojo.html[pomchecker:check-bom] manually from the command line, such as
 
@@ -23,7 +23,7 @@ $ mvn {project-group-id}:{project-artifact-id}:{project-version}:check-bom
 == Checking for Maven Central compliance
 
 You may configure the plugin in your project. Taking into account that `release` and `strict` are set to `true` by default
-you may find your build might fail during development. If this is the cas then we recommend using a profile to guard this
+you may find your build might fail during development. If this is the case then we recommend using a profile to guard this
 plugin, for example
 
 [source,xml]

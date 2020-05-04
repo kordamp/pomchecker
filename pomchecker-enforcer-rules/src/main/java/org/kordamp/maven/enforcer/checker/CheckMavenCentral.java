@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
  * @author Andres Almiray
  * @since 1.0.0
  */
-public class MavenCentralCheck implements EnforcerRule {
+public class CheckMavenCentral implements EnforcerRule {
     private boolean release = true;
 
     private boolean strict = true;

@@ -34,7 +34,7 @@ import javax.annotation.Nullable;
  * @author Andres Almiray
  * @since 1.0.0
  */
-public class BomCheck implements EnforcerRule {
+public class CheckBom implements EnforcerRule {
     @Override
     public void execute(@Nonnull EnforcerRuleHelper helper) throws EnforcerRuleException {
         try {

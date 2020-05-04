@@ -1,5 +1,5 @@
 
-= MavenCentralCheck
+= CheckMavenCentral
 
 Checks that the POM complies with the link:https://central.sonatype.org/pages/requirements.html[rules]
 required for link:http://maven.apache.org/repository/guide-central-repository-upload.html[uploading] to Maven Central.
@@ -35,7 +35,7 @@ strict:: Disallows `<repositories>` and `<pluginRepositories>` if set to `true`.
             </goals>
             <configuration>
               <rules>
-                <MavenCentralCheck implementation="org.kordamp.maven.enforcer.checker.MavenCentralCheck"/>
+                <CheckMavenCentral implementation="org.kordamp.maven.enforcer.checker.CheckMavenCentral"/>
               </rules>
             </configuration>
           </execution>

@@ -1,9 +1,10 @@
 
-= BomCheck
+= CheckBom
 
 Checks that a POM is a valid link:http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#importing-dependencies[BOM].
 
 Sample plugin configuration
+
 [source,xml,options="nowrap"]
 [subs="attributes,verbatim"]
 ----
@@ -30,7 +31,7 @@ Sample plugin configuration
             </goals>
             <configuration>
               <rules>
-                <BomCheck implementation="org.kordamp.maven.enforcer.checker.BomCheck"/>
+                <CheckBom implementation="org.kordamp.maven.enforcer.checker.CheckBom"/>
               </rules>
             </configuration>
           </execution>
