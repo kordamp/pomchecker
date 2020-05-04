@@ -78,7 +78,7 @@
     </scm>
 
     <mailingLists>
-        <mailingList />
+        <mailingList/>
     </mailingLists>
 
     <dependencyManagement>
@@ -118,6 +118,24 @@
         </resources>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>com.devexperts.bintray</groupId>
+                    <artifactId>bintray-maven-plugin</artifactId>
+                    <version>1.3</version>
+                    <configuration>
+                        <id>bintray</id>
+                        <url>https://api.bintray.com/maven/kordamp/maven/pomchecker</url>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>bintray-deploy</id>
+                            <goals>
+                                <goal>deploy</goal>
+                                <goal>publish</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
@@ -203,6 +221,10 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>com.devexperts.bintray</groupId>
+                <artifactId>bintray-maven-plugin</artifactId>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
