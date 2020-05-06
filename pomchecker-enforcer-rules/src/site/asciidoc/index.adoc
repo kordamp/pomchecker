@@ -3,7 +3,7 @@
 
 Provides rules that can be used with the link:https://maven.apache.org/enforcer/maven-enforcer-plugin/index.html[Maven Enforcer plugin].
 
- * link:check-bom[checkBom] - Checks that a POM is a valid link:http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#importing-dependencies[BOM].
- * link:check-maven-central[checkMavenCentral] - Checks that the POM complies with the link:https://central.sonatype.org/pages/requirements.html[rules]
+ * link:check-bom.html[checkBom] - Checks that a POM is a minimal link:http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#importing-dependencies[BOM].
+ * link:check-maven-central.html[checkMavenCentral] - Checks that the POM complies with the link:https://central.sonatype.org/pages/requirements.html[rules]
  required for link:http://maven.apache.org/repository/guide-central-repository-upload.html[uploading] to Maven Central.
  

@@ -5,13 +5,13 @@ The PomChecker plugin provides goals to check the contents of a POM file.
 
 The PomChecker plugin has two goals:
 
- * link:check-bom-mojo.html[pomchecker:check-bom] - Checks if a POM file is a valid BOM file.
+ * link:check-bom-mojo.html[pomchecker:check-bom] - Checks if a POM file is a minimal BOM file.
  * link:check-maven-central-mojo.html[pomchecker:check-maven-central] - Checks if a POM complies with the rules for uploading to Maven Central.
 
 == Checking BOM Files
 
-You are not allowed to directly configure this plugin in a BOM file given that these files should not include the `<build>` element.
-You may however apply this plugin to a parent POM file and link said parent to the BOM _or_
+You are not allowed to directly configure this plugin in a BOM file given that these files should not include the `<build>` element if you're
+aiming for a minimal BOM. You may however apply this plugin to a parent POM file and link said parent to the BOM _or_
 invoke link:check-bom-mojo.html[pomchecker:check-bom] manually from the command line, such as
 
 [source]

@@ -1,7 +1,13 @@
 
 = CheckBom
 
-Checks that a POM is a valid link:http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#importing-dependencies[BOM].
+Checks that a POM is a minimal link:http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#importing-dependencies[BOM]. +
+Minimal BOM files contain the following elements:
+
+ * <groupId>
+ * <artifactId>
+ * <version>
+ * <dependencyManagement>
 
 Sample plugin configuration
 

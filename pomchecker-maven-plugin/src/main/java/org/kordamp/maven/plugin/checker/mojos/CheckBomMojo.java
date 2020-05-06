@@ -27,7 +27,14 @@ import org.kordamp.maven.checker.BomChecker;
 import org.kordamp.maven.checker.PomCheckException;
 
 /**
- * Checks if a POM file is a valid BOM file.
+ * Checks if a POM file is a minimal BOM file.
+ * Minimal BOM files contain the following elements:
+ * <ul>
+ * <li>&lt;groupId&gt;</li>
+ * <li>&lt;artifactId&gt;</li>
+ * <li>&lt;version&gt;</li>
+ * <li>&lt;dependencyManagement&gt;</li>
+ * </ul>
  *
  * @author Andres Almiray
  * @since 1.0.0

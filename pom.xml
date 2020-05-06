@@ -22,7 +22,7 @@
 
     <groupId>org.kordamp.maven</groupId>
     <artifactId>pomchecker</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
 
     <name>pomchecker</name>
@@ -99,7 +99,7 @@
     <distributionManagement>
         <site>
             <id>kordamp</id>
-            <url>scp:///dev/null</url>
+            <url>scm:git:ssh://git@github.com/kordamp/pomchecker.git</url>
         </site>
 
     </distributionManagement>
@@ -203,6 +203,7 @@
                         </dependency>
                     </dependencies>
                     <configuration>
+                        <skipDeploy>true</skipDeploy>
                         <asciidoc>
                             <attributes>
                                 <source-highlighter>coderay</source-highlighter>
@@ -323,6 +324,16 @@
                         <goals>
                             <goal>attach-descriptor</goal>
                         </goals>
+                    </execution>
+                    <execution>
+                        <id>stage-for-scm-publish</id>
+                        <phase>post-site</phase>
+                        <goals>
+                            <goal>stage</goal>
+                        </goals>
+                        <configuration>
+                            <skipDeploy>false</skipDeploy>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

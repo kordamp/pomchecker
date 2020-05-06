@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Checks if a POM file is a valid BOM file.
+ * Checks if a POM file is a minimal BOM file.
  *
  * The following blocks are required:
  * <ul>
