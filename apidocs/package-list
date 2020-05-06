@@ -1,3 +1,4 @@
+
 org.kordamp.maven.checker
 org.kordamp.maven.enforcer.checker
 org.kordamp.maven.plugin.checker
