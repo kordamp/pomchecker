@@ -1,0 +1,41 @@
+name: Site
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  site:
+    name: Site
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'refs/tags')
+
+    steps:
+      - name: Get version
+        uses: oprypin/find-latest-tag@v1
+        id: version
+        with:
+          repository: ${{ github.repository }}
+          prefix: v
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.version.outputs.tag }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Build site
+        run: |
+          chmod +x mvnw
+          ./mvnw -B --file pom.xml site site:stage -DstagingDirectory="${{ runner.temp }}/site"
+
+      - name: Publish
+        uses: JamesIves/github-pages-deploy-action@4.0.0
+        with:
+          branch: gh-pages
+          folder: "${{ runner.temp }}/site"
