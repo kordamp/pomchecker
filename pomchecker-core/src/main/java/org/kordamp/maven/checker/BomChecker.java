@@ -19,7 +19,6 @@ package org.kordamp.maven.checker;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class BomChecker {
      * @param project the project to be checked.
      * @throws PomCheckException if the POM is invalid
      */
-    public static void check(Log log, MavenProject project) throws PomCheckException {
+    public static void check(Logger log, MavenProject project) throws PomCheckException {
         Model model = project.getOriginalModel();
 
         List<String> errors = new ArrayList<>();

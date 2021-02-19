@@ -23,6 +23,7 @@ import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
 import org.kordamp.maven.checker.MavenCentralChecker;
+import org.kordamp.maven.checker.MavenLoggerAdapter;
 import org.kordamp.maven.checker.PomCheckException;
 
 import javax.annotation.Nonnull;
@@ -43,7 +44,7 @@ public class CheckMavenCentral implements EnforcerRule {
     public void execute(@Nonnull EnforcerRuleHelper helper) throws EnforcerRuleException {
         try {
             MavenProject project = (MavenProject) helper.evaluate("${project}");
-            MavenCentralChecker.check(helper.getLog(), project, release, strict);
+            MavenCentralChecker.check(new MavenLoggerAdapter(helper.getLog()), project, release, strict);
         } catch (ExpressionEvaluationException e) {
             throw new EnforcerRuleException("Unable to lookup an expression " + e.getLocalizedMessage(), e);
         } catch (PomCheckException e) {

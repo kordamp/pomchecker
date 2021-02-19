@@ -24,6 +24,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.kordamp.maven.checker.BomChecker;
+import org.kordamp.maven.checker.MavenLoggerAdapter;
 import org.kordamp.maven.checker.PomCheckException;
 
 /**
@@ -50,7 +51,7 @@ public class CheckBomMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            BomChecker.check(getLog(), project);
+            BomChecker.check(new MavenLoggerAdapter(getLog()), project);
         } catch (PomCheckException e) {
             throw new MojoExecutionException("Bom check failed", e);
         }

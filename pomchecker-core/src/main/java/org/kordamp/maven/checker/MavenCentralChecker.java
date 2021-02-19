@@ -22,7 +22,6 @@ import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
@@ -72,7 +71,7 @@ public class MavenCentralChecker {
      * @param strict  if {@code true} checks that &lt;repositories&gt; and &lt;pluginRepositories&gt; are not present
      * @throws PomCheckException if the POM is invalid
      */
-    public static void check(Log log, MavenProject project, boolean release, boolean strict) throws PomCheckException {
+    public static void check(Logger log, MavenProject project, boolean release, boolean strict) throws PomCheckException {
         Model fullModel = project.getModel();
         Model originalModel = project.getOriginalModel();
 

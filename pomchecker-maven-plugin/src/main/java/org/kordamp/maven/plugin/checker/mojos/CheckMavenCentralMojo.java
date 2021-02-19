@@ -24,6 +24,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.kordamp.maven.checker.MavenCentralChecker;
+import org.kordamp.maven.checker.MavenLoggerAdapter;
 import org.kordamp.maven.checker.PomCheckException;
 
 /**
@@ -55,7 +56,7 @@ public class CheckMavenCentralMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            MavenCentralChecker.check(getLog(), project, release, strict);
+            MavenCentralChecker.check(new MavenLoggerAdapter(getLog()), project, release, strict);
         } catch (PomCheckException e) {
             throw new MojoExecutionException("MavenCentral check failed", e);
         }
