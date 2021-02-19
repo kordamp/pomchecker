@@ -15,74 +15,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kordamp.maven.plugin.checker;
-
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.project.MavenProject;
+package org.kordamp.maven.checker.cli;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
 /**
  * @author Andres Almiray
- * @since 1.0.0
+ * @since 1.1.0
  */
-public final class Banner {
+final class Banner {
     private static final Banner b = new Banner();
     private final ResourceBundle bundle = ResourceBundle.getBundle(Banner.class.getName());
     private final String productVersion = bundle.getString("product.version");
     private final String productId = bundle.getString("product.id");
     private final String productName = bundle.getString("product.name");
     private final String banner = MessageFormat.format(bundle.getString("product.banner"), productName, productVersion);
-    private final List<String> visited = new ArrayList<>();
 
     private Banner() {
         // nooop
     }
 
-    public static void display(MavenProject project, Log log) {
-        MavenProject element = project;
-        MavenProject root = project;
-        while (true) {
-            if (element.getParent() == null || element.getParent() == element) {
-                break;
-            }
-            root = element.getParent();
-        }
-        if (b.visited.contains(root.getName())) {
-            return;
-        }
-
-        b.visited.add(root.getName());
-
+    public static void display(PrintWriter out) {
         try {
-            File parent = new File(System.getProperty("user.home"), ".m2/caches");
-            File markerFile = b.getMarkerFile(parent);
+            File parent = new File(System.getProperty("user.home"), ".kordamp/caches");
+            File markerFile = getMarkerFile(parent, b);
             if (!markerFile.exists()) {
-                System.out.println(b.banner);
+                out.println(b.banner);
                 markerFile.getParentFile().mkdirs();
-                PrintStream out = new PrintStream(new FileOutputStream(markerFile));
-                out.println("1");
-                out.close();
+                PrintStream outstream = new PrintStream(new FileOutputStream(markerFile));
+                outstream.println("1");
+                outstream.close();
                 writeQuietly(markerFile, "1");
             } else {
                 try {
                     int count = Integer.parseInt(readQuietly(markerFile));
                     if (count < 3) {
-                        System.out.println(b.banner);
+                        out.println(b.banner);
                     }
                     writeQuietly(markerFile, (count + 1) + "");
                 } catch (NumberFormatException e) {
                     writeQuietly(markerFile, "1");
-                    System.out.println(b.banner);
+                    out.println(b.banner);
                 }
             }
         } catch (IOException ignored) {
@@ -109,13 +90,11 @@ public final class Banner {
         }
     }
 
-    private File getMarkerFile(File parent) {
+    private static File getMarkerFile(File parent, Banner b) {
         return new File(parent,
-            "kordamp" +
+                b.productId +
                 File.separator +
-                productId +
-                File.separator +
-                productVersion +
+                b.productVersion +
                 File.separator +
                 "marker.txt");
     }

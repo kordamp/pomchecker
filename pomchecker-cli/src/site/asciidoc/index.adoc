@@ -1,0 +1,49 @@
+
+= PomChecker CLI
+
+Command line tool for checking POM compliance.
+
+ * check-bom - Checks that a POM is a minimal link:http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#importing-dependencies[BOM].
+ * check-maven-central - Checks that the POM complies with the link:https://central.sonatype.org/pages/requirements.html[rules]
+ required for link:http://maven.apache.org/repository/guide-central-repository-upload.html[uploading] to Maven Central.
+
+[source]
+----
+$ pomchecker --help
+Usage: pomchecker [-hV] [COMMAND]
+pomchecker
+  -h, --help      Show this help message and exit.
+  -V, --version   Print version information and exit.
+Commands:
+  check-bom            Checks if a POM file is a minimal BOM file
+  check-maven-central  Checks if a POM complies with the rules for uploading to
+                         Maven Central
+----
+
+[source]
+----
+$ pomchecker check-bom --help
+Usage: pomchecker check-bom [-diqw] --file=<pomFile>
+Checks if a POM file is a minimal BOM file
+  -d, --debug            Set log level to debug.
+      --file=<pomFile>   The POM file to check
+  -i, --info             Set log level to info.
+  -q, --quiet            Log errors only.
+  -w, --warn             Set log level to warn.
+----
+
+[source]
+----
+$ pomchecker check-maven-central --help
+Usage: pomchecker check-maven-central [-diqw] [--no-release] [--no-strict]
+                                      --file=<pomFile>
+Checks if a POM complies with the rules for uploading to Maven Central
+  -d, --debug            Set log level to debug.
+      --file=<pomFile>   The POM file to check
+  -i, --info             Set log level to info.
+      --no-release       Checks if version is -SNAPSHOT
+      --no-strict        Checks if <repositories> and <pluginRepositories> are
+                           present
+  -q, --quiet            Log errors only.
+  -w, --warn             Set log level to warn.
+----

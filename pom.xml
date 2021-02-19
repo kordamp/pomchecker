@@ -46,10 +46,12 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.version>3.6.3</maven.version>
+        <slf4j.version>1.7.30</slf4j.version>
     </properties>
 
     <modules>
         <module>pomchecker-core</module>
+        <module>pomchecker-cli</module>
         <module>pomchecker-enforcer-rules</module>
         <module>pomchecker-maven-plugin</module>
     </modules>
@@ -80,11 +82,6 @@
                 <version>${maven.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.oracle.database.jdbc</groupId>
-                <artifactId>ojdbc8</artifactId>
-                <version>19.6.0.0</version>
-            </dependency>
-            <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-utils</artifactId>
                 <version>3.3.0</version>
@@ -92,7 +89,7 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.30</version>
+                <version>${slf4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
