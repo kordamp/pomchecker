@@ -9,7 +9,6 @@ jobs:
   site:
     name: Site
     runs-on: ubuntu-latest
-    if: contains(github.ref, 'refs/tags')
 
     steps:
       - name: Get version

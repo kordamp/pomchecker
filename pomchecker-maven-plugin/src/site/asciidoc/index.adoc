@@ -60,3 +60,8 @@ plugin, for example
 You may also pass additional parameters using the `checker.release` and `checker.strict` properties when invoking the
 `pomchecker:check-maven-central` from the command line without previously applying this plugin to the POM.
 
+[source]
+[subs="attributes"]
+----
+$ mvn {project-group-id}:{project-artifact-id}:{project-version}:check-maven-central
+----
