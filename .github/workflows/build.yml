@@ -6,19 +6,76 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    env:
-      CI: true
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Java
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Cache Maven packages
+
+      - name: Cache Maven
         uses: actions/cache@v1
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Build with Maven
-        run: ./mvnw -B verify --file pom.xml --settings .github/workflows/settings.xml
+
+      - name: Build
+        run: |
+          chmod +x mvnw
+          ./mvnw -B verify --file pom.xml
+
+  release:
+    name: Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.event.head_commit.message, '[release]')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+          server-id: central
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_CENTRAL_TOKEN
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Release
+        env:
+          MAVEN_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          export GPG_TTY=$(tty)
+          git config user.name "${{ github.event.head_commit.committer.name }}"
+          git config user.email "${{ github.event.head_commit.committer.email }}"
+          mvn -B --file pom.xml release:prepare release:perform -Drepository.url=https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
+  announce:
+    name: Announce
+    needs: release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: oprypin/find-latest-tag@v1
+        id: version
+        with:
+          repository: ${{ github.repository }}
+          prefix: v
+
+      - name: Announce
+        uses: ethomson/send-tweet-action@v1
+        with:
+          status: "Release ${{ steps.version.outputs.tag }} of ${{ github.repository }} has been published to Maven Central https://github.com/${{ github.repository }}"
+          consumer-key: ${{ secrets.TWITTER_API_KEY }}
+          consumer-secret: ${{ secrets.TWITTER_API_SECRET_KEY }}
+          access-token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          access-token-secret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
