@@ -1,4 +1,4 @@
-/**
+/*
  * SPDX-License-Identifier: Apache-2.0
  *
  * Copyright 2020-2021 Andres Almiray.
@@ -21,12 +21,6 @@ import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableMap;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequest;
-import org.apache.maven.model.building.DefaultModelBuilderFactory;
-import org.apache.maven.model.building.DefaultModelBuildingRequest;
-import org.apache.maven.model.building.ModelBuilder;
-import org.apache.maven.model.building.ModelBuildingRequest;
-import org.apache.maven.model.building.ModelBuildingResult;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
@@ -53,7 +47,6 @@ import org.eclipse.aether.transport.file.FileTransporterFactory;
 import org.eclipse.aether.transport.http.HttpTransporterFactory;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -68,57 +61,6 @@ import java.util.Properties;
 public class PomParser {
     private static final CharMatcher LOWER_ALPHA_NUMERIC =
         CharMatcher.inRange('a', 'z').or(CharMatcher.inRange('0', '9'));
-
-    public static MavenProject readProject(File pom) {
-        try {
-            FileReader reader = new FileReader(pom);
-            MavenXpp3Reader mavenReader = new MavenXpp3Reader();
-            return new MavenProject(mavenReader.read(reader));
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    public static MavenModels readModels(File pom) {
-        ModelBuilder modelBuilder = new DefaultModelBuilderFactory().newInstance();
-
-        ModelBuildingRequest modelRequest = new DefaultModelBuildingRequest();
-        modelRequest.setValidationLevel(ModelBuildingRequest.VALIDATION_LEVEL_MAVEN_3_1);
-        modelRequest.setModelResolver(new NoopModelResolver());
-        modelRequest.setProcessPlugins(false);
-        modelRequest.setTwoPhaseBuilding(true);
-        modelRequest.setPomFile(pom);
-
-        try {
-            ModelBuildingResult buildingResult = modelBuilder.build(modelRequest);
-            return new MavenModels(
-                buildingResult.getRawModel(),
-                buildingResult.getEffectiveModel()
-            );
-        } catch (Exception e) {
-            throw new IllegalStateException("Unexpected error when parsing " + pom.getAbsolutePath(), e);
-        }
-    }
-
-    public static MavenModels readModelsFully(File pom) {
-        ModelBuilder modelBuilder = new DefaultModelBuilderFactory().newInstance();
-
-        ModelBuildingRequest modelRequest = new DefaultModelBuildingRequest();
-        modelRequest.setValidationLevel(ModelBuildingRequest.VALIDATION_LEVEL_MAVEN_3_1);
-        //modelRequest.setModelResolver(new DefaultModelResolver());
-        modelRequest.setProcessPlugins(false);
-        modelRequest.setTwoPhaseBuilding(true);
-        modelRequest.setPomFile(pom);
-
-        try {
-            ModelBuildingResult buildingResult = modelBuilder.build(modelRequest);
-            return new MavenModels(
-                buildingResult.getRawModel(),
-                buildingResult.getEffectiveModel());
-        } catch (Exception e) {
-            throw new IllegalStateException("Unexpected error when parsing " + pom.getAbsolutePath(), e);
-        }
-    }
 
     public static MavenProject createMavenProject(File pomFile) {
         return createMavenProject(pomFile, createDefaultRepositorySystemSession(newRepositorySystem()));

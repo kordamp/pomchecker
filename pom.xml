@@ -150,6 +150,9 @@
                 <artifactId>license-maven-plugin</artifactId>
                 <configuration combine.self="override">
                     <header>${rootdir}/etc/license.txt</header>
+                    <headerDefinitions>
+                        <headerDefinition>${rootdir}/etc/header-definition.xml</headerDefinition>
+                    </headerDefinitions>
                     <strictCheck>true</strictCheck>
                     <properties>
                         <author>Andres Almiray</author>
@@ -161,6 +164,11 @@
                         <exclude>mvnw</exclude>
                         <exclude>mvnw.cmd</exclude>
                         <exclude>.mvn/wrapper/*</exclude>
+                        <exclude>**/.gradle/**/*</exclude>
+                        <exclude>**/gradle/wrapper/*</exclude>
+                        <exclude>**/*.gradle</exclude>
+                        <exclude>**/gradlew</exclude>
+                        <exclude>**/gradlew.bat</exclude>
                     </excludes>
                 </configuration>
                 <executions>
