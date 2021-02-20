@@ -54,9 +54,9 @@
     <modules>
         <module>pomchecker-core</module>
         <module>pomchecker-cli</module>
+        <module>pomchecker-toolprovider</module>
         <module>pomchecker-enforcer-rules</module>
         <module>pomchecker-maven-plugin</module>
-        <module>pomchecker-toolprovider</module>
     </modules>
 
     <dependencyManagement>

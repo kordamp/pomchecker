@@ -33,7 +33,7 @@
     <packaging>maven-plugin</packaging>
 
     <name>pomchecker-maven-plugin</name>
-    <description>POM validation plugin</description>
+    <description>PomChecker Maven plugin</description>
     <url>https://kordamp.org/pomchecker</url>
 
     <properties>

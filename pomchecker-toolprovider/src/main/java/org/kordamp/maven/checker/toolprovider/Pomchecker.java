@@ -17,6 +17,7 @@
  */
 package org.kordamp.maven.checker.toolprovider;
 
+import org.kordamp.jipsy.ServiceProviderFor;
 import org.kordamp.maven.checker.cli.Main;
 
 import java.io.PrintWriter;
@@ -26,6 +27,7 @@ import java.util.spi.ToolProvider;
  * @author Andres Almiray
  * @since 1.1.0
  */
+@ServiceProviderFor(ToolProvider.class)
 public class Pomchecker implements ToolProvider {
     public String name() {
         return "pomchecker";

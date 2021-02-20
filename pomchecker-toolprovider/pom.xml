@@ -42,6 +42,7 @@
         <maven.compiler.source>9</maven.compiler.source>
         <maven.compiler.target>9</maven.compiler.target>
         <application.main.class>org.kordamp.maven.checker.toolprovider.Pomchecker</application.main.class>
+        <jipsy.version>0.6.0</jipsy.version>
     </properties>
 
     <dependencyManagement>
@@ -130,10 +131,29 @@
             <artifactId>pomchecker-cli</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.kordamp.jipsy</groupId>
+            <artifactId>jipsy-annotations</artifactId>
+            <version>${jipsy.version}</version>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration combine.self="append">
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.kordamp.jipsy</groupId>
+                            <artifactId>jipsy</artifactId>
+                            <version>${jipsy.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
