@@ -36,7 +36,7 @@ public class CheckBom extends AbstractCommand {
             MavenProject project = PomParser.createMavenProject(pomFile.toFile());
             BomChecker.check(logger, project);
         } catch (PomCheckException e) {
-            logger.error(e.getMessage());
+            throw new HaltExecutionException(e);
         } catch (Exception e) {
             throw new PomcheckerException("Unexpected error", e);
         }

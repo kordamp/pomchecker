@@ -47,6 +47,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.version>3.6.3</maven.version>
         <slf4j.version>1.7.30</slf4j.version>
+        <picocli.version>4.6.1</picocli.version>
+        <maven.resolver.version>1.6.1</maven.resolver.version>
     </properties>
 
     <modules>

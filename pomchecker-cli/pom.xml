@@ -38,8 +38,6 @@
 
     <properties>
         <application.main.class>org.kordamp.maven.checker.cli.Main</application.main.class>
-        <picocli.version>4.6.1</picocli.version>
-        <maven.resolver.version>1.6.1</maven.resolver.version>
         <product.version>${project.version}</product.version>
         <product.id>pomchecker</product.id>
         <product.name>PomChecker CLI</product.name>
@@ -223,6 +221,17 @@
     <build>
         <finalName>pomchecker-${project.version}</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration combine.self="append">
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>org.kordamp.maven.pomchecker.cli</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

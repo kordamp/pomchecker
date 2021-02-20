@@ -86,6 +86,9 @@ abstract class AbstractCommand implements Callable<Integer> {
 
         try {
             execute();
+        } catch (HaltExecutionException e) {
+            logger.error(e.getCause().getMessage());
+            return 1;
         } catch (Exception e) {
             e.printStackTrace(new Colorizer(parent().out));
             return 1;
