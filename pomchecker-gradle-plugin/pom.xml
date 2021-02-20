@@ -75,7 +75,7 @@
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
-                        <phase>initialize</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
