@@ -38,8 +38,8 @@
     <inceptionYear>2020</inceptionYear>
 
     <properties>
-        <project.identifier>poomchecker</project.identifier>
-        <project.repository>kordamp/poomchecker</project.repository>
+        <project.identifier>pomchecker</project.identifier>
+        <project.repository>kordamp/pomchecker</project.repository>
         <local.repository.path>/tmp/repository</local.repository.path>
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -55,9 +55,9 @@
         <module>pomchecker-core</module>
         <module>pomchecker-cli</module>
         <module>pomchecker-toolprovider</module>
+        <module>pomchecker-gradle-plugin</module>
         <module>pomchecker-enforcer-rules</module>
         <module>pomchecker-maven-plugin</module>
-        <module>pomchecker-gradle-plugin</module>
     </modules>
 
     <distributionManagement>
@@ -118,36 +118,8 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.1.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
                     <version>3.9.1</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.asciidoctor</groupId>
-                            <artifactId>asciidoctor-maven-plugin</artifactId>
-                            <version>2.1.0</version>
-                        </dependency>
-                    </dependencies>
-                    <configuration>
-                        <skipDeploy>true</skipDeploy>
-                        <asciidoc>
-                            <attributes>
-                                <source-highlighter>coderay</source-highlighter>
-                                <coderay-css>style</coderay-css>
-                                <project-name>${project.name}</project-name>
-                                <project-group-id>${project.groupId}</project-group-id>
-                                <project-artifact-id>${project.artifactId}</project-artifact-id>
-                                <project-version>${project.version}</project-version>
-                            </attributes>
-                        </asciidoc>
-                        <moduleExcludes>
-                            <asciidoc>**/_*.adoc</asciidoc>
-                        </moduleExcludes>
-                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -191,24 +163,29 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-descriptor</id>
-                        <goals>
-                            <goal>attach-descriptor</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>stage-for-scm-publish</id>
-                        <phase>post-site</phase>
-                        <goals>
-                            <goal>stage</goal>
-                        </goals>
-                        <configuration>
-                            <skipDeploy>false</skipDeploy>
-                        </configuration>
-                    </execution>
-                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctor-maven-plugin</artifactId>
+                        <version>2.1.0</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <skipDeploy>true</skipDeploy>
+                    <asciidoc>
+                        <attributes>
+                            <source-highlighter>coderay</source-highlighter>
+                            <coderay-css>style</coderay-css>
+                            <project-name>${project.name}</project-name>
+                            <project-group-id>${project.groupId}</project-group-id>
+                            <project-artifact-id>${project.artifactId}</project-artifact-id>
+                            <project-version>${project.version}</project-version>
+                        </attributes>
+                    </asciidoc>
+                    <moduleExcludes>
+                        <asciidoc>**/_*.adoc</asciidoc>
+                    </moduleExcludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>

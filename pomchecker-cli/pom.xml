@@ -41,10 +41,6 @@
         <product.version>${project.version}</product.version>
         <product.id>pomchecker</product.id>
         <product.name>PomChecker</product.name>
-        <maven.javadoc.skip>true</maven.javadoc.skip>
-        <maven.source.skip>true</maven.source.skip>
-        <maven.deploy.skip>true</maven.deploy.skip>
-        <gpg.skip>true</gpg.skip>
     </properties>
 
     <dependencyManagement>
