@@ -147,7 +147,7 @@
                                         <argument>-Pversion=${project.version}</argument>
                                         <argument>-Prelease=true</argument>
                                         <argument>-S</argument>
-                                        <argument>publish</argument>
+                                        <argument>publishPlugins</argument>
                                     </arguments>
                                 </configuration>
                                 <goals>
