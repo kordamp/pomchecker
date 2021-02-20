@@ -44,8 +44,6 @@ enforce {
 
     rule(enforcer.rules.ExcludeDependencies) { r ->
         r.exclude('org.apache.maven:maven-project')
-        r.exclude('com.mycila.xmltool:xmltool')
-        r.exclude('xmlpull:xmlpull')
         r.exclude('com.google.inject:guice:4.2.3-no_aop')
     }
 

@@ -46,6 +46,7 @@
         <gradle.tasks>build</gradle.tasks>
         <maven.main.skip>true</maven.main.skip>
         <maven.test.skip>true</maven.test.skip>
+        <version.exec.plugin>1.6.0</version.exec.plugin>
     </properties>
 
     <dependencies>
@@ -57,6 +58,15 @@
     </dependencies>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>${version.exec.plugin}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <!-- copy all dependencies to target/dependencies -->
             <plugin>
@@ -84,12 +94,25 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
                 <executions>
                     <execution>
-                        <id>gradle</id>
-                        <phase>prepare-package</phase>
+                        <id>gradle-clean</id>
+                        <phase>clean</phase>
                         <configuration>
+                            <executable>${gradle.executable}</executable>
+                            <arguments>
+                                <argument>clean</argument>
+                                <argument>-Pversion=${project.version}</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>gradle-build</id>
+                        <phase>prepare-package</phase>
+                        <configuration combine.self="override">
                             <executable>${gradle.executable}</executable>
                             <arguments>
                                 <argument>${gradle.tasks}</argument>
@@ -118,6 +141,40 @@
             <properties>
                 <gradle.executable>gradlew.bat</gradle.executable>
             </properties>
+        </profile>
+        <profile>
+            <id>gradle-release</id>
+            <activation>
+                <property>
+                    <name>release</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>gradle-build</id>
+                                <phase>prepare-package</phase>
+                                <configuration combine.self="override">
+                                    <executable>${gradle.executable}</executable>
+                                    <arguments>
+                                        <argument>publish</argument>
+                                        <argument>-Pversion=${project.version}</argument>
+                                        <argument>-Prelease=true</argument>
+                                        <argument>-S</argument>
+                                    </arguments>
+                                </configuration>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>
