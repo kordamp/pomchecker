@@ -177,6 +177,7 @@
                         <exclude>**/*.gradle</exclude>
                         <exclude>**/gradlew</exclude>
                         <exclude>**/gradlew.bat</exclude>
+                        <exclude>**/build/**/*</exclude>
                     </excludes>
                 </configuration>
                 <executions>

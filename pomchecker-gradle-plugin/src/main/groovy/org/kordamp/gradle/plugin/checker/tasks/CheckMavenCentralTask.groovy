@@ -39,13 +39,13 @@ import javax.inject.Inject
 @CompileStatic
 class CheckMavenCentralTask extends DefaultTask {
     @InputFile
-    RegularFileProperty pomFile
+    final RegularFileProperty pomFile
 
     @Input
-    Property<Boolean> release
+    final Property<Boolean> release
 
     @Input
-    Property<Boolean> strict
+    final Property<Boolean> strict
 
     @Inject
     CheckMavenCentralTask(ObjectFactory objects) {

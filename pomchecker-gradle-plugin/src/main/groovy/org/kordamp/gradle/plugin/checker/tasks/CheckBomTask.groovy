@@ -37,7 +37,7 @@ import javax.inject.Inject
 @CompileStatic
 class CheckBomTask extends DefaultTask {
     @InputFile
-    RegularFileProperty pomFile
+    final RegularFileProperty pomFile
 
     @Inject
     CheckBomTask(ObjectFactory objects) {

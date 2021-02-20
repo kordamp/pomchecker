@@ -30,7 +30,7 @@
 
     <artifactId>pomchecker-gradle-plugin</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <name>pomchecker-gradle-plugin</name>
     <description>PomChecker Gradle plugin</description>
@@ -91,7 +91,6 @@
                         <configuration>
                             <executable>${gradle.executable}</executable>
                             <arguments>
-                                <!--argument>clean</argument-->
                                 <argument>${gradle.tasks}</argument>
                                 <argument>-Pversion=${project.version}</argument>
                                 <argument>-S</argument>
