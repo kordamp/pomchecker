@@ -75,7 +75,7 @@
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
-                        <phase>generate-resources</phase>
+                        <phase>initialize</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
@@ -111,7 +111,7 @@
                     </execution>
                     <execution>
                         <id>gradle-build</id>
-                        <phase>prepare-package</phase>
+                        <phase>package</phase>
                         <configuration combine.self="override">
                             <executable>${gradle.executable}</executable>
                             <arguments>
@@ -157,7 +157,7 @@
                         <executions>
                             <execution>
                                 <id>gradle-build</id>
-                                <phase>prepare-package</phase>
+                                <phase>package</phase>
                                 <configuration combine.self="override">
                                     <executable>${gradle.executable}</executable>
                                     <arguments>
