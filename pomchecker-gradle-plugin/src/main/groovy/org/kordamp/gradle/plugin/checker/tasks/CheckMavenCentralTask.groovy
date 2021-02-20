@@ -26,6 +26,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.options.Option
 import org.kordamp.gradle.plugin.checker.internal.GradleLoggerAdapter
 import org.kordamp.gradle.plugin.checker.internal.PomParser
 import org.kordamp.maven.checker.MavenCentralChecker
@@ -52,6 +53,16 @@ class CheckMavenCentralTask extends DefaultTask {
         pomFile = objects.fileProperty()
         release = objects.property(Boolean).convention(true)
         strict = objects.property(Boolean).convention(true)
+    }
+
+    @Option(option = 'release', description = 'Disallows `-SNAPSHOT` versions if set to `true`')
+    void setRelease(boolean release) {
+        getRelease().set(!release)
+    }
+
+    @Option(option = 'strict', description = 'Disallows `<repositories>` and `<pluginRepositories>` if set to `true`')
+    void setStrict(boolean strict) {
+        getStrict().set(!strict)
     }
 
     @TaskAction
