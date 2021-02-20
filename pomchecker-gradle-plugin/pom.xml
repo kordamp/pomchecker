@@ -101,8 +101,9 @@
                         <configuration>
                             <executable>${gradle.executable}</executable>
                             <arguments>
-                                <argument>clean</argument>
+                                <argument>-b clean-build.gradle</argument>
                                 <argument>-Pversion=${project.version}</argument>
+                                <argument>clean</argument>
                             </arguments>
                         </configuration>
                         <goals>
@@ -115,9 +116,9 @@
                         <configuration combine.self="override">
                             <executable>${gradle.executable}</executable>
                             <arguments>
-                                <argument>${gradle.tasks}</argument>
                                 <argument>-Pversion=${project.version}</argument>
                                 <argument>-S</argument>
+                                <argument>${gradle.tasks}</argument>
                             </arguments>
                         </configuration>
                         <goals>
@@ -161,10 +162,10 @@
                                 <configuration combine.self="override">
                                     <executable>${gradle.executable}</executable>
                                     <arguments>
-                                        <argument>publish</argument>
                                         <argument>-Pversion=${project.version}</argument>
                                         <argument>-Prelease=true</argument>
                                         <argument>-S</argument>
+                                        <argument>publish</argument>
                                     </arguments>
                                 </configuration>
                                 <goals>

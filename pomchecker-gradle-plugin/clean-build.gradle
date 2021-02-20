@@ -64,36 +64,6 @@ config {
 }
 
 repositories {
-    maven { url 'target/dependencies' }
     gradlePluginPortal()
     mavenCentral()
-}
-
-dependencies {
-    compileOnly gradleApi()
-
-    api "org.kordamp.maven:pomchecker-core:$version"
-    api "com.google.guava:guava:$guavaVersion"
-    api "com.google.inject:guice:$guiceVersion"
-    api "org.apache.maven:maven-artifact:$mavenVersion"
-    api "org.apache.maven:maven-model-builder:$mavenVersion"
-    api "org.apache.maven:maven-compat:$mavenVersion"
-    api "org.apache.maven:maven-core:$mavenVersion"
-    api "org.apache.maven:maven-resolver-provider:$mavenVersion"
-    api "org.apache.maven.resolver:maven-resolver-transport-http:$mavenResolverVersion"
-    api "org.apache.maven.resolver:maven-resolver-transport-file:$mavenResolverVersion"
-    api "org.apache.maven.resolver:maven-resolver-connector-basic:$mavenResolverVersion"
-    api "org.apache.maven:maven-project:$mavenProjectVersion"
-    api "org.kordamp.gradle:base-gradle-plugin:$kordampPluginVersion"
-}
-
-processResources {
-    inputs.property('version', project.version)
-    filesMatching(['**/*.properties']) {
-        expand(
-            'version': project.version,
-            'id': 'pomchecker',
-            'name': 'PomChecker Gradle plugin'
-        )
-    }
 }
