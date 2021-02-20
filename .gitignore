@@ -13,3 +13,4 @@ userHome/
 tmp/
 .DS_Store
 .build-site.sh
+dependency-reduced-pom.xml

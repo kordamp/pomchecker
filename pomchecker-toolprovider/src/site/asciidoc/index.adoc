@@ -1,0 +1,4 @@
+
+= PomChecker ToolProvider
+
+A `java.util.spi.ToolProvider` implementation of the link:../pomchecker-cli/index.html[PomChecker CLI] tool.

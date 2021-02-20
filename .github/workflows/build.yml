@@ -112,3 +112,4 @@ jobs:
           files: |
             pomchecker-cli/target/distributions/*.zip
             pomchecker-cli/target/distributions/*.tar.gz
+            pomchecker-toolprovider/target/pomchecker-toolprovider-*.jar

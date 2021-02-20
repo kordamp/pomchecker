@@ -17,6 +17,9 @@ Checks that a POM file has the required syntax for a given purpose.
 <tr class="b">
 <td><a href="pomchecker-cli/index.html">pomchecker-cli</a></td>
 <td>POM validation CLI runner</td></tr>
+<tr class="b">
+<td><a href="pomchecker-toolprovider/index.html">pomchecker-toolprovider</a></td>
+<td>A <code>java.util.spi.ToolProvider</code> implementation of the PomChecker CLI runner</td></tr>
 <tr class="a">
 <td><a href="pomchecker-enforcer-rules/index.html">pomchecker-enforcer-rules</a></td>
 <td>POM validation enforcer rules</td></tr>
