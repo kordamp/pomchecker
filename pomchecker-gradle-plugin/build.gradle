@@ -64,7 +64,7 @@ config {
 }
 
 repositories {
-    maven { url 'target/dependencies' }
+    flatDir { dir 'target/dependencies' }
     gradlePluginPortal()
     mavenCentral()
 }
