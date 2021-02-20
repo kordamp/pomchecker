@@ -57,7 +57,15 @@
         <module>pomchecker-toolprovider</module>
         <module>pomchecker-enforcer-rules</module>
         <module>pomchecker-maven-plugin</module>
+        <module>pomchecker-gradle-plugin</module>
     </modules>
+
+    <distributionManagement>
+        <site>
+            <id>kordamp</id>
+            <url>file://${local.repository.path}/site</url>
+        </site>
+    </distributionManagement>
 
     <dependencyManagement>
         <dependencies>

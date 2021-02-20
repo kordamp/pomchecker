@@ -25,5 +25,9 @@ Checks that a POM file has the required syntax for a given purpose.
 <td>POM validation enforcer rules</td></tr>
 <tr class="b">
 <td><a href="pomchecker-maven-plugin/index.html">pomchecker-maven-plugin</a></td>
-<td>POM validation plugin</td></tr></table></section>
+<td>POM validation Maven plugin</td></tr>
+<tr class="b">
+<td><a href="pomchecker-gradle-plugin/index.html">pomchecker-gradle-plugin</a></td>
+<td>POM validation Gradle plugin</td></tr>
+</table></section>
 ++++

@@ -1,0 +1,81 @@
+
+= PomChecker Gradle Plugin
+
+The PomChecker Gradle plugin provides goals to check the contents of a POM file.
+Its tasks will be run after their corresponding `generateMavenPom<PublicationName>publication` task runs.
+
+== Install
+
+[source,groovy]
+[subs="attributes"]
+.Option 1
+----
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath 'org.kordamp.gradle:pomchecker-gradle-plugin:{project-version}'
+    }
+}
+apply plugin: 'org.kordamp.gradle.pomchecker'
+----
+
+[source,groovy]
+[subs="attributes"]
+.Option 2
+----
+plugins {
+    id 'org.kordamp.gradle.pomchecker' version '{project-version}'
+}
+----
+
+[[_org_kordamp_gradle_checker_dsl]]
+== DSL
+
+[source,groovy]
+[subs="+macros"]
+----
+pomchecker {
+    enabled
+    bom
+    release
+    strict
+}
+----
+
+[options="header", cols="5*"]
+|===
+| Name    | Type    | Required | Default Value | Description
+| enabled | boolean | no       | true          | If `false` then all check taks will be disabled.
+| bom     | boolean | no       | false         | If `true` then the `checkBom` task wll be added.
+| release | boolean | no       | true          | Disallows `-SNAPSHOT` versions if set to `true`.
+| strict  | boolean | no       | true          | Disallows `<repositories>` and `<pluginRepositories>` if set to `true`.
+|===
+
+[[_org_kordamp_gradle_checker_tasks]]
+== Tasks
+
+[[_task_check_bom]]
+=== CheckBom
+
+Name:: checkBom<PublicationName>
+Type:: `org.kordamp.gradle.plugin.checker.tasks.CheckBomTask`
+
+Checks that a POM is a minimal link:http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#importing-dependencies[BOM]. +
+Minimal BOM files contain the following elements:
+
+ * <groupId>
+ * <artifactId>
+ * <version>
+ * <dependencyManagement>
+
+[[_task_check_maven_central]]
+=== CheckMavenCentral
+
+Name:: checkMavenCentral<PublicationName>
+Type:: `org.kordamp.gradle.plugin.checker.tasks.CheckMavenCentralTask`
+
+Checks that the POM complies with the link:https://central.sonatype.org/pages/requirements.html[rules]
+required for link:http://maven.apache.org/repository/guide-central-repository-upload.html[uploading] to Maven Central.
+

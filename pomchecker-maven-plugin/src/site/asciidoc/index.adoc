@@ -1,9 +1,9 @@
 
 = PomChecker Maven Plugin
 
-The PomChecker plugin provides goals to check the contents of a POM file.
+The PomChecker Maven plugin provides goals to check the contents of a POM file.
 
-The PomChecker plugin has two goals:
+The PomChecker Maven plugin has two goals:
 
  * link:check-bom-mojo.html[pomchecker:check-bom] - Checks if a POM file is a minimal BOM file.
  * link:check-maven-central-mojo.html[pomchecker:check-maven-central] - Checks if a POM complies with the rules for uploading to Maven Central.
