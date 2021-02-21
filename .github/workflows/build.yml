@@ -80,6 +80,11 @@ jobs:
           access-token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
           access-token-secret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
 
+      - name: Sdkman
+        run: |
+          chmod +x mvnw
+          ./mvnw -B -pl :pomchecker -Psdkman -Dpomchecker.version=${{ steps.get_version.outputs.VERSION }} --file pom.xml
+
   earlyaccess:
     name: 'Early Access'
     if: github.event_name == 'push' && github.repository == 'kordamp/pomchecker' && github.ref == 'refs/heads/master'
@@ -100,7 +105,9 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Build
-        run: mvn -DskipTests verify --file pom.xml
+        run: |
+          chmod +x mvnw
+          ./mvnw -DskipTests verify --file pom.xml
 
       - name: 'Release early-access artifacts'
         uses: marvinpinto/action-automatic-releases@latest
