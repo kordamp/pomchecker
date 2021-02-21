@@ -131,12 +131,11 @@ class PomCheckerPlugin extends AbstractKordampPlugin {
             new Action<CheckMavenCentralTask>() {
                 @Override
                 void execute(CheckMavenCentralTask t) {
-                    println "file = ${generateMavenPomTask.destination}"
                     t.group = 'Publishing'
                     t.description = "Checks if the ${publicationName} POM can be published to Maven Central"
                     t.pomFile.set(generateMavenPomTask.destination)
-                    t.release.convention(pomCheckerExtension.resolvedRelease)
-                    t.strict.convention(pomCheckerExtension.resolvedStrict)
+                    t.noRelease.convention(!pomCheckerExtension.resolvedRelease)
+                    t.noStrict.convention(!pomCheckerExtension.resolvedStrict)
                     t.dependsOn(generateMavenPomTask)
                     t.enabled = pomCheckerExtension.resolvedEnabled.get()
                 }

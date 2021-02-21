@@ -43,31 +43,31 @@ class CheckMavenCentralTask extends DefaultTask {
     final RegularFileProperty pomFile
 
     @Input
-    final Property<Boolean> release
+    final Property<Boolean> noRelease
 
     @Input
-    final Property<Boolean> strict
+    final Property<Boolean> noStrict
 
     @Inject
     CheckMavenCentralTask(ObjectFactory objects) {
         pomFile = objects.fileProperty()
-        release = objects.property(Boolean).convention(true)
-        strict = objects.property(Boolean).convention(true)
+        noRelease = objects.property(Boolean).convention(false)
+        noStrict = objects.property(Boolean).convention(false)
     }
 
-    @Option(option = 'release', description = 'Disallows `-SNAPSHOT` versions if set to `true`')
-    void setRelease(boolean release) {
-        getRelease().set(!release)
+    @Option(option = 'no-release', description = 'Allows `-SNAPSHOT` versions if set to `true`')
+    void setNoRelease(boolean noRelease) {
+        getNoRelease().set(noRelease)
     }
 
-    @Option(option = 'strict', description = 'Disallows `<repositories>` and `<pluginRepositories>` if set to `true`')
-    void setStrict(boolean strict) {
-        getStrict().set(!strict)
+    @Option(option = 'no-strict', description = 'Allows `<repositories>` and `<pluginRepositories>` if set to `true`')
+    void setNoStrict(boolean noStrict) {
+        getNoStrict().set(noStrict)
     }
 
     @TaskAction
     void check() {
         MavenProject mavenProject = PomParser.createMavenProject(pomFile.getAsFile().get())
-        MavenCentralChecker.check(new GradleLoggerAdapter(project.logger), mavenProject, release.get(), strict.get())
+        MavenCentralChecker.check(new GradleLoggerAdapter(project.logger), mavenProject, !noRelease.get(), !noStrict.get())
     }
 }
