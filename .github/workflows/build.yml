@@ -66,15 +66,19 @@ jobs:
 
     steps:
       - uses: oprypin/find-latest-tag@v1
-        id: version
+        id: latest
         with:
           repository: ${{ github.repository }}
           prefix: v
 
+      - name: Version
+        id: version
+        run: echo "::set-output name=VERSION::$(echo ${{ steps.latest.outputs.tag }} | sed 's/v//')"
+
       - name: Announce
         uses: ethomson/send-tweet-action@v1
         with:
-          status: "Release ${{ steps.version.outputs.tag }} of ${{ github.repository }} has been published to Maven Central https://github.com/${{ github.repository }}"
+          status: "Release ${{ steps.latest.outputs.tag }} of ${{ github.repository }} has been published to Maven Central https://github.com/${{ github.repository }}"
           consumer-key: ${{ secrets.TWITTER_API_KEY }}
           consumer-secret: ${{ secrets.TWITTER_API_SECRET_KEY }}
           access-token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
@@ -83,7 +87,7 @@ jobs:
       - name: Sdkman
         run: |
           chmod +x mvnw
-          ./mvnw -B -pl :pomchecker -Psdkman -Dpomchecker.version=${{ steps.get_version.outputs.VERSION }} --file pom.xml
+          ./mvnw -B -pl :pomchecker -Psdkman -Dpomchecker.version=${{ steps.version.outputs.VERSION }} --file pom.xml
 
   earlyaccess:
     name: 'Early Access'

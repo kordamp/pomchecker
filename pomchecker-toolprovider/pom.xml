@@ -247,6 +247,35 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            <!--plugin>
+                <groupId>org.moditect</groupId>
+                <artifactId>moditect-maven-plugin</artifactId>
+                <version>1.0.0.Beta2</version>
+                <executions>
+                    <execution>
+                        <id>add-module-infos</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>add-module-info</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/modules</outputDirectory>
+                            <jvmVersion>${java.version}</jvmVersion>
+                                <module>
+                                    <moduleInfoSource>
+                                        module org.kordamp.maven.pomchecker {
+                                            requires java.compiler;
+                                            requires java.logging;
+                                            exports org.kordamp.maven.checker.toolprovider;
+                                            provides java.util.spi.ToolProvider
+                                                with org.kordamp.maven.checker.toolprovider.Pomchecker;
+                                        }
+                                    </moduleInfoSource>
+                                </module>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin-->
         </plugins>
     </build>
 </project>
