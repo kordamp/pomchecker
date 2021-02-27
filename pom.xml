@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.kordamp.maven</groupId>
         <artifactId>kordamp-parent</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </parent>
 
     <artifactId>pomchecker</artifactId>
@@ -39,7 +39,7 @@
 
     <properties>
         <project.identifier>pomchecker</project.identifier>
-        <project.repository>kordamp/pomchecker</project.repository>
+        <project.github.repository>kordamp/pomchecker</project.github.repository>
         <local.repository.path>/tmp/repository</local.repository.path>
         <pomchecker.version>${project.version}</pomchecker.version>
         <java.version>1.8</java.version>
@@ -60,6 +60,12 @@
         <module>pomchecker-enforcer-rules</module>
         <module>pomchecker-maven-plugin</module>
     </modules>
+
+    <scm>
+        <connection>scm:git:${repository.url}</connection>
+        <developerConnection>scm:git:${repository.url}</developerConnection>
+        <url>${repository.url}</url>
+    </scm>
 
     <distributionManagement>
         <site>
@@ -218,7 +224,7 @@
                                     <candidate>${project.identifier}</candidate>
                                     <version>${pomchecker.version}</version>
                                     <url>${project.url}</url>
-                                    <releaseNotesUrl>https://github.com/${project.repository}/releases/tag/v${pomchecker.version}</releaseNotesUrl>
+                                    <releaseNotesUrl>https://github.com/${project.github.repository}/releases/tag/v${pomchecker.version}</releaseNotesUrl>
                                 </configuration>
                             </execution>
                         </executions>
