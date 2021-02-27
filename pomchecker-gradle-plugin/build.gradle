@@ -97,3 +97,5 @@ processResources {
         )
     }
 }
+
+println "Version = ${project.version}"
