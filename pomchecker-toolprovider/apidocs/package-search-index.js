@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"org.kordamp.maven.checker.toolprovider"}]

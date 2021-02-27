@@ -1,5 +1,8 @@
-
+unnamed package
 org.kordamp.maven.checker
+org.kordamp.maven.checker.cli
+org.kordamp.maven.checker.cli.internal
+org.kordamp.maven.checker.toolprovider
 org.kordamp.maven.enforcer.checker
 org.kordamp.maven.plugin.checker
 org.kordamp.maven.plugin.checker.mojos

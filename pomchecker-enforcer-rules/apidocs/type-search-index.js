@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"org.kordamp.maven.enforcer.checker","l":"CheckBom"},{"p":"org.kordamp.maven.enforcer.checker","l":"CheckMavenCentral"}]

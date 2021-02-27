@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"org.kordamp.maven.checker.toolprovider","l":"Pomchecker"}]

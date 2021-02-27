@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"org.kordamp.maven.checker"},{"l":"org.kordamp.maven.checker.cli"},{"l":"org.kordamp.maven.checker.cli.internal"},{"l":"org.kordamp.maven.checker.toolprovider"},{"l":"org.kordamp.maven.enforcer.checker"},{"l":"org.kordamp.maven.plugin.checker"},{"l":"org.kordamp.maven.plugin.checker.mojos"}]

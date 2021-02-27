@@ -6,69 +6,70 @@
 </head>
 <body>
 <div class="sourceContainer">
-<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
-<span class="sourceLineNo">002</span> * SPDX-License-Identifier: Apache-2.0<a name="line.2"></a>
-<span class="sourceLineNo">003</span> *<a name="line.3"></a>
-<span class="sourceLineNo">004</span> * Copyright 2020-2021 Andres Almiray.<a name="line.4"></a>
-<span class="sourceLineNo">005</span> *<a name="line.5"></a>
-<span class="sourceLineNo">006</span> * Licensed under the Apache License, Version 2.0 (the "License");<a name="line.6"></a>
-<span class="sourceLineNo">007</span> * you may not use this file except in compliance with the License.<a name="line.7"></a>
-<span class="sourceLineNo">008</span> * You may obtain a copy of the License at<a name="line.8"></a>
-<span class="sourceLineNo">009</span> *<a name="line.9"></a>
-<span class="sourceLineNo">010</span> *     https://www.apache.org/licenses/LICENSE-2.0<a name="line.10"></a>
-<span class="sourceLineNo">011</span> *<a name="line.11"></a>
-<span class="sourceLineNo">012</span> * Unless required by applicable law or agreed to in writing, software<a name="line.12"></a>
-<span class="sourceLineNo">013</span> * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.13"></a>
-<span class="sourceLineNo">014</span> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.14"></a>
-<span class="sourceLineNo">015</span> * See the License for the specific language governing permissions and<a name="line.15"></a>
-<span class="sourceLineNo">016</span> * limitations under the License.<a name="line.16"></a>
-<span class="sourceLineNo">017</span> */<a name="line.17"></a>
-<span class="sourceLineNo">018</span>package org.kordamp.maven.plugin.checker.mojos;<a name="line.18"></a>
+<pre><span class="sourceLineNo">001</span><a name="line.1">/*</a>
+<span class="sourceLineNo">002</span><a name="line.2"> * SPDX-License-Identifier: Apache-2.0</a>
+<span class="sourceLineNo">003</span><a name="line.3"> *</a>
+<span class="sourceLineNo">004</span><a name="line.4"> * Copyright 2020-2021 Andres Almiray.</a>
+<span class="sourceLineNo">005</span><a name="line.5"> *</a>
+<span class="sourceLineNo">006</span><a name="line.6"> * Licensed under the Apache License, Version 2.0 (the "License");</a>
+<span class="sourceLineNo">007</span><a name="line.7"> * you may not use this file except in compliance with the License.</a>
+<span class="sourceLineNo">008</span><a name="line.8"> * You may obtain a copy of the License at</a>
+<span class="sourceLineNo">009</span><a name="line.9"> *</a>
+<span class="sourceLineNo">010</span><a name="line.10"> *     https://www.apache.org/licenses/LICENSE-2.0</a>
+<span class="sourceLineNo">011</span><a name="line.11"> *</a>
+<span class="sourceLineNo">012</span><a name="line.12"> * Unless required by applicable law or agreed to in writing, software</a>
+<span class="sourceLineNo">013</span><a name="line.13"> * distributed under the License is distributed on an "AS IS" BASIS,</a>
+<span class="sourceLineNo">014</span><a name="line.14"> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</a>
+<span class="sourceLineNo">015</span><a name="line.15"> * See the License for the specific language governing permissions and</a>
+<span class="sourceLineNo">016</span><a name="line.16"> * limitations under the License.</a>
+<span class="sourceLineNo">017</span><a name="line.17"> */</a>
+<span class="sourceLineNo">018</span><a name="line.18">package org.kordamp.maven.plugin.checker.mojos;</a>
 <span class="sourceLineNo">019</span><a name="line.19"></a>
-<span class="sourceLineNo">020</span>import org.apache.maven.plugin.AbstractMojo;<a name="line.20"></a>
-<span class="sourceLineNo">021</span>import org.apache.maven.plugin.MojoExecutionException;<a name="line.21"></a>
-<span class="sourceLineNo">022</span>import org.apache.maven.plugin.MojoFailureException;<a name="line.22"></a>
-<span class="sourceLineNo">023</span>import org.apache.maven.plugins.annotations.Mojo;<a name="line.23"></a>
-<span class="sourceLineNo">024</span>import org.apache.maven.plugins.annotations.Parameter;<a name="line.24"></a>
-<span class="sourceLineNo">025</span>import org.apache.maven.project.MavenProject;<a name="line.25"></a>
-<span class="sourceLineNo">026</span>import org.kordamp.maven.checker.MavenCentralChecker;<a name="line.26"></a>
-<span class="sourceLineNo">027</span>import org.kordamp.maven.checker.PomCheckException;<a name="line.27"></a>
-<span class="sourceLineNo">028</span><a name="line.28"></a>
-<span class="sourceLineNo">029</span>/**<a name="line.29"></a>
-<span class="sourceLineNo">030</span> * Checks if a POM complies with the rules for uploading to Maven Central.<a name="line.30"></a>
-<span class="sourceLineNo">031</span> *<a name="line.31"></a>
-<span class="sourceLineNo">032</span> * @author Andres Almiray<a name="line.32"></a>
-<span class="sourceLineNo">033</span> * @since 1.0.0<a name="line.33"></a>
-<span class="sourceLineNo">034</span> */<a name="line.34"></a>
-<span class="sourceLineNo">035</span>@Mojo(name = "check-maven-central")<a name="line.35"></a>
-<span class="sourceLineNo">036</span>public class CheckMavenCentralMojo extends AbstractMojo {<a name="line.36"></a>
-<span class="sourceLineNo">037</span>    /**<a name="line.37"></a>
-<span class="sourceLineNo">038</span>     * The project whose model will be checked.<a name="line.38"></a>
-<span class="sourceLineNo">039</span>     */<a name="line.39"></a>
-<span class="sourceLineNo">040</span>    @Parameter(defaultValue = "${project}", readonly = true, required = true)<a name="line.40"></a>
-<span class="sourceLineNo">041</span>    private MavenProject project;<a name="line.41"></a>
-<span class="sourceLineNo">042</span><a name="line.42"></a>
-<span class="sourceLineNo">043</span>    /**<a name="line.43"></a>
-<span class="sourceLineNo">044</span>     * Checks if version is -SNAPSHOT.<a name="line.44"></a>
-<span class="sourceLineNo">045</span>     */<a name="line.45"></a>
-<span class="sourceLineNo">046</span>    @Parameter(property = "checker.release", defaultValue = "true")<a name="line.46"></a>
-<span class="sourceLineNo">047</span>    private boolean release = true;<a name="line.47"></a>
-<span class="sourceLineNo">048</span><a name="line.48"></a>
-<span class="sourceLineNo">049</span>    /**<a name="line.49"></a>
-<span class="sourceLineNo">050</span>     * Checks if &amp;lt;repositories&amp;gt; and &amp;lt;pluginRepositories&amp;gt; are present.<a name="line.50"></a>
-<span class="sourceLineNo">051</span>     */<a name="line.51"></a>
-<span class="sourceLineNo">052</span>    @Parameter(property = "checker.strict", defaultValue = "true")<a name="line.52"></a>
-<span class="sourceLineNo">053</span>    private boolean strict = true;<a name="line.53"></a>
-<span class="sourceLineNo">054</span><a name="line.54"></a>
-<span class="sourceLineNo">055</span>    @Override<a name="line.55"></a>
-<span class="sourceLineNo">056</span>    public void execute() throws MojoExecutionException, MojoFailureException {<a name="line.56"></a>
-<span class="sourceLineNo">057</span>        try {<a name="line.57"></a>
-<span class="sourceLineNo">058</span>            MavenCentralChecker.check(getLog(), project, release, strict);<a name="line.58"></a>
-<span class="sourceLineNo">059</span>        } catch (PomCheckException e) {<a name="line.59"></a>
-<span class="sourceLineNo">060</span>            throw new MojoExecutionException("MavenCentral check failed", e);<a name="line.60"></a>
-<span class="sourceLineNo">061</span>        }<a name="line.61"></a>
-<span class="sourceLineNo">062</span>    }<a name="line.62"></a>
-<span class="sourceLineNo">063</span>}<a name="line.63"></a>
+<span class="sourceLineNo">020</span><a name="line.20">import org.apache.maven.plugin.AbstractMojo;</a>
+<span class="sourceLineNo">021</span><a name="line.21">import org.apache.maven.plugin.MojoExecutionException;</a>
+<span class="sourceLineNo">022</span><a name="line.22">import org.apache.maven.plugin.MojoFailureException;</a>
+<span class="sourceLineNo">023</span><a name="line.23">import org.apache.maven.plugins.annotations.Mojo;</a>
+<span class="sourceLineNo">024</span><a name="line.24">import org.apache.maven.plugins.annotations.Parameter;</a>
+<span class="sourceLineNo">025</span><a name="line.25">import org.apache.maven.project.MavenProject;</a>
+<span class="sourceLineNo">026</span><a name="line.26">import org.kordamp.maven.checker.MavenCentralChecker;</a>
+<span class="sourceLineNo">027</span><a name="line.27">import org.kordamp.maven.checker.MavenLoggerAdapter;</a>
+<span class="sourceLineNo">028</span><a name="line.28">import org.kordamp.maven.checker.PomCheckException;</a>
+<span class="sourceLineNo">029</span><a name="line.29"></a>
+<span class="sourceLineNo">030</span><a name="line.30">/**</a>
+<span class="sourceLineNo">031</span><a name="line.31"> * Checks if a POM complies with the rules for uploading to Maven Central.</a>
+<span class="sourceLineNo">032</span><a name="line.32"> *</a>
+<span class="sourceLineNo">033</span><a name="line.33"> * @author Andres Almiray</a>
+<span class="sourceLineNo">034</span><a name="line.34"> * @since 1.0.0</a>
+<span class="sourceLineNo">035</span><a name="line.35"> */</a>
+<span class="sourceLineNo">036</span><a name="line.36">@Mojo(name = "check-maven-central")</a>
+<span class="sourceLineNo">037</span><a name="line.37">public class CheckMavenCentralMojo extends AbstractMojo {</a>
+<span class="sourceLineNo">038</span><a name="line.38">    /**</a>
+<span class="sourceLineNo">039</span><a name="line.39">     * The project whose model will be checked.</a>
+<span class="sourceLineNo">040</span><a name="line.40">     */</a>
+<span class="sourceLineNo">041</span><a name="line.41">    @Parameter(defaultValue = "${project}", readonly = true, required = true)</a>
+<span class="sourceLineNo">042</span><a name="line.42">    private MavenProject project;</a>
+<span class="sourceLineNo">043</span><a name="line.43"></a>
+<span class="sourceLineNo">044</span><a name="line.44">    /**</a>
+<span class="sourceLineNo">045</span><a name="line.45">     * Checks if version is -SNAPSHOT.</a>
+<span class="sourceLineNo">046</span><a name="line.46">     */</a>
+<span class="sourceLineNo">047</span><a name="line.47">    @Parameter(property = "checker.release", defaultValue = "true")</a>
+<span class="sourceLineNo">048</span><a name="line.48">    private boolean release = true;</a>
+<span class="sourceLineNo">049</span><a name="line.49"></a>
+<span class="sourceLineNo">050</span><a name="line.50">    /**</a>
+<span class="sourceLineNo">051</span><a name="line.51">     * Checks if &amp;lt;repositories&amp;gt; and &amp;lt;pluginRepositories&amp;gt; are present.</a>
+<span class="sourceLineNo">052</span><a name="line.52">     */</a>
+<span class="sourceLineNo">053</span><a name="line.53">    @Parameter(property = "checker.strict", defaultValue = "true")</a>
+<span class="sourceLineNo">054</span><a name="line.54">    private boolean strict = true;</a>
+<span class="sourceLineNo">055</span><a name="line.55"></a>
+<span class="sourceLineNo">056</span><a name="line.56">    @Override</a>
+<span class="sourceLineNo">057</span><a name="line.57">    public void execute() throws MojoExecutionException, MojoFailureException {</a>
+<span class="sourceLineNo">058</span><a name="line.58">        try {</a>
+<span class="sourceLineNo">059</span><a name="line.59">            MavenCentralChecker.check(new MavenLoggerAdapter(getLog()), project, release, strict);</a>
+<span class="sourceLineNo">060</span><a name="line.60">        } catch (PomCheckException e) {</a>
+<span class="sourceLineNo">061</span><a name="line.61">            throw new MojoExecutionException("MavenCentral check failed", e);</a>
+<span class="sourceLineNo">062</span><a name="line.62">        }</a>
+<span class="sourceLineNo">063</span><a name="line.63">    }</a>
+<span class="sourceLineNo">064</span><a name="line.64">}</a>
 
 
 

@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"org.kordamp.maven.plugin.checker","l":"Banner"},{"p":"org.kordamp.maven.plugin.checker.mojos","l":"CheckBomMojo"},{"p":"org.kordamp.maven.plugin.checker.mojos","l":"CheckMavenCentralMojo"},{"p":"org.kordamp.maven.plugin.checker.mojos","l":"HelpMojo"}]
