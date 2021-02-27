@@ -86,6 +86,9 @@ jobs:
           access-token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
           access-token-secret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
 
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Sdkman
         run: |
           chmod +x mvnw
