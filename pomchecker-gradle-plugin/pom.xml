@@ -143,6 +143,7 @@
                                 <phase>package</phase>
                                 <configuration combine.self="override">
                                     <executable>${gradle.executable}</executable>
+                                    <skip>true</skip>
                                     <arguments>
                                         <argument>-Pversion=${project.version}</argument>
                                         <argument>-Prelease=true</argument>
