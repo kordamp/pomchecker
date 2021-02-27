@@ -1,0 +1,39 @@
+name: "Early Access"
+
+on: [push]
+
+jobs:
+  earlyaccess:
+    name: "Early Access"
+    if: github.repository == 'kordamp/pomchecker' && github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, 'Releasing version') != true
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2.3.4
+
+      - name: Cache Maven
+        uses: actions/cache@v2.1.4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Setup Java
+        uses: actions/setup-java@v1.4.3
+        with:
+          java-version: 9
+
+      - name: Build
+        run: ./mvnw --no-transfer-progress -B -DskipTests --file pom.xml verify
+
+      - name: "Release early-access artifacts"
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          automatic_release_tag: "early-access"
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: true
+          title: "PomChecker Early-Access"
+          files: |
+            pomchecker-cli/target/distributions/*.zip
+            pomchecker-cli/target/distributions/*.tar.gz
+            pomchecker-toolprovider/target/pomchecker-toolprovider-*.jar
