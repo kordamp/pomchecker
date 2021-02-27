@@ -28,8 +28,8 @@ jobs:
           chmod +x mvnw
           ./mvnw -B verify --file pom.xml
 
-  release:
-    name: Release
+  maven_release:
+    name: Maven Release
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && startsWith(github.event.head_commit.message, '[release]')
@@ -61,9 +61,128 @@ jobs:
           git config user.email "${{ github.event.head_commit.committer.email }}"
           mvn -B --file pom.xml release:prepare release:perform -Drepository.url=https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git -Darguments="-Drelease=true -Dmaven.site.skip=true"
 
+  release:
+    name: Release
+    needs: maven_release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: oprypin/find-latest-tag@v1
+        id: latest
+        with:
+          repository: ${{ github.repository }}
+          prefix: v
+
+      - name: Version
+        id: version
+        run: echo "::set-output name=VERSION::$(echo ${{ steps.latest.outputs.tag }} | sed 's/v//')"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.latest.outputs.tag }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 9
+
+      - name: Cache Maven
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build
+        run: |
+          chmod +x mvnw
+          ./mvnw -B verify --file pom.xml -DskipTests
+
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload zip
+        id: upload-zip
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./pomchecker-cli/target/distributions/pomchecker-cli-${{ steps.version.outputs.VERSION }}.zip
+          asset_name: pomchecker-cli-${{ steps.version.outputs.VERSION }}.zip
+          asset_content_type: application/zip
+
+      - name: Upload tgz
+        id: upload-tgz
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./pomchecker-cli/target/distributions/pomchecker-cli-${{ steps.version.outputs.VERSION }}.tar.gz
+          asset_name: pomchecker-cli-${{ steps.version.outputs.VERSION }}.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Upload toolprovider
+        id: upload-toolprovider
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./pomchecker-toolprovider/target/pomchecker-toolprovider-${{ steps.version.outputs.VERSION }}.jar
+          asset_name: pomchecker-toolprovider-${{ steps.version.outputs.VERSION }}.jar
+          asset_content_type: application/java-archive
+
+  site:
+    name: Site
+    needs: release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: oprypin/find-latest-tag@v1
+        id: latest
+        with:
+          repository: ${{ github.repository }}
+          prefix: v
+
+      - name: Version
+        id: version
+        run: echo "::set-output name=VERSION::$(echo ${{ steps.latest.outputs.tag }} | sed 's/v//')"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.latest.outputs.tag }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 9
+
+      - name: Build site
+        run: |
+          chmod +x mvnw
+          ./mvnw -B --file pom.xml site site:stage -DstagingDirectory="${{ runner.temp }}/site"
+
+      - name: Publish
+        uses: JamesIves/github-pages-deploy-action@4.0.0
+        with:
+          branch: gh-pages
+          folder: "${{ runner.temp }}/site"
+
   announce:
     name: Announce
-    needs: release
+    needs: site
     runs-on: ubuntu-latest
 
     steps:
@@ -88,6 +207,13 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ steps.latest.outputs.tag }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 9
 
       - name: Sdkman
         run: |
