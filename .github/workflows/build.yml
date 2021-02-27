@@ -59,7 +59,7 @@ jobs:
           export GPG_TTY=$(tty)
           git config user.name "${{ github.event.head_commit.committer.name }}"
           git config user.email "${{ github.event.head_commit.committer.email }}"
-          mvn -B --file pom.xml release:prepare release:perform -Drepository.url=https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git -Darguments=-Drelease
+          mvn -B --file pom.xml release:prepare release:perform -Drepository.url=https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git -Darguments="-Drelease=true -Dmaven.site.skip=true"
 
   announce:
     name: Announce
