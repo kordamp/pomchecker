@@ -147,8 +147,8 @@
                                         <argument>-Pversion=${project.version}</argument>
                                         <argument>-Prelease=true</argument>
                                         <argument>-S</argument>
-                                        <argument>-Dgradle.publish.key=${env.GRADLE_PUBLISH_KEY}</argument>
-                                        <argument>-Dgradle.publish.secret=${env.GRADLE_PUBLISH_SECRET}</argument>
+                                        <argument>-Pgradle.publish.key=${env.GRADLE_PUBLISH_KEY}</argument>
+                                        <argument>-Pgradle.publish.secret=${env.GRADLE_PUBLISH_SECRET}</argument>
                                         <argument>build</argument>
                                         <argument>publishPlugins</argument>
                                     </arguments>
