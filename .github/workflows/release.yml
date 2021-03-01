@@ -46,7 +46,7 @@ jobs:
           export GPG_TTY=$(tty)
           ./mvnw --no-transfer-progress -B --file pom.xml \
             -Drepository.url=https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git \
-            -Drelease=true -Dmaven.site.skip=true -Ppublication,gpg deploy
+            -Dmaven.site.skip=true -Drelease=true deploy
 
       - name: Create GitHub Release
         id: create_release
@@ -91,6 +91,12 @@ jobs:
           asset_path: ./pomchecker-toolprovider/target/pomchecker-toolprovider-${{ steps.version.outputs.VERSION }}.jar
           asset_name: pomchecker-toolprovider-${{ steps.version.outputs.VERSION }}.jar
           asset_content_type: application/java-archive
+
+      - name: Sdkman
+          env:
+            SDKMAN_CONSUMER_KEY: ${{ secrets.SDKMAN_CONSUMER_KEY }}
+            SDKMAN_CONSUMER_TOKEN: ${{ secrets.SDKMAN_CONSUMER_TOKEN }}
+          run: ./mvnw --no-transfer-progress -B -pl :pomchecker -Psdkman -Dpomchecker.version=${{ steps.version.outputs.VERSION }} --file pom.xml
 
   site:
     name: Site
@@ -140,24 +146,3 @@ jobs:
           consumer-secret: ${{ secrets.TWITTER_API_SECRET_KEY }}
           access-token: ${{ secrets.TWITTER_ACCESS_TOKEN }}
           access-token-secret: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
-
-      - name: Checkout
-        uses: actions/checkout@v2.3.4
-
-      - name: Cache Maven
-        uses: actions/cache@v2.1.4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-
-      - name: Setup Java
-        uses: actions/setup-java@v1.4.3
-        with:
-          java-version: 9
-
-      - name: Sdkman
-        env:
-          SDKMAN_CONSUMER_KEY: ${{ secrets.SDKMAN_CONSUMER_KEY }}
-          SDKMAN_CONSUMER_TOKEN: ${{ secrets.SDKMAN_CONSUMER_TOKEN }}
-        run: ./mvnw --no-transfer-progress -B -pl :pomchecker -Psdkman -Dpomchecker.version=${{ steps.version.outputs.VERSION }} --file pom.xml

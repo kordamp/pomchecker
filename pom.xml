@@ -18,13 +18,14 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.kordamp.maven</groupId>
         <artifactId>kordamp-parent</artifactId>
-        <version>1.1.0</version>
+        <version>1.1.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>pomchecker</artifactId>
@@ -33,7 +34,7 @@
 
     <name>pomchecker</name>
     <description>POM checker</description>
-    <url>https://kordamp.org/pomchecker</url>
+    <url>https://kordamp.org/pomchecker/</url>
     <inceptionYear>2020</inceptionYear>
 
     <properties>
@@ -64,8 +65,8 @@
         <connection>scm:git:${repository.url}</connection>
         <developerConnection>scm:git:${repository.url}</developerConnection>
         <url>${repository.url}</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <distributionManagement>
         <site>
@@ -223,8 +224,12 @@
                                     <consumerToken>${env.SDKMAN_CONSUMER_TOKEN}</consumerToken>
                                     <candidate>${project.identifier}</candidate>
                                     <version>${pomchecker.version}</version>
-                                    <url>${project.url}</url>
-                                    <releaseNotesUrl>https://github.com/${project.github.repository}/releases/tag/v${pomchecker.version}</releaseNotesUrl>
+                                    <url>
+                                        https://github.com/${project.github.repository}/releases/download/v${pomchecker.version}/pomchecker-${pomchecker.version}.zip
+                                    </url>
+                                    <releaseNotesUrl>
+                                        https://github.com/${project.github.repository}/releases/tag/v${pomchecker.version}
+                                    </releaseNotesUrl>
                                 </configuration>
                             </execution>
                         </executions>
