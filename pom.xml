@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.kordamp.maven</groupId>
         <artifactId>kordamp-parent</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.2.0</version>
     </parent>
 
     <artifactId>pomchecker</artifactId>
@@ -39,7 +39,6 @@
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.version>3.6.3</maven.version>
         <slf4j.version>1.7.30</slf4j.version>
         <picocli.version>4.6.1</picocli.version>
