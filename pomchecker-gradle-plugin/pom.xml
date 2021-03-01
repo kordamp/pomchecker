@@ -31,10 +31,6 @@
     <version>1.1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>pomchecker-gradle-plugin</name>
-    <description>PomChecker Gradle plugin</description>
-    <url>https://kordamp.org/pomchecker</url>
-
     <properties>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <maven.source.skip>true</maven.source.skip>
@@ -47,6 +43,10 @@
         <maven.test.skip>true</maven.test.skip>
         <version.exec.plugin>1.6.0</version.exec.plugin>
     </properties>
+
+    <name>pomchecker-gradle-plugin</name>
+    <description>PomChecker Gradle plugin</description>
+    <url>https://kordamp.org/pomchecker</url>
 
     <dependencies>
         <dependency>
@@ -74,10 +74,10 @@
                 <executions>
                     <execution>
                         <id>prepare-local-repository</id>
-                        <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
+                        <phase>prepare-package</phase>
                         <configuration>
                             <useBaseVersion>true</useBaseVersion>
                             <useRepositoryLayout>false</useRepositoryLayout>
@@ -93,6 +93,9 @@
                 <executions>
                     <execution>
                         <id>gradle-build</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
                         <phase>package</phase>
                         <configuration combine.self="override">
                             <executable>${gradle.executable}</executable>
@@ -102,9 +105,6 @@
                                 <argument>${gradle.tasks}</argument>
                             </arguments>
                         </configuration>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -139,6 +139,9 @@
                         <executions>
                             <execution>
                                 <id>gradle-build</id>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
                                 <phase>package</phase>
                                 <configuration combine.self="override">
                                     <executable>${gradle.executable}</executable>
@@ -153,9 +156,6 @@
                                         <argument>publishPlugins</argument>
                                     </arguments>
                                 </configuration>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
                             </execution>
                         </executions>
                     </plugin>

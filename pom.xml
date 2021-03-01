@@ -18,8 +18,7 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -31,11 +30,6 @@
     <artifactId>pomchecker</artifactId>
     <version>1.1.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-
-    <name>pomchecker</name>
-    <description>POM checker</description>
-    <url>https://kordamp.org/pomchecker/</url>
-    <inceptionYear>2020</inceptionYear>
 
     <properties>
         <project.identifier>pomchecker</project.identifier>
@@ -52,6 +46,18 @@
         <maven.resolver.version>1.6.1</maven.resolver.version>
     </properties>
 
+    <name>pomchecker</name>
+    <description>POM checker</description>
+    <url>https://kordamp.org/pomchecker/</url>
+    <inceptionYear>2020</inceptionYear>
+
+    <scm>
+        <connection>scm:git:${repository.url}</connection>
+        <developerConnection>scm:git:${repository.url}</developerConnection>
+        <tag>HEAD</tag>
+        <url>${repository.url}</url>
+    </scm>
+
     <modules>
         <module>pomchecker-core</module>
         <module>pomchecker-cli</module>
@@ -61,31 +67,27 @@
         <module>pomchecker-maven-plugin</module>
     </modules>
 
-    <scm>
-        <connection>scm:git:${repository.url}</connection>
-        <developerConnection>scm:git:${repository.url}</developerConnection>
-        <url>${repository.url}</url>
-        <tag>HEAD</tag>
-    </scm>
-
-    <distributionManagement>
-        <site>
-            <id>kordamp</id>
-            <url>file://${local.repository.path}/site</url>
-        </site>
-    </distributionManagement>
-
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-artifact</artifactId>
+                <version>${maven.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-core</artifactId>
                 <version>${maven.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-artifact</artifactId>
-                <version>${maven.version}</version>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-classworlds</artifactId>
+                <version>2.6.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-component-annotations</artifactId>
+                <version>2.1.0</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
@@ -97,24 +99,14 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-component-annotations</artifactId>
-                <version>2.1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-classworlds</artifactId>
-                <version>2.6.0</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <build>
         <resources>
             <resource>
-                <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <directory>src/main/resources</directory>
             </resource>
         </resources>
         <pluginManagement>
@@ -171,13 +163,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.asciidoctor</groupId>
-                        <artifactId>asciidoctor-maven-plugin</artifactId>
-                        <version>2.1.0</version>
-                    </dependency>
-                </dependencies>
                 <configuration>
                     <skipDeploy>true</skipDeploy>
                     <asciidoc>
@@ -194,9 +179,50 @@
                         <asciidoc>**/_*.adoc</asciidoc>
                     </moduleExcludes>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctor-maven-plugin</artifactId>
+                        <version>2.1.0</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <linksource>true</linksource>
+                    <notimestamp>true</notimestamp>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <id>aggregate</id>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                        <inherited>false</inherited>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.0.0</version>
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <distributionManagement>
+        <site>
+            <id>kordamp</id>
+            <url>file://${local.repository.path}/site</url>
+        </site>
+    </distributionManagement>
 
     <profiles>
         <profile>
@@ -224,12 +250,8 @@
                                     <consumerToken>${env.SDKMAN_CONSUMER_TOKEN}</consumerToken>
                                     <candidate>${project.identifier}</candidate>
                                     <version>${pomchecker.version}</version>
-                                    <url>
-                                        https://github.com/${project.github.repository}/releases/download/v${pomchecker.version}/pomchecker-${pomchecker.version}.zip
-                                    </url>
-                                    <releaseNotesUrl>
-                                        https://github.com/${project.github.repository}/releases/tag/v${pomchecker.version}
-                                    </releaseNotesUrl>
+                                    <url>https://github.com/${project.github.repository}/releases/download/v${pomchecker.version}/pomchecker-${pomchecker.version}.zip</url>
+                                    <releaseNotesUrl>https://github.com/${project.github.repository}/releases/tag/v${pomchecker.version}</releaseNotesUrl>
                                 </configuration>
                             </execution>
                         </executions>
@@ -238,31 +260,4 @@
             </build>
         </profile>
     </profiles>
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.0.0</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <linksource>true</linksource>
-                    <notimestamp>true</notimestamp>
-                </configuration>
-                <reportSets>
-                    <reportSet>
-                        <id>aggregate</id>
-                        <inherited>false</inherited>
-                        <reports>
-                            <report>aggregate</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-        </plugins>
-    </reporting>
 </project>
