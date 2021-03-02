@@ -17,7 +17,7 @@
  */
 package org.kordamp.maven.checker.toolprovider;
 
-import org.kordamp.jipsy.ServiceProviderFor;
+import org.kordamp.jipsy.annotations.ServiceProviderFor;
 import org.kordamp.maven.checker.cli.Main;
 
 import java.io.PrintWriter;

@@ -37,7 +37,7 @@
         <maven.compiler.source>9</maven.compiler.source>
         <maven.compiler.target>9</maven.compiler.target>
         <application.main.class>org.kordamp.maven.checker.toolprovider.Pomchecker</application.main.class>
-        <jipsy.version>0.6.0</jipsy.version>
+        <jipsy.version>1.0.0</jipsy.version>
     </properties>
 
     <name>pomchecker-toolprovider</name>
@@ -147,7 +147,7 @@
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.kordamp.jipsy</groupId>
-                            <artifactId>jipsy</artifactId>
+                            <artifactId>jipsy-processor</artifactId>
                             <version>${jipsy.version}</version>
                         </path>
                     </annotationProcessorPaths>
