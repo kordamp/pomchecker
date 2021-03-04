@@ -48,6 +48,12 @@ jobs:
             -Drepository.url=https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git \
             -Dmaven.site.skip=true -Drelease=true deploy
 
+      - name: Generate changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v0.4.4
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -56,6 +62,13 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
+          body: |
+            Docs found at https://kordamp.org/pomchecker
+            You may install PomChecker via https://sdkman.io; download binaries from this release; or configure either the
+            Maven or Gradle plugins in your build.
+
+            ### Changelog
+            ${{ steps.changelog.outputs.changelog }}
           draft: false
           prerelease: false
 

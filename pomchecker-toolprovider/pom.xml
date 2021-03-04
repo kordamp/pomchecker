@@ -123,7 +123,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
     <dependencies>
         <dependency>
             <groupId>org.kordamp.jipsy</groupId>
