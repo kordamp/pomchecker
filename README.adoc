@@ -1,4 +1,4 @@
-= PomChecker
+= Pomchecker
 :linkattrs:
 :project-owner:      kordamp
 :project-name:       pomchecker
@@ -11,5 +11,59 @@ image:https://img.shields.io/maven-central/v/{project-groupId}/{project-artifact
 
 ---
 
-Refer to the link:http://{project-owner}.github.io/{project-name}[guide, window="_blank"] for further information on configuration
-and usage.
+Refer to the link:http://{project-owner}.github.io/{project-name}[guide, window="_blank"] for further information on
+configuration and usage.
+
+== Install
+
+.Sdkman
+[source]
+[subs="attributes"]
+----
+$ sdk install pomchecker {project-version}
+----
+
+.Jbang
+[source]
+[subs="attributes"]
+----
+$ jbang pomchecker@kordamp --help
+----
+
+.Maven
+[source]
+[subs="attributes,verbatim"]
+----
+<plugin>
+   <groupId>{project-groupId}</groupId>
+   <artifactId>pomchecker-maven-plugin</artifactId>
+   <version>{project-version}</version>
+</plugin>
+----
+
+.Maven Enforcer
+[source]
+[subs="attributes,verbatim"]
+----
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-enforcer-plugin</artifactId>
+    <version>3.0.0-M3</version>
+    <dependencies>
+        <dependency>
+            <groupId>{project-groupId}</groupId>
+            <artifactId>pomchecker-enforcer-rules</artifactId>
+            <version>{project-version}</version>
+        </dependency>
+    </dependencies>
+</plugin>
+----
+
+.Gradle
+[source]
+[subs="attributes"]
+----
+plugins {
+    id 'org.kordamp.gradle.pomchecker' version '{project-version}'
+}
+----
