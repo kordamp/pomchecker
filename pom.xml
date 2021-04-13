@@ -212,6 +212,10 @@
                     <properties>
                         <author>Andres Almiray</author>
                     </properties>
+                    <mapping>
+                        <yml>SCRIPT_STYLE</yml>
+                        <toml>SCRIPT_STYLE</toml>
+                    </mapping>
                     <excludes>
                         <exclude>**/*.adoc</exclude>
                         <exclude>LICENSE</exclude>
@@ -225,6 +229,8 @@
                         <exclude>**/gradlew</exclude>
                         <exclude>**/gradlew.bat</exclude>
                         <exclude>**/build/**/*</exclude>
+                        <exclude>out/**/*</exclude>
+                        <exclude>VERSION</exclude>
                     </excludes>
                 </configuration>
                 <executions>

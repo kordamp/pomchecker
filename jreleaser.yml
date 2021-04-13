@@ -1,0 +1,71 @@
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+# Copyright 2020-2021 Andres Almiray.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+project:
+  name: pomchecker
+  description: Checks POM files may be uploaded to Maven Central
+  longDescription: Checks POM files may be uploaded to Maven Central
+  website: https://kordamp.org/pomchecker
+  authors:
+    - Andres Almiray
+  license: Apache-2.0
+  java:
+    groupId: org.kordamp.maven
+    version: 8
+
+release:
+  github:
+    username: aalmiray
+    overwrite: true
+    sign: true
+
+signing:
+  enabled: true
+  armored: true
+
+#announce:
+#  twitter:
+#    enabled: true
+#  sdkman:
+#    enabled: true
+
+distributions:
+  pomchecker:
+    java:
+      mainClass: org.kordamp.maven.checker.cli.Main
+    brew:
+      enabled: true
+    scoop:
+      enabled: true
+    jbang:
+      enabled: true
+    artifacts:
+      - path: pomchecker-cli/target/distributions/{{distributionName}}-{{projectVersion}}.zip
+      - path: pomchecker-cli/target/distributions/{{distributionName}}-{{projectVersion}}.tar.gz
+
+  pomchecker-cli:
+    type: 'single-jar'
+    artifacts:
+      - path: pomchecker-cli/target/{{distributionName}}-{{projectVersion}}-all.jar
+
+  pomchecker-toolprovider:
+    type: 'single-jar'
+    java:
+      version: 9
+    artifacts:
+      - path: pomchecker-toolprovider/target/{{distributionName}}-{{projectVersion}}.jar
