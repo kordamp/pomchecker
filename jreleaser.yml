@@ -61,11 +61,11 @@ distributions:
   pomchecker-cli:
     type: 'single-jar'
     artifacts:
-      - path: pomchecker-cli/target/{{distributionName}}-{{projectVersion}}-all.jar
+      - path: '{{distributionName}}/target/{{distributionName}}-{{projectVersion}}-all.jar'
 
   pomchecker-toolprovider:
     type: 'single-jar'
     java:
       version: 9
     artifacts:
-      - path: pomchecker-toolprovider/target/{{distributionName}}-{{projectVersion}}.jar
+      - path: '{{distributionName}}/target/{{distributionName}}-{{projectVersion}}.jar'
