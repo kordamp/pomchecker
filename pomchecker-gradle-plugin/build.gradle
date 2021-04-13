@@ -50,10 +50,6 @@ config {
         }
     }
 
-    bintray {
-        enabled = false
-    }
-
     plugins {
         plugin {
             name                = 'pomchecker'
