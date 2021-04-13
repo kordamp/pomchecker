@@ -29,23 +29,19 @@ import java.util.spi.ToolProvider;
  */
 @ServiceProviderFor(ToolProvider.class)
 public class Pomchecker implements ToolProvider {
+    @Override
     public String name() {
         return "pomchecker";
     }
 
+    @Override
     public int run(PrintWriter out, PrintWriter err, String... args) {
         return Main.run(out, err, args);
     }
 
     public static void main(String[] args) {
-        PrintWriter out = new PrintWriter(System.out);
-        PrintWriter err = new PrintWriter(System.err);
-
-        try {
-            Main.run(out, err, args);
-        } finally {
-            out.flush();
-            err.flush();
-        }
+        PrintWriter out = new PrintWriter(System.out, true);
+        PrintWriter err = new PrintWriter(System.err, true);
+        System.exit(Main.run(out, err, args));
     }
 }

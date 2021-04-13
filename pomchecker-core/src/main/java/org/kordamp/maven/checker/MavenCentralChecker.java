@@ -79,19 +79,19 @@ public class MavenCentralChecker {
 
         // sanity checks. redundant?
         if (isBlank(fullModel.getGroupId())) {
-            errors.add("<groupId> cannot not be blank.");
+            errors.add("<groupId> can not be blank.");
         }
         if (isBlank(fullModel.getArtifactId())) {
-            errors.add("<artifactId> cannot not be blank.");
+            errors.add("<artifactId> can not be blank.");
         }
         if (isBlank(fullModel.getVersion())) {
-            errors.add("<version> cannot not be blank.");
+            errors.add("<version> can not be blank.");
         }
 
         if (isBlank(fullModel.getName())) {
             String parentName = resolveParentName(project.getFile().getParentFile(), fullModel);
             if (isBlank(parentName)) {
-                errors.add("<name> cannot not be blank.");
+                errors.add("<name> can not be blank.");
             } else {
                 log.warn("<name> is not defined in POM. Will use value from parent: " +
                     System.lineSeparator() + "\t" + parentName);
@@ -99,7 +99,7 @@ public class MavenCentralChecker {
         }
 
         if (isBlank(fullModel.getDescription())) {
-            errors.add("<description> cannot not be blank.");
+            errors.add("<description> can not be blank.");
         }
         if (isBlank(originalModel.getDescription())) {
             log.warn("<description> is not defined in POM. Will use value from parent: " +
@@ -107,7 +107,7 @@ public class MavenCentralChecker {
         }
 
         if (isBlank(fullModel.getUrl())) {
-            errors.add("<url> cannot not be blank.");
+            errors.add("<url> can not be blank.");
         }
         if (isBlank(originalModel.getUrl())) {
             log.warn("<url> is not defined in POM. Will use computed value from parent: " +
@@ -115,7 +115,7 @@ public class MavenCentralChecker {
         }
 
         if (release && fullModel.getVersion().endsWith("-SNAPSHOT")) {
-            errors.add("<version> cannot not be -SNAPSHOT.");
+            errors.add("<version> can not be -SNAPSHOT.");
         }
 
         if (fullModel.getLicenses() != null) {
@@ -221,7 +221,7 @@ public class MavenCentralChecker {
                         parent = parentModel.getParent();
                     }
                 } else {
-                    // parent should be available form a repository
+                    // parent should be available from a repository
                     // TODO: resolve parent
                     return null;
                 }
