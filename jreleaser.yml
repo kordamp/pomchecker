@@ -35,25 +35,25 @@ release:
     sign: true
 
 signing:
-  enabled: true
+  active: always
   armored: true
 
-#announce:
-#  twitter:
-#    enabled: true
-#  sdkman:
-#    enabled: true
+announce:
+  twitter:
+    active: release
+  sdkman:
+    active: release
 
 distributions:
   pomchecker:
     java:
       mainClass: org.kordamp.maven.checker.cli.Main
     brew:
-      enabled: true
+      active: release
     scoop:
-      enabled: true
+      active: release
     jbang:
-      enabled: true
+      active: always
     artifacts:
       - path: pomchecker-cli/target/distributions/{{distributionName}}-{{projectVersion}}.zip
       - path: pomchecker-cli/target/distributions/{{distributionName}}-{{projectVersion}}.tar.gz
