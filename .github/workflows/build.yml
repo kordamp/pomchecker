@@ -1,15 +1,11 @@
 name: Build
 
-on:
-  push:
-    branches:
-      - '*'
+on: [push]
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    if: startsWith(github.event.head_commit.message, 'Releasing version') != true
 
     steps:
       - name: Checkout

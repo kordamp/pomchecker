@@ -50,8 +50,6 @@ enforce {
     rule(enforcer.rules.ForceDependencies) { r ->
         r.dependencies.addAll "org.codehaus.plexus:plexus-utils:$plexusVersion",
             "org.codehaus.plexus:plexus-interpolation:$plexus2Version",
-            "org.eclipse.jgit:org.eclipse.jgit.ui:$jgitVersion",
-            "org.eclipse.jgit:org.eclipse.jgit:$jgitVersion",
             "commons-lang:commons-lang:$commonsLangVersion",
             "commons-codec:commons-codec:1.14",
             "commons-beanutils:commons-beanutils:1.9.3",
@@ -59,20 +57,13 @@ enforce {
             "commons-collections:commons-collections:$commonsCollectionsVersion",
             "commons-httpclient:commons-httpclient:3.1",
             "org.apache.commons:commons-lang3:$commonsLang3Version",
-            "com.jcraft:jsch.agentproxy.core:$jschProxyVersion",
-            "com.jcraft:jsch.agentproxy.pageant:$jschProxyVersion",
-            "com.jcraft:jsch.agentproxy.sshagent:$jschProxyVersion",
-            "com.jcraft:jsch.agentproxy.usocket-jna:$jschProxyVersion",
-            "com.jcraft:jsch.agentproxy.usocket-nc:$jschProxyVersion",
             "org.slf4j:slf4j-api:$slf4jVersion",
             "org.slf4j:slf4j-nop:$slf4jVersion",
             "org.slf4j:jcl-over-slf4j:$slf4jVersion",
-            "com.jcraft:jsch:$jschVersion",
             "com.google.guava:guava:$guavaVersion",
             "com.google.inject:guice:$guiceVersion",
             "org.apache.httpcomponents:httpclient:$httpVersion",
             "org.apache.httpcomponents:httpcore:4.4.13",
-            "com.trilead:trilead-ssh2:$trileadVersion",
             "org.apache.maven:maven-model:$mavenVersion",
             "org.apache.maven:maven-artifact:$mavenVersion",
             "org.apache.maven:maven-settings:$mavenVersion",
@@ -95,9 +86,8 @@ enforce {
             "org.sonatype.plexus:plexus-sec-dispatcher:1.4",
             "org.codehaus.plexus:plexus-classworlds:2.6.0",
             "org.codehaus.groovy.modules.http-builder:http-builder:0.7.2",
-            "com.fasterxml.woodstox:woodstox-core:$woodstoxVersion",
             "classworlds:classworlds:1.1",
             "org.eclipse.sisu:org.eclipse.sisu.plexus:0.3.4",
-            "org.apache.maven.wagon:wagon-provider-api:3.3.4"
+            "org.apache.maven.wagon:wagon-provider-api:3.4.3"
     }
 }
