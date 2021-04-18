@@ -1,1 +1,1 @@
-typeSearchIndex = [{"p":"org.kordamp.maven.checker.toolprovider","l":"Pomchecker"}]
+typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"org.kordamp.maven.checker.toolprovider","l":"Pomchecker"}]

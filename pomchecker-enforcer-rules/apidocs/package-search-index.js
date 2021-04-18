@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"org.kordamp.maven.enforcer.checker"}]
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"org.kordamp.maven.enforcer.checker"}]

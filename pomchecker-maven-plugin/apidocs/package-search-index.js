@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"org.kordamp.maven.plugin.checker"},{"l":"org.kordamp.maven.plugin.checker.mojos"}]
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"org.kordamp.maven.plugin.checker"},{"l":"org.kordamp.maven.plugin.checker.mojos"}]
