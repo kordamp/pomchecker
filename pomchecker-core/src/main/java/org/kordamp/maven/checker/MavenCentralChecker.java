@@ -78,16 +78,20 @@ public class MavenCentralChecker {
         List<String> errors = new ArrayList<>();
 
         // sanity checks. redundant?
+        log.debug("Checking <groupId>");
         if (isBlank(fullModel.getGroupId())) {
             errors.add("<groupId> can not be blank.");
         }
+        log.debug("Checking <artifactId>");
         if (isBlank(fullModel.getArtifactId())) {
             errors.add("<artifactId> can not be blank.");
         }
+        log.debug("Checking <version>");
         if (isBlank(fullModel.getVersion())) {
             errors.add("<version> can not be blank.");
         }
 
+        log.debug("Checking <name>");
         if (isBlank(fullModel.getName())) {
             String parentName = resolveParentName(project.getFile().getParentFile(), fullModel);
             if (isBlank(parentName)) {
@@ -98,6 +102,7 @@ public class MavenCentralChecker {
             }
         }
 
+        log.debug("Checking <description>");
         if (isBlank(fullModel.getDescription())) {
             errors.add("<description> can not be blank.");
         }
@@ -106,6 +111,7 @@ public class MavenCentralChecker {
                 System.lineSeparator() + "\t" + fullModel.getDescription());
         }
 
+        log.debug("Checking <url>");
         if (isBlank(fullModel.getUrl())) {
             errors.add("<url> can not be blank.");
         }
@@ -114,10 +120,12 @@ public class MavenCentralChecker {
                 System.lineSeparator() + "\t" + fullModel.getUrl());
         }
 
+        if (release) log.debug("Checking if version is not snapshot");
         if (release && fullModel.getVersion().endsWith("-SNAPSHOT")) {
             errors.add("<version> can not be -SNAPSHOT.");
         }
 
+        log.debug("Checking <licenses>");
         if (fullModel.getLicenses() != null) {
             if (!fullModel.getLicenses().isEmpty()) {
                 // verify that all licenses have <name> & <url>
@@ -134,6 +142,7 @@ public class MavenCentralChecker {
             errors.add("<licenses> block is required but was left undefined.");
         }
 
+        log.debug("Checking <developers>");
         if (fullModel.getDevelopers() != null) {
             if (!fullModel.getDevelopers().isEmpty()) {
                 // verify that all developers have at least one of [id, name, organization, organizationUrl]
@@ -153,10 +162,12 @@ public class MavenCentralChecker {
             errors.add("<developers> block is required but was left undefined.");
         }
 
+        log.debug("Checking <scm>");
         if (fullModel.getScm() == null) {
             errors.add("The <scm> block is required.");
         }
 
+        log.debug("Checking <repositories>");
         if (null != originalModel.getRepositories() && !originalModel.getRepositories().isEmpty()) {
             if (strict) {
                 errors.add("The <repositories> block should not be present.");
@@ -164,6 +175,8 @@ public class MavenCentralChecker {
                 log.warn("The <repositories> block should not be present.");
             }
         }
+
+        log.debug("Checking <pluginRepositories>");
         if (null != originalModel.getPluginRepositories() && !originalModel.getPluginRepositories().isEmpty()) {
             if (strict) {
                 errors.add("The <pluginRepositories> block should not be present.");
@@ -181,6 +194,8 @@ public class MavenCentralChecker {
             }
 
             throw new PomCheckException(b.toString());
+        } else {
+            log.info("POM {} passes all checks. It be uploaded to Maven Central.", project.getFile().getAbsolutePath());
         }
     }
 

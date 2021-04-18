@@ -67,19 +67,21 @@ abstract class AbstractCommand implements Callable<Integer> {
     public Integer call() {
         Banner.display(spec.commandLine().getOut());
 
-        SimpleLoggerAdapter.Level level = SimpleLoggerAdapter.Level.WARN;
+        System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "error");
+
+        SimpleLoggerAdapter.Level level = SimpleLoggerAdapter.Level.INFO;
         if (debug) {
             level = SimpleLoggerAdapter.Level.DEBUG;
-            System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "debug");
+            System.setProperty("org.slf4j.simpleLogger.org.kordamp.maven", "debug");
         } else if (info) {
             level = SimpleLoggerAdapter.Level.INFO;
-            System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
+            System.setProperty("org.slf4j.simpleLogger.org.kordamp.maven", "info");
         } else if (warn) {
             level = SimpleLoggerAdapter.Level.WARN;
-            System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "warn");
+            System.setProperty("org.slf4j.simpleLogger.org.kordamp.maven", "warn");
         } else if (quiet) {
             level = SimpleLoggerAdapter.Level.ERROR;
-            System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "error");
+            System.setProperty("org.slf4j.simpleLogger.org.kordamp.maven", "error");
         }
 
         logger = new SimpleLoggerAdapter(parent().out, level);

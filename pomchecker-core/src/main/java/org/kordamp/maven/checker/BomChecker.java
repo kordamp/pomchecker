@@ -60,10 +60,12 @@ public class BomChecker {
         List<String> errors = new ArrayList<>();
 
         // 1. is it packaged as 'pom'?
+        log.debug("Checking <packaging>");
         if (!"pom".equals(model.getPackaging())) {
             errors.add("The value of <packaging> must be 'pom'.");
         }
 
+        log.debug("Checking <dependencyManagement>");
         // 2. must have a <dependencyManagement> block
         if (null != model.getDependencyManagement()) {
             List<Dependency> dependencies = model.getDependencyManagement().getDependencies();
@@ -74,24 +76,37 @@ public class BomChecker {
             errors.add("No <dependencyManagement> block has been defined.");
         }
 
+        log.debug("Checking <build>");
         if (null != model.getBuild()) {
             errors.add("The <build> block should not be present.");
         }
+
+        log.debug("Checking <reporting>");
         if (null != model.getReporting()) {
             errors.add("The <reporting> block should not be present.");
         }
+
+        log.debug("Checking <dependencies>");
         if (null != model.getDependencies() && !model.getDependencies().isEmpty()) {
             errors.add("The <dependencies> block should not be present.");
         }
+
+        log.debug("Checking <repositories>");
         if (null != model.getRepositories() && !model.getRepositories().isEmpty()) {
             errors.add("The <repositories> block should not be present.");
         }
+
+        log.debug("Checking <pluginRepositories>");
         if (null != model.getPluginRepositories() && !model.getPluginRepositories().isEmpty()) {
             errors.add("The <pluginRepositories> block should not be present.");
         }
+
+        log.debug("Checking <profiles>");
         if (null != model.getProfiles() && !model.getProfiles().isEmpty()) {
             errors.add("The <profiles> block should not be present.");
         }
+
+        log.debug("Checking <modules>");
         if (null != model.getModules() && !model.getModules().isEmpty()) {
             errors.add("The <modules> block should not be present.");
         }
@@ -105,6 +120,8 @@ public class BomChecker {
             }
 
             throw new PomCheckException(b.toString());
+        } else {
+            log.info("BOM {} passes all checks.", project.getFile().getAbsolutePath());
         }
     }
 }
