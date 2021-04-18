@@ -41,6 +41,7 @@ public class CheckMavenCentral extends AbstractCommand {
     @Override
     protected void execute() {
         try {
+            logger.info("Maven Central checks: {}", pomFile.toAbsolutePath().toString());
             MavenProject project = PomParser.createMavenProject(pomFile.toFile());
             MavenCentralChecker.check(logger, project, !release, !strict);
         } catch (PomCheckException e) {
