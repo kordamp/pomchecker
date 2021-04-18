@@ -5,7 +5,7 @@ on: [push]
 jobs:
   earlyaccess:
     name: "Early Access"
-    if: github.repository == 'kordamp/pomchecker' && github.ref == 'refs/heads/master'
+    if: github.repository == 'kordamp/pomchecker' && github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, 'Releasing version') != true
     runs-on: ubuntu-latest
 
     steps:
