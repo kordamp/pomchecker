@@ -29,7 +29,7 @@
     </parent>
 
     <artifactId>pomchecker</artifactId>
-    <version>1.2.0</version>
+    <version>1.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -304,45 +304,4 @@
             <url>file://${local.repository.path}/site</url>
         </site>
     </distributionManagement>
-
-    <profiles>
-        <profile>
-            <id>sdkman</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <build>
-                <defaultGoal>initialize</defaultGoal>
-                <plugins>
-                    <plugin>
-                        <groupId>io.sdkman</groupId>
-                        <artifactId>sdkman-maven-plugin</artifactId>
-                        <version>2.0.0</version>
-                        <inherited>false</inherited>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>major-release</goal>
-                                </goals>
-                                <phase>initialize</phase>
-                                <configuration>
-                                    <apiHost>https://vendors.sdkman.io</apiHost>
-                                    <consumerKey>${env.SDKMAN_CONSUMER_KEY}</consumerKey>
-                                    <consumerToken>${env.SDKMAN_CONSUMER_TOKEN}</consumerToken>
-                                    <candidate>${project.identifier}</candidate>
-                                    <version>${pomchecker.version}</version>
-                                    <url>
-                                        https://github.com/${project.github.repository}/releases/download/v${pomchecker.version}/pomchecker-${pomchecker.version}.zip
-                                    </url>
-                                    <releaseNotesUrl>
-                                        https://github.com/${project.github.repository}/releases/tag/v${pomchecker.version}
-                                    </releaseNotesUrl>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>
