@@ -67,3 +67,10 @@ plugins {
     id 'org.kordamp.gradle.pomchecker' version '{project-version}'
 }
 ----
+
+.Fedora
+[source]
+[subs="attributes"]
+----
+$ sudo dnf install pomchecker-cli
+----
