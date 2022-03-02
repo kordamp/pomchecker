@@ -27,12 +27,21 @@ project:
   java:
     groupId: org.kordamp.maven
     version: 8
+  extraProperties:
+    inceptionYear: 2020
 
 release:
   github:
-    username: aalmiray
     overwrite: true
     sign: true
+    changelog:
+      formatted: ALWAYS
+      format: '- {{commitShortHash}} {{commitTitle}}'
+      contributors:
+        format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
+      hide:
+        contributors:
+          - 'GitHub'
 
 signing:
   active: always
@@ -59,12 +68,12 @@ distributions:
       - path: pomchecker-cli/target/distributions/{{distributionName}}-{{projectVersion}}.tar.gz
 
   pomchecker-cli:
-    type: 'single-jar'
+    type: SINGLE_JAR
     artifacts:
       - path: '{{distributionName}}/target/{{distributionName}}-{{projectVersion}}-all.jar'
 
   pomchecker-toolprovider:
-    type: 'single-jar'
+    type: SINGLE_JAR
     java:
       version: 9
     artifacts:

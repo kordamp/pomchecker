@@ -1,18 +1,62 @@
-name: "Early Access"
+name: Early Access
 
-on: [push]
+on:
+  push:
+    branches: [ master ]
+env:
+  JAVA_VERSION: '11'
+  JAVA_DISTRO: 'zulu'
 
 jobs:
-  earlyaccess:
-    name: "Early Access"
-    if: github.repository == 'kordamp/pomchecker' && github.ref == 'refs/heads/master' && startsWith(github.event.head_commit.message, 'Releasing version') != true
+  precheck:
+    if: github.repository == 'kordamp/pomchecker' && startsWith(github.event.head_commit.message, 'Releasing version') != true
     runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.vars.outputs.VERSION }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
+      - uses: n1hility/cancel-previous-runs@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRO }}
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Version
+        id: vars
+        shell: bash
+        run: |
+          version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo ::set-output name=VERSION::$(echo "$version")
+
+  release:
+    needs: [precheck]
+    if: endsWith(${{ needs.precheck.outputs.VERSION }}, '-SNAPSHOT')
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRO }}
 
       - name: Cache Maven
         uses: actions/cache@v2
@@ -25,7 +69,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-cache-${{ hashFiles('**/*.gradle') }}-${{ hashFiles('**/gradle.properties') }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}-${{ hashFiles('**/gradle.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
 
@@ -33,28 +77,19 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradlew') }}
+          key: ${{ runner.os }}-gradlew-${{ hashFiles('**/gradlew') }}
           restore-keys: |
             ${{ runner.os }}-gradlew-
 
-      - name: Setup Java
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
-
       - name: Build
         run: ./mvnw --no-transfer-progress -B --file pom.xml verify
-
-      - name: Version
-        id: vars
-        run: echo ::set-output name=version::$(cat VERSION)
 
       - name: Release
         uses: jreleaser/release-action@v1
         with:
           version: early-access
         env:
-          JRELEASER_PROJECT_VERSION: ${{ steps.vars.outputs.version }}
+          JRELEASER_PROJECT_VERSION: ${{ needs.precheck.outputs.VERSION }}
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
           JRELEASER_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
@@ -64,7 +99,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: artifact
+          name: jreleaser-release
           path: |
             out/jreleaser/trace.log
             out/jreleaser/output.properties
