@@ -4,7 +4,7 @@
 :project-name:       pomchecker
 :project-groupId:    org.kordamp.maven
 :project-artifactId: pomchecker-maven-plugin
-:project-version:    1.1.0
+:project-version:    1.2.0
 
 image:https://github.com/{project-owner}/{project-name}/workflows/Build/badge.svg["Build Status", link="https://github.com/{project-owner}/{project-name}/actions"]
 image:https://img.shields.io/maven-central/v/{project-groupId}/{project-artifactId}.svg[Download, link="https://search.maven.org/#search|ga|1|g:{project-groupId} AND a:{project-artifactId}"]
@@ -48,7 +48,7 @@ $ jbang pomchecker@kordamp --help
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-enforcer-plugin</artifactId>
-    <version>3.0.0-M3</version>
+    <version>3.0.0</version>
     <dependencies>
         <dependency>
             <groupId>{project-groupId}</groupId>
