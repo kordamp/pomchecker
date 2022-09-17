@@ -43,6 +43,8 @@
         <slf4j.version>2.0.1</slf4j.version>
         <picocli.version>4.6.3</picocli.version>
         <maven.resolver.version>1.8.2</maven.resolver.version>
+        <version.compiler.plugin>3.10.1</version.compiler.plugin>
+        <version.javadoc.plugin>3.4.1</version.javadoc.plugin>
     </properties>
 
     <name>pomchecker</name>
