@@ -20,15 +20,16 @@ project:
   name: pomchecker
   description: Checks POM files may be uploaded to Maven Central
   longDescription: Checks POM files may be uploaded to Maven Central
-  website: https://kordamp.org/pomchecker
+  links:
+    homepage: https://kordamp.org/pomchecker
   authors:
     - Andres Almiray
   license: Apache-2.0
   java:
     groupId: org.kordamp.maven
     version: 8
-  extraProperties:
-    inceptionYear: 2020
+  inceptionYear: 2020
+  stereotype: cli
 
 release:
   github:
@@ -37,6 +38,7 @@ release:
     changelog:
       formatted: ALWAYS
       format: '- {{commitShortHash}} {{commitTitle}}'
+      preset: conventional-commits
       contributors:
         format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
       hide:
@@ -58,9 +60,9 @@ distributions:
     java:
       mainClass: org.kordamp.maven.checker.cli.Main
     brew:
-      active: release
+      active: always
     scoop:
-      active: release
+      active: always
     jbang:
       active: always
     artifacts:
