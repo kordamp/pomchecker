@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -75,14 +75,14 @@ jobs:
           GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
         run: |
           export GPG_TTY=$(tty)
-          ./mvnw --no-transfer-progress -B --file pom.xml \
+          ./mvnw -ntp -B --file pom.xml \
           -Drepository.url=https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git \
           -Dmaven.site.skip=true -Drelease=true -Pgradle-release deploy
 
       - name: Build site
         run: |
           export GPG_TTY=$(tty)
-          ./mvnw --no-transfer-progress -B --file pom.xml \
+          ./mvnw -ntp -B --file pom.xml \
           -Drepository.url=https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git \
           site site:stage -DstagingDirectory="${{ runner.temp }}/site"
 
@@ -94,8 +94,6 @@ jobs:
 
       - name: Release
         uses: jreleaser/release-action@v1
-        with:
-          version: early-access
         env:
           JRELEASER_PROJECT_VERSION: ${{ github.event.inputs.version }}
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}

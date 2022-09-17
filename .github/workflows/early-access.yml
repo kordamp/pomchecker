@@ -15,7 +15,7 @@ jobs:
       VERSION: ${{ steps.vars.outputs.VERSION }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - uses: n1hility/cancel-previous-runs@v2
         with:
@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
@@ -82,12 +82,10 @@ jobs:
             ${{ runner.os }}-gradlew-
 
       - name: Build
-        run: ./mvnw --no-transfer-progress -B --file pom.xml verify
+        run: ./mvnw -ntp -B --file pom.xml verify
 
       - name: Release
         uses: jreleaser/release-action@v1
-        with:
-          version: early-access
         env:
           JRELEASER_PROJECT_VERSION: ${{ needs.precheck.outputs.VERSION }}
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
