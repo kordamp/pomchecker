@@ -66,8 +66,6 @@ signing:
 announce:
   twitter:
     active: release
-  sdkman:
-    active: release
 
 distributions:
   pomchecker:
@@ -79,6 +77,8 @@ distributions:
       active: always
     jbang:
       active: always
+    sdkman:
+      active: release
     artifacts:
       - path: pomchecker-cli/target/distributions/{{distributionName}}-{{projectVersion}}.zip
       - path: pomchecker-cli/target/distributions/{{distributionName}}-{{projectVersion}}.tar.gz
