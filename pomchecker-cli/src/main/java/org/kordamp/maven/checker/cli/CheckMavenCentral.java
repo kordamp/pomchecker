@@ -46,8 +46,6 @@ public class CheckMavenCentral extends AbstractCommand {
             MavenCentralChecker.check(logger, project, !release, !strict);
         } catch (PomCheckException e) {
             throw new HaltExecutionException(e);
-        } catch (Exception e) {
-            throw new PomcheckerException("Unexpected error", e);
         }
     }
 }
