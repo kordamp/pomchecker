@@ -41,9 +41,23 @@ release:
       preset: conventional-commits
       contributors:
         format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
+      labelers:
+        - label: 'dependencies'
+          title: 'regex:^(?:deps(?:\(.*\))?!?):\s.*'
+          order: 120
+      categories:
+        - title: '⚙️  Dependencies'
+          key: 'dependencies'
+          order: 70
+          labels:
+            - 'dependencies'
       hide:
+        categories:
+          - 'merge'
         contributors:
           - 'GitHub'
+      replacers:
+        - search: 'deps: '
 
 signing:
   active: always
