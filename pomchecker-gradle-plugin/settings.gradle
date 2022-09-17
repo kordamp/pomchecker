@@ -63,7 +63,7 @@ enforce {
             "com.google.guava:guava:$guavaVersion",
             "com.google.inject:guice:$guiceVersion",
             "org.apache.httpcomponents:httpclient:$httpVersion",
-            "org.apache.httpcomponents:httpcore:4.4.13",
+            "org.apache.httpcomponents:httpcore:4.4.15",
             "org.apache.maven:maven-model:$mavenVersion",
             "org.apache.maven:maven-artifact:$mavenVersion",
             "org.apache.maven:maven-settings:$mavenVersion",
@@ -87,7 +87,7 @@ enforce {
             "org.codehaus.plexus:plexus-classworlds:2.6.0",
             "org.codehaus.groovy.modules.http-builder:http-builder:0.7.2",
             "classworlds:classworlds:1.1",
-            "org.eclipse.sisu:org.eclipse.sisu.plexus:0.3.4",
-            "org.apache.maven.wagon:wagon-provider-api:3.4.3"
+            "org.eclipse.sisu:org.eclipse.sisu.plexus:0.3.5",
+            "org.apache.maven.wagon:wagon-provider-api:3.5.2"
     }
 }
