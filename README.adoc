@@ -4,7 +4,7 @@
 :project-name:       pomchecker
 :project-groupId:    org.kordamp.maven
 :project-artifactId: pomchecker-maven-plugin
-:project-version: 1.4.0-SNAPSHOT
+:project-version: 1.4.0
 
 image:https://github.com/{project-owner}/{project-name}/workflows/Build/badge.svg["Build Status", link="https://github.com/{project-owner}/{project-name}/actions"]
 image:https://img.shields.io/maven-central/v/{project-groupId}/{project-artifactId}.svg[Download, link="https://search.maven.org/#search|ga|1|g:{project-groupId} AND a:{project-artifactId}"]
