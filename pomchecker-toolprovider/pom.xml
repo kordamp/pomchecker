@@ -24,11 +24,11 @@
     <parent>
         <groupId>org.kordamp.maven</groupId>
         <artifactId>pomchecker</artifactId>
-        <version>1.4.0</version>
+        <version>1.4.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>pomchecker-toolprovider</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -59,6 +59,26 @@
     </dependencies>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <phase>prepare-package</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                            <configuration>
+                                <attach>true</attach>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -122,76 +142,10 @@
                                     </excludes>
                                 </filter>
                             </filters>
-                            <!--relocations>
-                                <relocation>
-                                    <pattern>org</pattern>
-                                    <shadedPattern>pomchecker.shaded.org</shadedPattern>
-                                    <excludes>
-                                        <exclude>org.kordamp.maven.checker.toolprovider.*</exclude>
-                                    </excludes>
-                                </relocation>
-                                <relocation>
-                                    <pattern>info</pattern>
-                                    <shadedPattern>pomchecker.shaded.info</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax</pattern>
-                                    <shadedPattern>pomchecker.shaded.javax</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com</pattern>
-                                    <shadedPattern>pomchecker.shaded.com</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>afu</pattern>
-                                    <shadedPattern>pomchecker.shaded.afu</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>edu</pattern>
-                                    <shadedPattern>pomchecker.shaded.edu</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>junit</pattern>
-                                    <shadedPattern>pomchecker.shaded.junit</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>picocli</pattern>
-                                    <shadedPattern>pomchecker.shaded.picocli</shadedPattern>
-                                </relocation>
-                            </relocations-->
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-            <!--plugin>
-                <groupId>org.moditect</groupId>
-                <artifactId>moditect-maven-plugin</artifactId>
-                <version>1.0.0.Beta2</version>
-                <executions>
-                    <execution>
-                        <id>add-module-infos</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>add-module-info</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/modules</outputDirectory>
-                            <jvmVersion>${java.version}</jvmVersion>
-                                <module>
-                                    <moduleInfoSource>
-                                        module org.kordamp.maven.pomchecker {
-                                            requires java.compiler;
-                                            requires java.logging;
-                                            exports org.kordamp.maven.checker.toolprovider;
-                                            provides java.util.spi.ToolProvider
-                                                with org.kordamp.maven.checker.toolprovider.Pomchecker;
-                                        }
-                                    </moduleInfoSource>
-                                </module>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin-->
         </plugins>
     </build>
 </project>
