@@ -10,7 +10,7 @@
 <pre><span class="sourceLineNo">001</span><a id="line.1">/*</a>
 <span class="sourceLineNo">002</span><a id="line.2"> * SPDX-License-Identifier: Apache-2.0</a>
 <span class="sourceLineNo">003</span><a id="line.3"> *</a>
-<span class="sourceLineNo">004</span><a id="line.4"> * Copyright 2020–2022 Andres Almiray.</a>
+<span class="sourceLineNo">004</span><a id="line.4"> * Copyright 2020-2022 Andres Almiray.</a>
 <span class="sourceLineNo">005</span><a id="line.5"> *</a>
 <span class="sourceLineNo">006</span><a id="line.6"> * Licensed under the Apache License, Version 2.0 (the "License");</a>
 <span class="sourceLineNo">007</span><a id="line.7"> * you may not use this file except in compliance with the License.</a>
@@ -69,54 +69,71 @@
 <span class="sourceLineNo">060</span><a id="line.60">        List&lt;String&gt; errors = new ArrayList&lt;&gt;();</a>
 <span class="sourceLineNo">061</span><a id="line.61"></a>
 <span class="sourceLineNo">062</span><a id="line.62">        // 1. is it packaged as 'pom'?</a>
-<span class="sourceLineNo">063</span><a id="line.63">        if (!"pom".equals(model.getPackaging())) {</a>
-<span class="sourceLineNo">064</span><a id="line.64">            errors.add("The value of &lt;packaging&gt; must be 'pom'.");</a>
-<span class="sourceLineNo">065</span><a id="line.65">        }</a>
-<span class="sourceLineNo">066</span><a id="line.66"></a>
-<span class="sourceLineNo">067</span><a id="line.67">        // 2. must have a &lt;dependencyManagement&gt; block</a>
-<span class="sourceLineNo">068</span><a id="line.68">        if (null != model.getDependencyManagement()) {</a>
-<span class="sourceLineNo">069</span><a id="line.69">            List&lt;Dependency&gt; dependencies = model.getDependencyManagement().getDependencies();</a>
-<span class="sourceLineNo">070</span><a id="line.70">            if (dependencies == null || dependencies.isEmpty()) {</a>
-<span class="sourceLineNo">071</span><a id="line.71">                errors.add("No dependencies have been defined in &lt;dependencyManagement&gt;.");</a>
-<span class="sourceLineNo">072</span><a id="line.72">            }</a>
-<span class="sourceLineNo">073</span><a id="line.73">        } else {</a>
-<span class="sourceLineNo">074</span><a id="line.74">            errors.add("No &lt;dependencyManagement&gt; block has been defined.");</a>
-<span class="sourceLineNo">075</span><a id="line.75">        }</a>
-<span class="sourceLineNo">076</span><a id="line.76"></a>
-<span class="sourceLineNo">077</span><a id="line.77">        if (null != model.getBuild()) {</a>
-<span class="sourceLineNo">078</span><a id="line.78">            errors.add("The &lt;build&gt; block should not be present.");</a>
-<span class="sourceLineNo">079</span><a id="line.79">        }</a>
-<span class="sourceLineNo">080</span><a id="line.80">        if (null != model.getReporting()) {</a>
-<span class="sourceLineNo">081</span><a id="line.81">            errors.add("The &lt;reporting&gt; block should not be present.");</a>
+<span class="sourceLineNo">063</span><a id="line.63">        log.debug("Checking &lt;packaging&gt;");</a>
+<span class="sourceLineNo">064</span><a id="line.64">        if (!"pom".equals(model.getPackaging())) {</a>
+<span class="sourceLineNo">065</span><a id="line.65">            errors.add("The value of &lt;packaging&gt; must be 'pom'.");</a>
+<span class="sourceLineNo">066</span><a id="line.66">        }</a>
+<span class="sourceLineNo">067</span><a id="line.67"></a>
+<span class="sourceLineNo">068</span><a id="line.68">        log.debug("Checking &lt;dependencyManagement&gt;");</a>
+<span class="sourceLineNo">069</span><a id="line.69">        // 2. must have a &lt;dependencyManagement&gt; block</a>
+<span class="sourceLineNo">070</span><a id="line.70">        if (null != model.getDependencyManagement()) {</a>
+<span class="sourceLineNo">071</span><a id="line.71">            List&lt;Dependency&gt; dependencies = model.getDependencyManagement().getDependencies();</a>
+<span class="sourceLineNo">072</span><a id="line.72">            if (dependencies == null || dependencies.isEmpty()) {</a>
+<span class="sourceLineNo">073</span><a id="line.73">                errors.add("No dependencies have been defined in &lt;dependencyManagement&gt;.");</a>
+<span class="sourceLineNo">074</span><a id="line.74">            }</a>
+<span class="sourceLineNo">075</span><a id="line.75">        } else {</a>
+<span class="sourceLineNo">076</span><a id="line.76">            errors.add("No &lt;dependencyManagement&gt; block has been defined.");</a>
+<span class="sourceLineNo">077</span><a id="line.77">        }</a>
+<span class="sourceLineNo">078</span><a id="line.78"></a>
+<span class="sourceLineNo">079</span><a id="line.79">        log.debug("Checking &lt;build&gt;");</a>
+<span class="sourceLineNo">080</span><a id="line.80">        if (null != model.getBuild()) {</a>
+<span class="sourceLineNo">081</span><a id="line.81">            errors.add("The &lt;build&gt; block should not be present.");</a>
 <span class="sourceLineNo">082</span><a id="line.82">        }</a>
-<span class="sourceLineNo">083</span><a id="line.83">        if (null != model.getDependencies() &amp;&amp; !model.getDependencies().isEmpty()) {</a>
-<span class="sourceLineNo">084</span><a id="line.84">            errors.add("The &lt;dependencies&gt; block should not be present.");</a>
-<span class="sourceLineNo">085</span><a id="line.85">        }</a>
-<span class="sourceLineNo">086</span><a id="line.86">        if (null != model.getRepositories() &amp;&amp; !model.getRepositories().isEmpty()) {</a>
-<span class="sourceLineNo">087</span><a id="line.87">            errors.add("The &lt;repositories&gt; block should not be present.");</a>
-<span class="sourceLineNo">088</span><a id="line.88">        }</a>
-<span class="sourceLineNo">089</span><a id="line.89">        if (null != model.getPluginRepositories() &amp;&amp; !model.getPluginRepositories().isEmpty()) {</a>
-<span class="sourceLineNo">090</span><a id="line.90">            errors.add("The &lt;pluginRepositories&gt; block should not be present.");</a>
-<span class="sourceLineNo">091</span><a id="line.91">        }</a>
-<span class="sourceLineNo">092</span><a id="line.92">        if (null != model.getProfiles() &amp;&amp; !model.getProfiles().isEmpty()) {</a>
-<span class="sourceLineNo">093</span><a id="line.93">            errors.add("The &lt;profiles&gt; block should not be present.");</a>
-<span class="sourceLineNo">094</span><a id="line.94">        }</a>
-<span class="sourceLineNo">095</span><a id="line.95">        if (null != model.getModules() &amp;&amp; !model.getModules().isEmpty()) {</a>
-<span class="sourceLineNo">096</span><a id="line.96">            errors.add("The &lt;modules&gt; block should not be present.");</a>
+<span class="sourceLineNo">083</span><a id="line.83"></a>
+<span class="sourceLineNo">084</span><a id="line.84">        log.debug("Checking &lt;reporting&gt;");</a>
+<span class="sourceLineNo">085</span><a id="line.85">        if (null != model.getReporting()) {</a>
+<span class="sourceLineNo">086</span><a id="line.86">            errors.add("The &lt;reporting&gt; block should not be present.");</a>
+<span class="sourceLineNo">087</span><a id="line.87">        }</a>
+<span class="sourceLineNo">088</span><a id="line.88"></a>
+<span class="sourceLineNo">089</span><a id="line.89">        log.debug("Checking &lt;dependencies&gt;");</a>
+<span class="sourceLineNo">090</span><a id="line.90">        if (null != model.getDependencies() &amp;&amp; !model.getDependencies().isEmpty()) {</a>
+<span class="sourceLineNo">091</span><a id="line.91">            errors.add("The &lt;dependencies&gt; block should not be present.");</a>
+<span class="sourceLineNo">092</span><a id="line.92">        }</a>
+<span class="sourceLineNo">093</span><a id="line.93"></a>
+<span class="sourceLineNo">094</span><a id="line.94">        log.debug("Checking &lt;repositories&gt;");</a>
+<span class="sourceLineNo">095</span><a id="line.95">        if (null != model.getRepositories() &amp;&amp; !model.getRepositories().isEmpty()) {</a>
+<span class="sourceLineNo">096</span><a id="line.96">            errors.add("The &lt;repositories&gt; block should not be present.");</a>
 <span class="sourceLineNo">097</span><a id="line.97">        }</a>
 <span class="sourceLineNo">098</span><a id="line.98"></a>
-<span class="sourceLineNo">099</span><a id="line.99">        if (!errors.isEmpty()) {</a>
-<span class="sourceLineNo">100</span><a id="line.100">            StringBuilder b = new StringBuilder("\nThe POM file\n")</a>
-<span class="sourceLineNo">101</span><a id="line.101">                .append(project.getFile().getAbsolutePath())</a>
-<span class="sourceLineNo">102</span><a id="line.102">                .append("\nis not a valid BOM due to the following reasons:\n");</a>
-<span class="sourceLineNo">103</span><a id="line.103">            for (String s : errors) {</a>
-<span class="sourceLineNo">104</span><a id="line.104">                b.append(" * ").append(s).append("\n");</a>
-<span class="sourceLineNo">105</span><a id="line.105">            }</a>
-<span class="sourceLineNo">106</span><a id="line.106"></a>
-<span class="sourceLineNo">107</span><a id="line.107">            throw new PomCheckException(b.toString());</a>
-<span class="sourceLineNo">108</span><a id="line.108">        }</a>
-<span class="sourceLineNo">109</span><a id="line.109">    }</a>
-<span class="sourceLineNo">110</span><a id="line.110">}</a>
+<span class="sourceLineNo">099</span><a id="line.99">        log.debug("Checking &lt;pluginRepositories&gt;");</a>
+<span class="sourceLineNo">100</span><a id="line.100">        if (null != model.getPluginRepositories() &amp;&amp; !model.getPluginRepositories().isEmpty()) {</a>
+<span class="sourceLineNo">101</span><a id="line.101">            errors.add("The &lt;pluginRepositories&gt; block should not be present.");</a>
+<span class="sourceLineNo">102</span><a id="line.102">        }</a>
+<span class="sourceLineNo">103</span><a id="line.103"></a>
+<span class="sourceLineNo">104</span><a id="line.104">        log.debug("Checking &lt;profiles&gt;");</a>
+<span class="sourceLineNo">105</span><a id="line.105">        if (null != model.getProfiles() &amp;&amp; !model.getProfiles().isEmpty()) {</a>
+<span class="sourceLineNo">106</span><a id="line.106">            errors.add("The &lt;profiles&gt; block should not be present.");</a>
+<span class="sourceLineNo">107</span><a id="line.107">        }</a>
+<span class="sourceLineNo">108</span><a id="line.108"></a>
+<span class="sourceLineNo">109</span><a id="line.109">        log.debug("Checking &lt;modules&gt;");</a>
+<span class="sourceLineNo">110</span><a id="line.110">        if (null != model.getModules() &amp;&amp; !model.getModules().isEmpty()) {</a>
+<span class="sourceLineNo">111</span><a id="line.111">            errors.add("The &lt;modules&gt; block should not be present.");</a>
+<span class="sourceLineNo">112</span><a id="line.112">        }</a>
+<span class="sourceLineNo">113</span><a id="line.113"></a>
+<span class="sourceLineNo">114</span><a id="line.114">        if (!errors.isEmpty()) {</a>
+<span class="sourceLineNo">115</span><a id="line.115">            StringBuilder b = new StringBuilder("\nThe POM file\n")</a>
+<span class="sourceLineNo">116</span><a id="line.116">                .append(project.getFile().getAbsolutePath())</a>
+<span class="sourceLineNo">117</span><a id="line.117">                .append("\nis not a valid BOM due to the following reasons:\n");</a>
+<span class="sourceLineNo">118</span><a id="line.118">            for (String s : errors) {</a>
+<span class="sourceLineNo">119</span><a id="line.119">                b.append(" * ").append(s).append("\n");</a>
+<span class="sourceLineNo">120</span><a id="line.120">            }</a>
+<span class="sourceLineNo">121</span><a id="line.121"></a>
+<span class="sourceLineNo">122</span><a id="line.122">            throw new PomCheckException(b.toString());</a>
+<span class="sourceLineNo">123</span><a id="line.123">        } else {</a>
+<span class="sourceLineNo">124</span><a id="line.124">            log.info("BOM {} passes all checks.", project.getFile().getAbsolutePath());</a>
+<span class="sourceLineNo">125</span><a id="line.125">        }</a>
+<span class="sourceLineNo">126</span><a id="line.126">    }</a>
+<span class="sourceLineNo">127</span><a id="line.127">}</a>
 
 
 
