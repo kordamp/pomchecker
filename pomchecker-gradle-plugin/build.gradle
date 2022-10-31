@@ -81,6 +81,8 @@ dependencies {
     api "org.apache.maven.resolver:maven-resolver-connector-basic:$mavenResolverVersion"
     api "org.apache.maven:maven-project:$mavenProjectVersion"
     api "org.kordamp.gradle:base-gradle-plugin:$kordampPluginVersion"
+    api "org.eclipse.sisu:org.eclipse.sisu.inject:$sisuVersion"
+    api "org.eclipse.sisu:org.eclipse.sisu.plexus:$sisuVersion"
 }
 
 processResources {
