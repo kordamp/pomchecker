@@ -29,9 +29,6 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
 /**
  * Checks if a POM complies with the rules for uploading to Maven Central.
  *
@@ -254,5 +251,23 @@ public class MavenCentralChecker {
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }
+    }
+
+    private static boolean isBlank(String str) {
+        if (str == null || str.length() == 0) {
+            return true;
+        }
+
+        for (char c : str.toCharArray()) {
+            if (!Character.isWhitespace(c)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean isNotBlank(String str) {
+        return !isBlank(str);
     }
 }
