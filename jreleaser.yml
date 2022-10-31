@@ -35,6 +35,8 @@ release:
   github:
     overwrite: true
     sign: true
+    issues:
+      enabled: true
     changelog:
       formatted: ALWAYS
       format: '- {{commitShortHash}} {{commitTitle}}'
