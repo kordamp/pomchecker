@@ -87,7 +87,7 @@ jobs:
           site site:stage -DstagingDirectory="${{ runner.temp }}/site"
 
       - name: Publish site
-        uses: JamesIves/github-pages-deploy-action@v4.4.0
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
           folder: "${{ runner.temp }}/site"
