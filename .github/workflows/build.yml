@@ -1,6 +1,7 @@
 name: Build
 
-on: [push]
+on:
+  pull_request:
 
 env:
   JAVA_VERSION: '11'

@@ -3,6 +3,7 @@ name: Early Access
 on:
   push:
     branches: [ master ]
+
 env:
   JAVA_VERSION: '11'
   JAVA_DISTRO: 'zulu'
@@ -40,7 +41,7 @@ jobs:
         shell: bash
         run: |
           version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo ::set-output name=VERSION::$(echo "$version")
+          echo "VERSION=$(echo $version)" >>$GITHUB_OUTPUT
 
   release:
     needs: [precheck]
