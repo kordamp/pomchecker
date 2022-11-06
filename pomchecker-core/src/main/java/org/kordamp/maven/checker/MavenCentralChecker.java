@@ -192,7 +192,7 @@ public class MavenCentralChecker {
 
             throw new PomCheckException(b.toString());
         } else {
-            log.info("POM {} passes all checks. It be uploaded to Maven Central.", project.getFile().getAbsolutePath());
+            log.info("POM {} passes all checks. It can be uploaded to Maven Central.", project.getFile().getAbsolutePath());
         }
     }
 
