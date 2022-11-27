@@ -19,7 +19,6 @@
 project:
   name: pomchecker
   description: Checks POM files may be uploaded to Maven Central
-  longDescription: Checks POM files may be uploaded to Maven Central
   links:
     homepage: https://kordamp.org/pomchecker
   authors:
@@ -62,25 +61,41 @@ release:
         - search: 'deps: '
 
 signing:
-  active: always
+  active: ALWAYS
   armored: true
+
+deploy:
+  maven:
+    nexus2:
+      maven-central:
+        active: RELEASE
+        url: https://s01.oss.sonatype.org/service/local
+        closeRepository: true
+        releaseRepository: true
+        stagingRepositories:
+          - target/staging-deploy
 
 announce:
   twitter:
-    active: release
+    active: RELEASE
+    status: 🚀 {{projectName}} {{projectVersion}} has been released! {{releaseNotesUrl}}
+  mastodon:
+    active: RELEASE
+    host: https://mastodon.social
+    status: 🚀 {{projectName}} {{projectVersion}} has been released! {{releaseNotesUrl}}
 
 distributions:
   pomchecker:
     java:
       mainClass: org.kordamp.maven.checker.cli.Main
     brew:
-      active: always
+      active: RELEASE
     scoop:
-      active: always
+      active: RELEASE
     jbang:
-      active: always
+      active: RELEASE
     sdkman:
-      active: release
+      active: RELEASE
     artifacts:
       - path: pomchecker-cli/target/distributions/{{distributionName}}-{{projectVersion}}.zip
       - path: pomchecker-cli/target/distributions/{{distributionName}}-{{projectVersion}}.tar.gz
