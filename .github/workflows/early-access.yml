@@ -42,12 +42,16 @@ jobs:
         shell: bash
         run: |
           version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-          echo "VERSION=$(echo $version)" >>$GITHUB_OUTPUT
+          echo "VERSION=$(echo $version)" >> $GITHUB_OUTPUT
 
   release:
     needs: [precheck]
     if: endsWith(${{ needs.precheck.outputs.VERSION }}, '-SNAPSHOT')
     runs-on: ubuntu-latest
+    outputs:
+      JAR_SIZE: ${{ steps.bach.outputs.JAR_SIZE }}
+      JAR_CSUM: ${{ steps.bach.outputs.JAR_CSUM }}
+      DOC_SIZE: ${{ steps.bach.outputs.DOC_SIZE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -95,6 +99,25 @@ jobs:
           JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.GPG_PUBLIC_KEY }}
           JRELEASER_GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
 
+      - name: Grab bach-info
+        id: bach
+        shell: bash
+        run: |
+          VERSION=${{ needs.precheck.outputs.VERSION }}
+          JAR_SIZE=$(ls -l pomchecker-toolprovider/target/pomchecker-toolprovider-${VERSION}.jar | awk '{print $5}')
+          JAR_CSUM=$(shasum -a 256 pomchecker-toolprovider/target/pomchecker-toolprovider-${VERSION}.jar | awk '{print $1}')
+          DOC_SIZE=$(ls -l README.adoc | awk '{print $5}')
+          echo "JAR_SIZE=$(echo $JAR_SIZE)" >> $GITHUB_OUTPUT
+          echo "JAR_CSUM=$(echo $JAR_CSUM)" >> $GITHUB_OUTPUT
+          echo "DOC_SIZE=$(echo $DOC_SIZE)" >> $GITHUB_OUTPUT
+
+      - name: Bach-info script
+        uses: actions/upload-artifact@v3
+        with:
+          retention-days: 1
+          name: bach
+          path: .github/scripts/update-bach-info.sh
+
       - name: JReleaser output
         if: always()
         uses: actions/upload-artifact@v3
@@ -103,3 +126,31 @@ jobs:
           path: |
             out/jreleaser/trace.log
             out/jreleaser/output.properties
+
+  update-bach-info:
+    name: Update bach-info
+    needs: [precheck, release]
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: kordamp/bach-info
+          ref: 'main'
+          fetch-depth: 0
+          token: ${{ secrets.GIT_ACCESS_TOKEN }}
+
+      - name: Download bach-info script
+        uses: actions/download-artifact@v3
+        with:
+          name: bach
+
+      - name: Commit
+        env:
+          TAG: "early-access"
+          VERSION: ${{ needs.precheck.outputs.VERSION }}
+          JAR_SIZE: ${{ needs.release.outputs.JAR_SIZE }}
+          JAR_CSUM: ${{ needs.release.outputs.JAR_CSUM }}
+          DOC_SIZE: ${{ needs.release.outputs.DOC_SIZE }}
+        run: sh update-bach-info.sh

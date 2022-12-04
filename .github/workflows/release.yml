@@ -14,6 +14,10 @@ env:
 jobs:
   release:
     runs-on: ubuntu-latest
+    outputs:
+      JAR_SIZE: ${{ steps.bach.outputs.JAR_SIZE }}
+      JAR_CSUM: ${{ steps.bach.outputs.JAR_CSUM }}
+      DOC_SIZE: ${{ steps.bach.outputs.DOC_SIZE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -82,6 +86,25 @@ jobs:
           JRELEASER_NEXUS2_MAVEN_CENTRAL_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           JRELEASER_NEXUS2_MAVEN_CENTRAL_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
 
+      - name: Grab bach-info
+        id: bach
+        shell: bash
+        run: |
+          VERSION=${{ github.event.inputs.version }}
+          JAR_SIZE=$(ls -l pomchecker-toolprovider/target/pomchecker-toolprovider-${VERSION}.jar | awk '{print $5}')
+          JAR_CSUM=$(shasum -a 256 pomchecker-toolprovider/target/pomchecker-toolprovider-${VERSION}.jar | awk '{print $1}')
+          DOC_SIZE=$(ls -l README.adoc | awk '{print $5}')
+          echo "JAR_SIZE=$(echo $JAR_SIZE)" >> $GITHUB_OUTPUT
+          echo "JAR_CSUM=$(echo $JAR_CSUM)" >> $GITHUB_OUTPUT
+          echo "DOC_SIZE=$(echo $DOC_SIZE)" >> $GITHUB_OUTPUT
+
+      - name: Bach-info script
+        uses: actions/upload-artifact@v3
+        with:
+          retention-days: 1
+          name: bach
+          path: .github/scripts/update-bach-info.sh
+
       - name: JReleaser output
         if: always()
         uses: actions/upload-artifact@v3
@@ -103,3 +126,31 @@ jobs:
         with:
           branch: gh-pages
           folder: "${{ runner.temp }}/site"
+
+  update-bach-info:
+    name: Update bach-info
+    needs: [release]
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: kordamp/bach-info
+          ref: 'main'
+          fetch-depth: 0
+          token: ${{ secrets.GIT_ACCESS_TOKEN }}
+
+      - name: Download bach-info script
+        uses: actions/download-artifact@v3
+        with:
+          name: bach
+
+      - name: Commit
+        env:
+          TAG: "v${{ github.event.inputs.version }}"
+          VERSION: ${{ needs.precheck.outputs.VERSION }}
+          JAR_SIZE: ${{ needs.release.outputs.JAR_SIZE }}
+          JAR_CSUM: ${{ needs.release.outputs.JAR_CSUM }}
+          DOC_SIZE: ${{ needs.release.outputs.DOC_SIZE }}
+        run: sh update-bach-info.sh
