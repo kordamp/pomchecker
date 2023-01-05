@@ -101,6 +101,7 @@
                             <executable>${gradle.executable}</executable>
                             <arguments>
                                 <argument>-Pversion=${project.version}</argument>
+                                <argument>-PreproducibleBuild=true</argument>
                                 <argument>-S</argument>
                                 <argument>${gradle.tasks}</argument>
                             </arguments>
@@ -149,6 +150,7 @@
                                     <arguments>
                                         <argument>-Pversion=${project.version}</argument>
                                         <argument>-Prelease=true</argument>
+                                        <argument>-PreproducibleBuild=true</argument>
                                         <argument>-S</argument>
                                         <argument>-Pgradle.publish.key=${env.GRADLE_PUBLISH_KEY}</argument>
                                         <argument>-Pgradle.publish.secret=${env.GRADLE_PUBLISH_SECRET}</argument>
