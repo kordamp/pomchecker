@@ -20,6 +20,7 @@ package org.kordamp.gradle.plugin.checker
 import groovy.transform.CompileStatic
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.publish.Publication
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom
@@ -27,6 +28,7 @@ import org.gradle.api.tasks.TaskProvider
 import org.kordamp.gradle.annotations.DependsOn
 import org.kordamp.gradle.listener.AllProjectsEvaluatedListener
 import org.kordamp.gradle.plugin.AbstractKordampPlugin
+import org.kordamp.gradle.plugin.checker.internal.GradleLoggerAdapter
 import org.kordamp.gradle.plugin.checker.internal.PomCheckerExtensionImpl
 import org.kordamp.gradle.plugin.checker.tasks.CheckBomTask
 import org.kordamp.gradle.plugin.checker.tasks.CheckMavenCentralTask
@@ -49,6 +51,12 @@ class PomCheckerPlugin extends AbstractKordampPlugin {
     }
 
     void apply(Project project) {
+        if (project.gradle.startParameter.logLevel != LogLevel.QUIET) {
+            project.gradle.sharedServices
+                .registerIfAbsent('pomchecker-banner', Banner, { spec -> })
+                .get().display(project)
+        }
+
         this.project = project
 
         configureRootProject(project)
@@ -92,6 +100,8 @@ class PomCheckerPlugin extends AbstractKordampPlugin {
 
         PomCheckerExtensionImpl pomCheckerExtension = (PomCheckerExtensionImpl) project.extensions.findByType(PomCheckerExtension)
 
+        GradleLoggerAdapter glogger = new GradleLoggerAdapter(project.logger)
+
         publishingExtension.publications.getAsMap().each { String publicationName, Publication publication ->
             if (publicationName.toLowerCase().contains('pluginmarker')) return
 
@@ -99,13 +109,14 @@ class PomCheckerPlugin extends AbstractKordampPlugin {
             if (!generateMavenPomTask) return
 
             if (pomCheckerExtension.resolvedBom.get()) {
-                registerCheckBomTask(project, publicationName, generateMavenPomTask, pomCheckerExtension)
+                registerCheckBomTask(project, glogger, publicationName, generateMavenPomTask, pomCheckerExtension)
             }
-            registerCheckMavenCentralTask(project, publicationName, generateMavenPomTask, pomCheckerExtension)
+            registerCheckMavenCentralTask(project, glogger, publicationName, generateMavenPomTask, pomCheckerExtension)
         }
     }
 
     private void registerCheckBomTask(Project project,
+                                      GradleLoggerAdapter glogger,
                                       String publicationName,
                                       GenerateMavenPom generateMavenPomTask,
                                       PomCheckerExtensionImpl pomCheckerExtension) {
@@ -118,12 +129,14 @@ class PomCheckerPlugin extends AbstractKordampPlugin {
                     t.pomFile.set(generateMavenPomTask.destination)
                     t.dependsOn(generateMavenPomTask)
                     t.enabled = pomCheckerExtension.resolvedEnabled.get()
+                    t.glogger.set(glogger)
                 }
             })
         generateMavenPomTask.finalizedBy(checkBomTask)
     }
 
     private void registerCheckMavenCentralTask(Project project,
+                                               GradleLoggerAdapter glogger,
                                                String publicationName,
                                                GenerateMavenPom generateMavenPomTask,
                                                PomCheckerExtensionImpl pomCheckerExtension) {
@@ -138,6 +151,7 @@ class PomCheckerPlugin extends AbstractKordampPlugin {
                     t.noStrict.convention(!pomCheckerExtension.resolvedStrict)
                     t.dependsOn(generateMavenPomTask)
                     t.enabled = pomCheckerExtension.resolvedEnabled.get()
+                    t.glogger.set(glogger)
                 }
             })
         generateMavenPomTask.finalizedBy(checkMavenCentralTask)

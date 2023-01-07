@@ -22,7 +22,9 @@ import org.apache.maven.project.MavenProject
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.kordamp.gradle.plugin.checker.internal.GradleLoggerAdapter
 import org.kordamp.gradle.plugin.checker.internal.PomParser
@@ -39,6 +41,9 @@ class CheckBomTask extends DefaultTask {
     @InputFile
     final RegularFileProperty pomFile
 
+    @Internal
+    final Property<GradleLoggerAdapter> glogger
+
     @Inject
     CheckBomTask(ObjectFactory objects) {
         pomFile = objects.fileProperty()
@@ -47,6 +52,6 @@ class CheckBomTask extends DefaultTask {
     @TaskAction
     void check() {
         MavenProject mavenProject = PomParser.createMavenProject(pomFile.getAsFile().get())
-        BomChecker.check(new GradleLoggerAdapter(project.logger), mavenProject)
+        BomChecker.check(glogger.get(), mavenProject)
     }
 }

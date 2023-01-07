@@ -36,38 +36,49 @@ import java.util.Scanner;
  * @since 1.0.0
  */
 public final class Banner {
-    private static final Banner b = new Banner();
+    private static final String ORG_KORDAMP_BANNER = "org.kordamp.banner";
+    private static final Banner INSTANCE = new Banner();
     private final ResourceBundle bundle = ResourceBundle.getBundle(Banner.class.getName());
     private final String productVersion = bundle.getString("product.version");
     private final String productId = bundle.getString("product.id");
     private final String productName = bundle.getString("product.name");
-    private final String banner = MessageFormat.format(bundle.getString("product.banner"), productName, productVersion);
+    private final String message = MessageFormat.format(bundle.getString("product.banner"), productName, productVersion);
     private final List<String> visited = new ArrayList<>();
 
     private Banner() {
-        // nooop
+        // noop
+    }
+
+    private File getMarkerFile(File parent) {
+        return new File(parent,
+            "kordamp" +
+                File.separator +
+                productId +
+                File.separator +
+                productVersion +
+                File.separator +
+                "marker.txt");
     }
 
     public static void display(MavenProject project, Log log) {
-        MavenProject element = project;
-        MavenProject root = project;
-        while (true) {
-            if (element.getParent() == null || element.getParent() == element) {
-                break;
-            }
-            root = element.getParent();
-        }
-        if (b.visited.contains(root.getName())) {
+        if (INSTANCE.visited.contains(project.getName())) {
             return;
         }
 
-        b.visited.add(root.getName());
+        INSTANCE.visited.add(project.getName());
+
+        boolean quiet = log.isErrorEnabled() &&
+            !log.isWarnEnabled() &&
+            !log.isInfoEnabled() &&
+            !log.isDebugEnabled();
+
+        boolean printBanner = null == System.getProperty(ORG_KORDAMP_BANNER) || Boolean.getBoolean(ORG_KORDAMP_BANNER);
 
         try {
             File parent = new File(System.getProperty("user.home"), ".m2/caches");
-            File markerFile = b.getMarkerFile(parent);
+            File markerFile = INSTANCE.getMarkerFile(parent);
             if (!markerFile.exists()) {
-                System.out.println(b.banner);
+                if (printBanner && !quiet) System.out.println(INSTANCE.message);
                 markerFile.getParentFile().mkdirs();
                 PrintStream out = new PrintStream(new FileOutputStream(markerFile));
                 out.println("1");
@@ -77,12 +88,12 @@ public final class Banner {
                 try {
                     int count = Integer.parseInt(readQuietly(markerFile));
                     if (count < 3) {
-                        System.out.println(b.banner);
+                        if (printBanner && !quiet) System.out.println(INSTANCE.message);
                     }
                     writeQuietly(markerFile, (count + 1) + "");
                 } catch (NumberFormatException e) {
                     writeQuietly(markerFile, "1");
-                    System.out.println(b.banner);
+                    if (printBanner && !quiet) System.out.println(INSTANCE.message);
                 }
             }
         } catch (IOException ignored) {
@@ -107,16 +118,5 @@ public final class Banner {
         } catch (Exception ignored) {
             return "";
         }
-    }
-
-    private File getMarkerFile(File parent) {
-        return new File(parent,
-            "kordamp" +
-                File.separator +
-                productId +
-                File.separator +
-                productVersion +
-                File.separator +
-                "marker.txt");
     }
 }

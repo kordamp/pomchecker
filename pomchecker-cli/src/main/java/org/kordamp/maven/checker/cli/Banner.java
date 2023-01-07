@@ -32,23 +32,26 @@ import java.util.Scanner;
  * @since 1.1.0
  */
 final class Banner {
-    private static final Banner b = new Banner();
+    private static final String ORG_KORDAMP_BANNER = "org.kordamp.banner";
+    private static final Banner INSTANCE = new Banner();
     private final ResourceBundle bundle = ResourceBundle.getBundle(Banner.class.getName());
     private final String productVersion = bundle.getString("product.version");
     private final String productId = bundle.getString("product.id");
     private final String productName = bundle.getString("product.name");
-    private final String banner = MessageFormat.format(bundle.getString("product.banner"), productName, productVersion);
+    private final String message = MessageFormat.format(bundle.getString("product.banner"), productName, productVersion);
 
     private Banner() {
         // nooop
     }
 
     public static void display(PrintWriter out) {
+        boolean printBanner = null == System.getProperty(ORG_KORDAMP_BANNER) || Boolean.getBoolean(ORG_KORDAMP_BANNER);
+
         try {
             File parent = new File(System.getProperty("user.home"), ".kordamp/caches");
-            File markerFile = getMarkerFile(parent, b);
+            File markerFile = getMarkerFile(parent, INSTANCE);
             if (!markerFile.exists()) {
-                out.println(b.banner);
+                if (printBanner) out.println(INSTANCE.message);
                 markerFile.getParentFile().mkdirs();
                 PrintStream outstream = new PrintStream(new FileOutputStream(markerFile));
                 outstream.println("1");
@@ -58,12 +61,12 @@ final class Banner {
                 try {
                     int count = Integer.parseInt(readQuietly(markerFile));
                     if (count < 3) {
-                        out.println(b.banner);
+                        if (printBanner) out.println(INSTANCE.message);
                     }
                     writeQuietly(markerFile, (count + 1) + "");
                 } catch (NumberFormatException e) {
                     writeQuietly(markerFile, "1");
-                    out.println(b.banner);
+                    if (printBanner) out.println(INSTANCE.message);
                 }
             }
         } catch (IOException ignored) {

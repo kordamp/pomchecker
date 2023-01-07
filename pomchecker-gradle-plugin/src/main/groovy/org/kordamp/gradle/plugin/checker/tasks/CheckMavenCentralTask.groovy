@@ -25,6 +25,7 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import org.kordamp.gradle.plugin.checker.internal.GradleLoggerAdapter
@@ -48,11 +49,15 @@ class CheckMavenCentralTask extends DefaultTask {
     @Input
     final Property<Boolean> noStrict
 
+    @Internal
+    final Property<GradleLoggerAdapter> glogger
+
     @Inject
     CheckMavenCentralTask(ObjectFactory objects) {
         pomFile = objects.fileProperty()
         noRelease = objects.property(Boolean).convention(false)
         noStrict = objects.property(Boolean).convention(false)
+        glogger = objects.property(GradleLoggerAdapter)
     }
 
     @Option(option = 'no-release', description = 'Allows `-SNAPSHOT` versions if set to `true`')
@@ -68,6 +73,6 @@ class CheckMavenCentralTask extends DefaultTask {
     @TaskAction
     void check() {
         MavenProject mavenProject = PomParser.createMavenProject(pomFile.getAsFile().get())
-        MavenCentralChecker.check(new GradleLoggerAdapter(project.logger), mavenProject, !noRelease.get(), !noStrict.get())
+        MavenCentralChecker.check(glogger.get(), mavenProject, !noRelease.get(), !noStrict.get())
     }
 }
