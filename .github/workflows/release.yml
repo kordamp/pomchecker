@@ -129,7 +129,7 @@ jobs:
 
   update-bach-info:
     name: Update bach-info
-    needs: [release]
+    needs: [precheck, release]
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
