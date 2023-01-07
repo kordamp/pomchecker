@@ -27,5 +27,5 @@ echo "" >> $TARGET_FILE
 git add $TARGET_FILE
 git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 git config --global user.name "GitHub Action"
-git commit -a -m "Releasing ${TAG} (${VERSION})"
+git commit -a -m "Releasing ${TOOL_NAME} ${TAG} (${VERSION})"
 git push origin main

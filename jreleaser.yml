@@ -38,7 +38,6 @@ release:
       enabled: true
     changelog:
       formatted: ALWAYS
-      format: '- {{commitShortHash}} {{commitTitle}}'
       preset: conventional-commits
       contributors:
         format: '- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}'
@@ -96,6 +95,7 @@ distributions:
       active: RELEASE
     sdkman:
       active: RELEASE
+      continueOnError: true
     artifacts:
       - path: pomchecker-cli/target/distributions/{{distributionName}}-{{projectVersion}}.zip
       - path: pomchecker-cli/target/distributions/{{distributionName}}-{{projectVersion}}.tar.gz
