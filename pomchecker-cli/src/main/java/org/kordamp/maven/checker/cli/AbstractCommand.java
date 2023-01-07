@@ -30,7 +30,8 @@ import java.util.concurrent.Callable;
  * @author Andres Almiray
  * @since 1.1.0
  */
-@CommandLine.Command
+@CommandLine.Command(mixinStandardHelpOptions = true,
+    versionProvider = Versions.class)
 abstract class AbstractCommand implements Callable<Integer> {
     protected Logger logger;
 
@@ -57,7 +58,7 @@ abstract class AbstractCommand implements Callable<Integer> {
 
     @CommandLine.Option(names = "-D",
         paramLabel = "<key=value>",
-        descriptionKey = "system-property",
+        description = "Sets a System property. Repeatable.",
         mapFallbackValue = "")
     void setProperty(Map<String, String> props) {
         props.forEach(System::setProperty);

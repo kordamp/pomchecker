@@ -23,9 +23,10 @@ Commands:
 [source]
 ----
 $ pomchecker check-bom --help
-Usage: pomchecker check-bom [-diqw] --file=<pomFile>
+Usage: pomchecker check-bom [-diqw] --file=<pomFile> [-D=<key=value>]...
 Checks if a POM file is a minimal BOM file
   -d, --debug            Set log level to debug.
+  -D=<key=value>
       --file=<pomFile>   The POM file to check
   -i, --info             Set log level to info.
   -q, --quiet            Log errors only.
@@ -36,9 +37,10 @@ Checks if a POM file is a minimal BOM file
 ----
 $ pomchecker check-maven-central --help
 Usage: pomchecker check-maven-central [-diqw] [--no-release] [--no-strict]
-                                      --file=<pomFile>
+                                      --file=<pomFile> [-D=<key=value>]...
 Checks if a POM complies with the rules for uploading to Maven Central
   -d, --debug            Set log level to debug.
+  -D=<key=value>
       --file=<pomFile>   The POM file to check
   -i, --info             Set log level to info.
       --no-release       Checks if version is -SNAPSHOT
