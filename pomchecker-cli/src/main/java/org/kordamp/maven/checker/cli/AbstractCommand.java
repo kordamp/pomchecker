@@ -23,6 +23,7 @@ import org.kordamp.maven.checker.cli.internal.SimpleLoggerAdapter;
 import picocli.CommandLine;
 
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -53,6 +54,14 @@ abstract class AbstractCommand implements Callable<Integer> {
         description = "The POM file to check",
         required = true)
     Path pomFile;
+
+    @CommandLine.Option(names = "-D",
+        paramLabel = "<key=value>",
+        descriptionKey = "system-property",
+        mapFallbackValue = "")
+    void setProperty(Map<String, String> props) {
+        props.forEach(System::setProperty);
+    }
 
     @CommandLine.Spec
     CommandLine.Model.CommandSpec spec;
