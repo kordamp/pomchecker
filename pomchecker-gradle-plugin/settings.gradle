@@ -63,7 +63,7 @@ enforce {
             "com.google.guava:guava:$guavaVersion",
             "com.google.inject:guice:$guiceVersion",
             "org.apache.httpcomponents:httpclient:$httpVersion",
-            "org.apache.httpcomponents:httpcore:4.4.15",
+            "org.apache.httpcomponents:httpcore:4.4.16",
             "org.apache.maven:maven-model:$mavenVersion",
             "org.apache.maven:maven-artifact:$mavenVersion",
             "org.apache.maven:maven-settings:$mavenVersion",
