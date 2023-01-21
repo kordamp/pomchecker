@@ -111,13 +111,6 @@ jobs:
           echo "JAR_CSUM=$(echo $JAR_CSUM)" >> $GITHUB_OUTPUT
           echo "DOC_SIZE=$(echo $DOC_SIZE)" >> $GITHUB_OUTPUT
 
-      - name: Bach-info script
-        uses: actions/upload-artifact@v3
-        with:
-          retention-days: 1
-          name: bach
-          path: .github/scripts/update-bach-info.sh
-
       - name: JReleaser output
         if: always()
         uses: actions/upload-artifact@v3
@@ -142,9 +135,9 @@ jobs:
           token: ${{ secrets.GIT_ACCESS_TOKEN }}
 
       - name: Download bach-info script
-        uses: actions/download-artifact@v3
-        with:
-          name: bach
+        run: |
+          curl -sL https://raw.githubusercontent.com/kordamp/pomchecker/main/.github/scripts/update-bach-info.sh --output update-bach-info.sh
+          chmod +x update-bach-info.sh
 
       - name: Commit
         env:
