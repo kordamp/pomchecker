@@ -136,7 +136,7 @@ jobs:
 
       - name: Download bach-info script
         run: |
-          curl -sL https://raw.githubusercontent.com/kordamp/pomchecker/main/.github/scripts/update-bach-info.sh --output update-bach-info.sh
+          curl -sL https://raw.githubusercontent.com/kordamp/pomchecker/master/.github/scripts/update-bach-info.sh --output update-bach-info.sh
           chmod +x update-bach-info.sh
 
       - name: Commit

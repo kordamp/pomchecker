@@ -127,11 +127,6 @@
         </profile>
         <profile>
             <id>gradle-release</id>
-            <activation>
-                <property>
-                    <name>release</name>
-                </property>
-            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -146,7 +141,6 @@
                                 <phase>package</phase>
                                 <configuration combine.self="override">
                                     <executable>${gradle.executable}</executable>
-                                    <skip>true</skip>
                                     <arguments>
                                         <argument>-Pversion=${project.version}</argument>
                                         <argument>-Prelease=true</argument>
