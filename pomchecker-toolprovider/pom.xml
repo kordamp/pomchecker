@@ -146,6 +146,26 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.moditect</groupId>
+                <artifactId>moditect-maven-plugin</artifactId>
+                <version>1.0.0.RC2</version>
+                <executions>
+                    <execution>
+                        <id>add-module-info</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>add-module-info</goal>
+                        </goals>
+                        <configuration>
+                            <jvmVersion>9</jvmVersion>
+                            <module>
+                                <moduleInfoFile>src/java9/module-info.java</moduleInfoFile>
+                            </module>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
