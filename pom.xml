@@ -44,7 +44,7 @@
         <picocli.version>4.7.0</picocli.version>
         <sisu.version>0.9.0.M1</sisu.version>
         <maven.version>3.8.7</maven.version>
-        <maven.resolver.version>1.6.3</maven.resolver.version>
+        <maven.resolver.version>1.9.4</maven.resolver.version>
     </properties>
 
     <name>pomchecker</name>
@@ -150,6 +150,11 @@
             <dependency>
                 <groupId>org.apache.maven.resolver</groupId>
                 <artifactId>maven-resolver-api</artifactId>
+                <version>${maven.resolver.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.resolver</groupId>
+                <artifactId>maven-resolver-impl</artifactId>
                 <version>${maven.resolver.version}</version>
             </dependency>
             <dependency>
