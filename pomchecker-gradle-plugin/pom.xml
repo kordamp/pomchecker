@@ -24,11 +24,11 @@
     <parent>
         <groupId>org.kordamp.maven</groupId>
         <artifactId>pomchecker</artifactId>
-        <version>1.6.0-SNAPSHOT</version>
+        <version>1.7.0</version>
     </parent>
 
     <artifactId>pomchecker-gradle-plugin</artifactId>
-    <version>1.6.0-SNAPSHOT</version>
+    <version>1.7.0</version>
     <packaging>pom</packaging>
 
     <properties>
