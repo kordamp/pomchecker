@@ -55,7 +55,7 @@ jobs:
         run: |
           VERSION=${{ github.event.inputs.version }}
           echo "Updating POMs to version $VERSION"
-          ./mvnw -B versions:set versions:commit -DnewVersion=$VERSION
+          ./mvnw -ntp -B versions:set versions:commit -DnewVersion=$VERSION
           echo $VERSION > VERSION
           sed -i -e "s/^\:project-version\:\ .*/:project-version: ${VERSION}/g" README.adoc
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -64,6 +64,9 @@ jobs:
           git push origin master
 
       - name: Stage deploy
+        env:
+          GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
+          GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
         run: |
           ./mvnw -ntp -B --file pom.xml -Ppublication -DaltDeploymentRepository=local::file:target/staging-deploy \
           -Dmaven.site.skip=true -Pgradle-release deploy

@@ -49,9 +49,9 @@ final class Banner {
 
         try {
             File parent = new File(System.getProperty("user.home"), ".kordamp/caches");
-            File markerFile = getMarkerFile(parent, INSTANCE);
+            File markerFile = getMarkerFile(parent);
             if (!markerFile.exists()) {
-                if (printBanner) out.println(INSTANCE.message);
+                if (printBanner) System.err.println(INSTANCE.message);
                 markerFile.getParentFile().mkdirs();
                 PrintStream outstream = new PrintStream(new FileOutputStream(markerFile));
                 outstream.println("1");
@@ -61,12 +61,12 @@ final class Banner {
                 try {
                     int count = Integer.parseInt(readQuietly(markerFile));
                     if (count < 3) {
-                        if (printBanner) out.println(INSTANCE.message);
+                        if (printBanner) System.err.println(INSTANCE.message);
                     }
                     writeQuietly(markerFile, (count + 1) + "");
                 } catch (NumberFormatException e) {
                     writeQuietly(markerFile, "1");
-                    if (printBanner) out.println(INSTANCE.message);
+                    if (printBanner) System.err.println(INSTANCE.message);
                 }
             }
         } catch (IOException ignored) {
@@ -93,11 +93,11 @@ final class Banner {
         }
     }
 
-    private static File getMarkerFile(File parent, Banner b) {
+    private static File getMarkerFile(File parent) {
         return new File(parent,
-                b.productId +
+                INSTANCE.productId +
                 File.separator +
-                b.productVersion +
+                INSTANCE.productVersion +
                 File.separator +
                 "marker.txt");
     }
