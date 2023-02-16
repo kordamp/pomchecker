@@ -42,14 +42,14 @@
     <url>https://kordamp.org/pomchecker</url>
 
     <prerequisites>
-        <maven>3.1.0</maven>
+        <maven>3.9.0</maven>
     </prerequisites>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
-            <version>3.6.4</version>
+            <version>3.7.1</version>
         </dependency>
         <dependency>
             <groupId>org.kordamp.maven</groupId>
@@ -84,7 +84,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>3.7.1</version>
                 <configuration>
                     <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
                 </configuration>
