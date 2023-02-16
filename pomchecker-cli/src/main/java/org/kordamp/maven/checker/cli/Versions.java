@@ -35,6 +35,7 @@ import java.util.jar.Manifest;
 public class Versions implements CommandLine.IVersionProvider {
     private static final ResourceBundle bundle = ResourceBundle.getBundle(Versions.class.getName());
     private static final String POMCHECKER_VERSION = bundle.getString("pomchecker_version");
+    private static final String SEPARATOR = "------------------------------------------------------------%n";
 
     @Override
     public String[] getVersion() throws Exception {
@@ -51,18 +52,18 @@ public class Versions implements CommandLine.IVersionProvider {
             String buildRevision = manifest.getMainAttributes().getValue("Build-Revision");
             boolean additionalInfo = isNotBlank(buildTimestamp) || isNotBlank(buildRevision);
 
-            out.println("------------------------------------------------------------");
-            out.println("PomChecker " + version);
-            out.println("------------------------------------------------------------");
+            out.printf(SEPARATOR);
+            out.printf("PomChecker %s%n", version);
+            out.printf(SEPARATOR);
             if (additionalInfo) {
                 if (isNotBlank(buildTimestamp)) {
-                    out.println("Build timestamp: " + buildTimestamp);
+                    out.printf("Build timestamp: %s%n", buildTimestamp);
                 }
-                if (isNotBlank(buildRevision)) out.println("Revision:        " + buildRevision);
-                out.println("------------------------------------------------------------");
+                if (isNotBlank(buildRevision)) out.printf("Revision:        %s%n", buildRevision);
+                out.printf(SEPARATOR);
             }
         } else {
-            out.println(POMCHECKER_VERSION);
+            out.printf("%s%n", POMCHECKER_VERSION);
         }
     }
 
