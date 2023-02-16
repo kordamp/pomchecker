@@ -167,7 +167,7 @@
                 <configuration combine.self="append">
                     <archive>
                         <manifestEntries>
-                            <Automatic-Module-Name>org.kordamp.maven.pomchecker.cli</Automatic-Module-Name>
+                            <Automatic-Module-Name>org.kordamp.pomchecker.cli</Automatic-Module-Name>
                         </manifestEntries>
                     </archive>
                 </configuration>
