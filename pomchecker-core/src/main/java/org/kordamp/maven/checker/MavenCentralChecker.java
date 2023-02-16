@@ -29,9 +29,11 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.System.lineSeparator;
+
 /**
  * Checks if a POM complies with the rules for uploading to Maven Central.
- *
+ * <p>
  * The following blocks are required:
  * <ul>
  *   <li>&lt;groupId&gt;</li>
@@ -43,36 +45,98 @@ import java.util.List;
  *   <li>&lt;licenses&gt;</li>
  *   <li>&lt;scm&gt;</li>
  * </ul>
- *
+ * <p>
  * All previous blocks may be supplied by a parent POM with the exception of &lt;artifactId&gt;.
- *
+ * <p>
  * The following blocks are forbidden if {@code strict = true}
  * <ul>
  *   <li>&lt;repositories&gt;</li>
  *   <li>&lt;pluginRepositories&gt;</li>
  * </ul>
  *
+ * @author Andres Almiray
  * @see <a href="http://maven.apache.org/repository/guide-central-repository-upload.html">http://maven.apache.org/repository/guide-central-repository-upload.html</a>
  * @see <a href="https://central.sonatype.org/pages/requirements.html">https://central.sonatype.org/pages/requirements.html</a>
- *
- * @author Andres Almiray
  * @since 1.0.0
  */
 public class MavenCentralChecker {
+    public static class Configuration {
+        private boolean release;
+        private boolean strict;
+        private boolean failOnError;
+        private boolean failOnWarning;
+
+        public boolean isRelease() {
+            return release;
+        }
+
+        /**
+         * Sets the value for {@code release}.
+         *
+         * @param release if {@code true} checks if version is not -SNAPSHOT.
+         */
+        public Configuration withRelease(boolean release) {
+            this.release = release;
+            return this;
+        }
+
+        public boolean isStrict() {
+            return strict;
+        }
+
+        /**
+         * Sets the value for {@code strict}.
+         *
+         * @param strict if {@code true} checks that &lt;repositories&gt; and &lt;pluginRepositories&gt; are not present
+         */
+        public Configuration withStrict(boolean strict) {
+            this.strict = strict;
+            return this;
+        }
+
+        public boolean isFailOnError() {
+            return failOnError;
+        }
+
+        /**
+         * Sets the value for {@code failOnError}.
+         *
+         * @param failOnError if {@code true} fails the build when an error is encountered.
+         */
+        public Configuration withFailOnError(boolean failOnError) {
+            this.failOnError = failOnError;
+            return this;
+        }
+
+        public boolean isFailOnWarning() {
+            return failOnWarning;
+        }
+
+        /**
+         * Sets the value for {@code failOnWarning}.
+         *
+         * @param failOnWarning if {@code true} fails the build when a warning is encountered.
+         */
+        public Configuration withFailOnWarning(boolean failOnWarning) {
+            this.failOnWarning = failOnWarning;
+            return this;
+        }
+    }
+
     /**
-     * Checks the resolved model of the given MaveProject for compliance.
+     * Checks the resolved model of the given MavenProject for compliance.
      *
-     * @param log     the logger to use.
-     * @param project the project to be checked.
-     * @param release if {@code true} checks if version is not -SNAPSHOT.
-     * @param strict  if {@code true} checks that &lt;repositories&gt; and &lt;pluginRepositories&gt; are not present
+     * @param log           the logger to use.
+     * @param project       the project to be checked.
+     * @param configuration configuration required for inspection.
      * @throws PomCheckException if the POM is invalid
      */
-    public static void check(Logger log, MavenProject project, boolean release, boolean strict) throws PomCheckException {
+    public static void check(Logger log, MavenProject project, Configuration configuration) throws PomCheckException {
         Model fullModel = project.getModel();
         Model originalModel = project.getOriginalModel();
 
         List<String> errors = new ArrayList<>();
+        List<String> warnings = new ArrayList<>();
 
         // sanity checks. redundant?
         log.debug("Checking <groupId>");
@@ -94,8 +158,8 @@ public class MavenCentralChecker {
             if (isBlank(parentName)) {
                 errors.add("<name> can not be blank.");
             } else {
-                log.warn("<name> is not defined in POM. Will use value from parent: " +
-                    System.lineSeparator() + "\t" + parentName);
+                warnings.add("<name> is not defined in POM. Will use value from parent: " +
+                    lineSeparator() + "\t" + parentName);
             }
         }
 
@@ -104,8 +168,8 @@ public class MavenCentralChecker {
             errors.add("<description> can not be blank.");
         }
         if (isBlank(originalModel.getDescription())) {
-            log.warn("<description> is not defined in POM. Will use value from parent: " +
-                System.lineSeparator() + "\t" + fullModel.getDescription());
+            warnings.add("<description> is not defined in POM. Will use value from parent: " +
+                lineSeparator() + "\t" + fullModel.getDescription());
         }
 
         log.debug("Checking <url>");
@@ -113,12 +177,12 @@ public class MavenCentralChecker {
             errors.add("<url> can not be blank.");
         }
         if (isBlank(originalModel.getUrl())) {
-            log.warn("<url> is not defined in POM. Will use computed value from parent: " +
-                System.lineSeparator() + "\t" + fullModel.getUrl());
+            warnings.add("<url> is not defined in POM. Will use computed value from parent: " +
+                lineSeparator() + "\t" + fullModel.getUrl());
         }
 
-        if (release) log.debug("Checking if version is not snapshot");
-        if (release && fullModel.getVersion().endsWith("-SNAPSHOT")) {
+        if (configuration.isRelease()) log.debug("Checking if version is not snapshot");
+        if (configuration.isRelease() && fullModel.getVersion().endsWith("-SNAPSHOT")) {
             errors.add("<version> can not be -SNAPSHOT.");
         }
 
@@ -166,31 +230,47 @@ public class MavenCentralChecker {
 
         log.debug("Checking <repositories>");
         if (null != originalModel.getRepositories() && !originalModel.getRepositories().isEmpty()) {
-            if (strict) {
+            if (configuration.isStrict()) {
                 errors.add("The <repositories> block should not be present.");
             } else {
-                log.warn("The <repositories> block should not be present.");
+                warnings.add("The <repositories> block should not be present.");
             }
         }
 
         log.debug("Checking <pluginRepositories>");
         if (null != originalModel.getPluginRepositories() && !originalModel.getPluginRepositories().isEmpty()) {
-            if (strict) {
+            if (configuration.isStrict()) {
                 errors.add("The <pluginRepositories> block should not be present.");
             } else {
-                log.warn("The <pluginRepositories> block should not be present.");
+                warnings.add("The <pluginRepositories> block should not be present.");
+            }
+        }
+
+        if (!warnings.isEmpty()) {
+            if (configuration.isFailOnWarning()) {
+                throw new PomCheckException(String.join(lineSeparator(), warnings));
+            } else {
+                warnings.forEach(log::warn);
             }
         }
 
         if (!errors.isEmpty()) {
-            StringBuilder b = new StringBuilder("\nThe POM file\n")
+            StringBuilder b = new StringBuilder(lineSeparator())
+                .append("The POM file")
+                .append(lineSeparator())
                 .append(project.getFile().getAbsolutePath())
-                .append("\ncannot be uploaded to Maven Central due to the following reasons:\n");
+                .append(lineSeparator())
+                .append("cannot be uploaded to Maven Central due to the following reasons:")
+                .append(lineSeparator());
             for (String s : errors) {
-                b.append(" * ").append(s).append("\n");
+                b.append(" * ").append(s).append(lineSeparator());
             }
 
-            throw new PomCheckException(b.toString());
+            if (configuration.isFailOnError()) {
+                throw new PomCheckException(b.toString());
+            } else {
+                log.warn(b.toString());
+            }
         } else {
             log.info("POM {} passes all checks. It can be uploaded to Maven Central.", project.getFile().getAbsolutePath());
         }

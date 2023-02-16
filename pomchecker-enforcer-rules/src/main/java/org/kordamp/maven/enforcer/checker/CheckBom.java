@@ -43,11 +43,23 @@ import javax.annotation.Nullable;
  * @since 1.0.0
  */
 public class CheckBom implements EnforcerRule {
+    private boolean failOnError;
+
+    public boolean isFailOnError() {
+        return failOnError;
+    }
+
+    public CheckBom setFailOnError(boolean failOnError) {
+        this.failOnError = failOnError;
+        return this;
+    }
+
     @Override
     public void execute(@Nonnull EnforcerRuleHelper helper) throws EnforcerRuleException {
         try {
             MavenProject project = (MavenProject) helper.evaluate("${project}");
-            BomChecker.check(new MavenLoggerAdapter(helper.getLog()), project);
+            BomChecker.check(new MavenLoggerAdapter(helper.getLog()), project, new BomChecker.Configuration()
+                .withFailOnError(failOnError));
         } catch (ExpressionEvaluationException e) {
             throw new EnforcerRuleException("Unable to lookup an expression " + e.getLocalizedMessage(), e);
         } catch (PomCheckException e) {

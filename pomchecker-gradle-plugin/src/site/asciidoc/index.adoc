@@ -41,16 +41,20 @@ pomchecker {
     bom
     release
     strict
+    failOnError
+    failOnWarning
 }
 ----
 
 [options="header", cols="5*"]
 |===
-| Name    | Type    | Required | Default Value | Description
-| enabled | boolean | no       | true          | If `false` then all check taks will be disabled.
-| bom     | boolean | no       | false         | If `true` then the `checkBom` task wll be added.
-| release | boolean | no       | true          | Disallows `-SNAPSHOT` versions if set to `true`.
-| strict  | boolean | no       | true          | Disallows `<repositories>` and `<pluginRepositories>` if set to `true`.
+| Name          | Type    | Required | Default Value | Description
+| enabled       | boolean | no       | true          | If `false` then all check taks will be disabled.
+| bom           | boolean | no       | false         | If `true` then the `checkBom` task wll be added.
+| release       | boolean | no       | true          | Disallows `-SNAPSHOT` versions if set to `true`.
+| strict        | boolean | no       | true          | Disallows `<repositories>` and `<pluginRepositories>` if set to `true`.
+| failOnError   | boolean | no       | true          | Fails the build on error.
+| failOnWarning | boolean | no       | false         | Fails the build on warning.
 |===
 
 [[_org_kordamp_gradle_checker_tasks]]

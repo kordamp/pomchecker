@@ -129,6 +129,7 @@ class PomCheckerPlugin extends AbstractKordampPlugin {
                     t.pomFile.set(generateMavenPomTask.destination)
                     t.dependsOn(generateMavenPomTask)
                     t.enabled = pomCheckerExtension.resolvedEnabled.get()
+                    t.noFailOnError.convention(!pomCheckerExtension.resolvedFailOnError.get())
                     t.glogger.set(glogger)
                 }
             })
@@ -147,8 +148,10 @@ class PomCheckerPlugin extends AbstractKordampPlugin {
                     t.group = 'Publishing'
                     t.description = "Checks if the ${publicationName} POM can be published to Maven Central"
                     t.pomFile.set(generateMavenPomTask.destination)
-                    t.noRelease.convention(!pomCheckerExtension.resolvedRelease)
-                    t.noStrict.convention(!pomCheckerExtension.resolvedStrict)
+                    t.noRelease.convention(!pomCheckerExtension.resolvedRelease.get())
+                    t.noStrict.convention(!pomCheckerExtension.resolvedStrict.get())
+                    t.noFailOnError.convention(!pomCheckerExtension.resolvedFailOnError.get())
+                    t.failOnWarning = pomCheckerExtension.resolvedFailOnWarning.get()
                     t.dependsOn(generateMavenPomTask)
                     t.enabled = pomCheckerExtension.resolvedEnabled.get()
                     t.glogger.set(glogger)

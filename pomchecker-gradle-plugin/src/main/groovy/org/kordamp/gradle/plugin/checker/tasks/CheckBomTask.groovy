@@ -23,6 +23,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
@@ -41,17 +42,22 @@ class CheckBomTask extends DefaultTask {
     @InputFile
     final RegularFileProperty pomFile
 
+    @Input
+    final Property<Boolean> noFailOnError
+
     @Internal
     final Property<GradleLoggerAdapter> glogger
 
     @Inject
     CheckBomTask(ObjectFactory objects) {
         pomFile = objects.fileProperty()
+        noFailOnError = objects.property(Boolean).convention(false)
     }
 
     @TaskAction
     void check() {
         MavenProject mavenProject = PomParser.createMavenProject(pomFile.getAsFile().get())
-        BomChecker.check(glogger.get(), mavenProject)
+        BomChecker.check(glogger.get(), mavenProject, new BomChecker.Configuration()
+            .withFailOnError(!noFailOnError.get()))
     }
 }

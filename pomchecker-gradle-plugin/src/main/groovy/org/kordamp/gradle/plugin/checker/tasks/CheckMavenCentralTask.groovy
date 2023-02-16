@@ -49,6 +49,12 @@ class CheckMavenCentralTask extends DefaultTask {
     @Input
     final Property<Boolean> noStrict
 
+    @Input
+    final Property<Boolean> noFailOnError
+
+    @Input
+    final Property<Boolean> failOnWarning
+
     @Internal
     final Property<GradleLoggerAdapter> glogger
 
@@ -57,22 +63,38 @@ class CheckMavenCentralTask extends DefaultTask {
         pomFile = objects.fileProperty()
         noRelease = objects.property(Boolean).convention(false)
         noStrict = objects.property(Boolean).convention(false)
+        noFailOnError = objects.property(Boolean).convention(false)
+        failOnWarning = objects.property(Boolean).convention(false)
         glogger = objects.property(GradleLoggerAdapter)
     }
 
     @Option(option = 'no-release', description = 'Allows `-SNAPSHOT` versions if set to `true`')
     void setNoRelease(boolean noRelease) {
-        getNoRelease().set(noRelease)
+        this.noRelease.set(noRelease)
     }
 
     @Option(option = 'no-strict', description = 'Allows `<repositories>` and `<pluginRepositories>` if set to `true`')
     void setNoStrict(boolean noStrict) {
-        getNoStrict().set(noStrict)
+        this.noStrict.set(noStrict)
+    }
+
+    @Option(option = 'no-fail-on-error', description = 'Skips failing the build if set')
+    void setNoFailOnError(boolean noFailOnError) {
+        this.noFailOnError.set(noFailOnError)
+    }
+
+    @Option(option = 'fail-on-warning', description = 'Fails the build if set to `true`')
+    void setFailOnWarning(boolean failOnWarning) {
+        this.failOnWarning.set(failOnWarning)
     }
 
     @TaskAction
     void check() {
         MavenProject mavenProject = PomParser.createMavenProject(pomFile.getAsFile().get())
-        MavenCentralChecker.check(glogger.get(), mavenProject, !noRelease.get(), !noStrict.get())
+        MavenCentralChecker.check(glogger.get(), mavenProject, new MavenCentralChecker.Configuration()
+            .withRelease(!noRelease.get())
+            .withStrict(!noStrict.get())
+            .withFailOnError(!noFailOnError.get())
+            .withFailOnWarning(failOnWarning.get()))
     }
 }

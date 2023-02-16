@@ -23,7 +23,6 @@ import org.kordamp.maven.checker.cli.internal.SimpleLoggerAdapter;
 import picocli.CommandLine;
 
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -32,7 +31,7 @@ import java.util.concurrent.Callable;
  */
 @CommandLine.Command(mixinStandardHelpOptions = true,
     versionProvider = Versions.class)
-abstract class AbstractCommand implements Callable<Integer> {
+abstract class AbstractCommand<C extends IO> extends BaseCommand implements Callable<Integer> {
     protected Logger logger;
 
     @CommandLine.Option(names = {"-d", "--debug"},
@@ -56,26 +55,15 @@ abstract class AbstractCommand implements Callable<Integer> {
         required = true)
     Path pomFile;
 
-    @CommandLine.Option(names = "-D",
-        paramLabel = "<key=value>",
-        description = "Sets a System property. Repeatable.",
-        mapFallbackValue = "")
-    void setProperty(Map<String, String> props) {
-        props.forEach(System::setProperty);
-    }
-
-    @CommandLine.Spec
-    CommandLine.Model.CommandSpec spec;
-
     @CommandLine.ParentCommand
-    Main parent;
+    private C parent;
 
-    protected Main parent() {
+    protected C parent() {
         return parent;
     }
 
     public Integer call() {
-        Banner.display(spec.commandLine().getOut());
+        Banner.display(spec.commandLine().getErr());
 
         System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "error");
 
@@ -94,7 +82,7 @@ abstract class AbstractCommand implements Callable<Integer> {
             System.setProperty("org.slf4j.simpleLogger.org.kordamp.maven", "error");
         }
 
-        logger = new SimpleLoggerAdapter(parent().out, level);
+        logger = new SimpleLoggerAdapter(parent().getOut(), level);
 
         try {
             execute();
@@ -102,8 +90,8 @@ abstract class AbstractCommand implements Callable<Integer> {
             logger.error(e.getCause().getMessage());
             return 1;
         } catch (Exception e) {
-            new Colorizer(parent().out).println(e.getMessage());
-            e.printStackTrace(new Colorizer(parent().err));
+            new Colorizer(parent().getOut()).println(e.getMessage());
+            e.printStackTrace(new Colorizer(parent().getErr()));
             return 1;
         }
 

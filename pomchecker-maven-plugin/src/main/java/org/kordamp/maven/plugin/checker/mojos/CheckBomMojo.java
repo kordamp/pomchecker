@@ -43,6 +43,12 @@ import org.kordamp.maven.checker.PomCheckException;
 @Mojo(name = "check-bom")
 public class CheckBomMojo extends AbstractMojo {
     /**
+     * Fail the build on error.
+     */
+    @Parameter(property = "checker.fail.on.error", defaultValue = "true")
+    private boolean failOnError;
+
+    /**
      * The project whose model will be checked.
      */
     @Parameter(defaultValue = "${project}", readonly = true, required = true)
@@ -51,7 +57,8 @@ public class CheckBomMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            BomChecker.check(new MavenLoggerAdapter(getLog()), project);
+            BomChecker.check(new MavenLoggerAdapter(getLog()), project, new BomChecker.Configuration()
+                .withFailOnError(failOnError));
         } catch (PomCheckException e) {
             throw new MojoExecutionException("Bom check failed", e);
         }

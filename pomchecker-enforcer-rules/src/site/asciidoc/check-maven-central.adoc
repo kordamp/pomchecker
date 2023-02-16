@@ -8,6 +8,8 @@ required for link:http://maven.apache.org/repository/guide-central-repository-up
 
 release:: Disallows `-SNAPSHOT` versions if set to `true`. Defaults to `true`.
 strict:: Disallows `<repositories>` and `<pluginRepositories>` if set to `true`. Defaults to `true`.
+failOnError:: Fails the build on error. Defaults to `true`.
+failOnWarning:: Fails the build on warning. Defaults to `false`.
 
 [source,xml,options="nowrap"]
 [subs="attributes,verbatim"]

@@ -11,9 +11,11 @@ Command line tool for checking POM compliance.
 ----
 $ pomchecker --help
 Usage: pomchecker [-hV] [COMMAND]
+Usage: pomchecker [-hV] [-D=<key=value>]... [COMMAND]
 pomchecker
-  -h, --help      Show this help message and exit.
-  -V, --version   Print version information and exit.
+  -D=<key=value>    Sets a System property. Repeatable.
+  -h, --help        Show this help message and exit.
+  -V, --version     Print version information and exit.
 Commands:
   check-bom            Checks if a POM file is a minimal BOM file
   check-maven-central  Checks if a POM complies with the rules for uploading to
@@ -23,29 +25,39 @@ Commands:
 [source]
 ----
 $ pomchecker check-bom --help
-Usage: pomchecker check-bom [-diqw] --file=<pomFile> [-D=<key=value>]...
+Usage: pomchecker check-bom [-dhiqVw] [--[no-]fail-on-error] --file=<pomFile>
+                            [-D=<key=value>]...
 Checks if a POM file is a minimal BOM file
-  -d, --debug            Set log level to debug.
-  -D=<key=value>
-      --file=<pomFile>   The POM file to check
-  -i, --info             Set log level to info.
-  -q, --quiet            Log errors only.
-  -w, --warn             Set log level to warn.
+  -d, --debug                Set log level to debug.
+  -D=<key=value>             Sets a System property. Repeatable.
+      --[no-]fail-on-error   Fails the build on error.
+      --file=<pomFile>       The POM file to check.
+  -h, --help                 Show this help message and exit.
+  -i, --info                 Set log level to info.
+  -q, --quiet                Log errors only.
+  -V, --version              Print version information and exit.
+  -w, --warn                 Set log level to warn.
 ----
 
 [source]
 ----
 $ pomchecker check-maven-central --help
-Usage: pomchecker check-maven-central [-diqw] [--no-release] [--no-strict]
-                                      --file=<pomFile> [-D=<key=value>]...
+Usage: pomchecker check-maven-central [-dhiqVw] [--[no-]fail-on-error] [--[no-]
+                                      fail-on-warning] [--[no-]release] [--[no-]
+                                      strict] --file=<pomFile>
+                                      [-D=<key=value>]...
 Checks if a POM complies with the rules for uploading to Maven Central
-  -d, --debug            Set log level to debug.
-  -D=<key=value>
-      --file=<pomFile>   The POM file to check
-  -i, --info             Set log level to info.
-      --no-release       Checks if version is -SNAPSHOT
-      --no-strict        Checks if <repositories> and <pluginRepositories> are
-                           present
-  -q, --quiet            Log errors only.
-  -w, --warn             Set log level to warn.
+  -d, --debug                Set log level to debug.
+  -D=<key=value>             Sets a System property. Repeatable.
+      --[no-]fail-on-error   Fails the build on error.
+      --[no-]fail-on-warning Fails the build on warning.
+      --file=<pomFile>       The POM file to check.
+  -h, --help                 Show this help message and exit.
+  -i, --info                 Set log level to info.
+  -q, --quiet                Log errors only.
+      --[no-]release         Checks if version is -SNAPSHOT.
+      --[no-]strict          Checks if <repositories> and <pluginRepositories>
+                               are present.
+  -V, --version              Print version information and exit.
+  -w, --warn                 Set log level to warn.
 ----

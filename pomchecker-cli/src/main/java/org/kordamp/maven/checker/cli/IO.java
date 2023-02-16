@@ -15,27 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kordamp.gradle.plugin.checker
+package org.kordamp.maven.checker.cli;
 
-import groovy.transform.CompileStatic
-import org.gradle.api.provider.Property
+import java.io.PrintWriter;
 
 /**
- *
  * @author Andres Almiray
- * @since 1.1.0
+ * @since 1.8.0
  */
-@CompileStatic
-interface PomCheckerExtension {
-    Property<Boolean> getEnabled()
+public interface IO {
+    PrintWriter getOut();
 
-    Property<Boolean> getBom()
+    void setOut(PrintWriter out);
 
-    Property<Boolean> getRelease()
+    PrintWriter getErr();
 
-    Property<Boolean> getStrict()
-
-    Property<Boolean> getFailOnError()
-
-    Property<Boolean> getFailOnWarning()
+    void setErr(PrintWriter err);
 }

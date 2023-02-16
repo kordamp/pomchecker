@@ -29,13 +29,20 @@ import picocli.CommandLine;
  */
 @CommandLine.Command(name = "check-bom",
     description = "Checks if a POM file is a minimal BOM file")
-public class CheckBom extends AbstractCommand {
+public class CheckBom extends AbstractCommand<Main> {
+    @CommandLine.Option(names = {"--fail-on-error"},
+        negatable = true,
+        defaultValue = "true", fallbackValue = "true",
+        description = "Fails the build on error.")
+    boolean failOnError;
+
     @Override
     protected void execute() {
         try {
             logger.info("BOM checks: {}", pomFile.toAbsolutePath().toString());
             MavenProject project = PomParser.createMavenProject(pomFile.toFile());
-            BomChecker.check(logger, project);
+            BomChecker.check(logger, project, new BomChecker.Configuration()
+                .withFailOnError(failOnError));
         } catch (PomCheckException e) {
             throw new HaltExecutionException(e);
         }

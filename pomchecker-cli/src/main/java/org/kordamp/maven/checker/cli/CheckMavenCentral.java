@@ -29,21 +29,41 @@ import picocli.CommandLine;
  */
 @CommandLine.Command(name = "check-maven-central",
     description = "Checks if a POM complies with the rules for uploading to Maven Central")
-public class CheckMavenCentral extends AbstractCommand {
-    @CommandLine.Option(names = {"--no-strict"},
-        description = "Checks if <repositories> and <pluginRepositories> are present")
+public class CheckMavenCentral extends AbstractCommand<Main> {
+    @CommandLine.Option(names = {"--strict"},
+        negatable = true,
+        defaultValue = "true", fallbackValue = "true",
+        description = "Checks if <repositories> and <pluginRepositories> are present.")
     boolean strict;
 
-    @CommandLine.Option(names = {"--no-release"},
-        description = "Checks if version is -SNAPSHOT")
+    @CommandLine.Option(names = {"--release"},
+        negatable = true,
+        defaultValue = "true", fallbackValue = "true",
+        description = "Checks if version is -SNAPSHOT.")
     boolean release;
+
+    @CommandLine.Option(names = {"--fail-on-error"},
+        negatable = true,
+        defaultValue = "true", fallbackValue = "true",
+        description = "Fails the build on error.")
+    boolean failOnError;
+
+    @CommandLine.Option(names = {"--fail-on-warning"},
+        negatable = true,
+        defaultValue = "true", fallbackValue = "true",
+        description = "Fails the build on warning.")
+    boolean failOnWarning;
 
     @Override
     protected void execute() {
         try {
             logger.info("Maven Central checks: {}", pomFile.toAbsolutePath().toString());
             MavenProject project = PomParser.createMavenProject(pomFile.toFile());
-            MavenCentralChecker.check(logger, project, !release, !strict);
+            MavenCentralChecker.check(logger, project, new MavenCentralChecker.Configuration()
+                .withRelease(release)
+                .withStrict(strict)
+                .withFailOnError(failOnError)
+                .withFailOnWarning(failOnWarning));
         } catch (PomCheckException e) {
             throw new HaltExecutionException(e);
         }

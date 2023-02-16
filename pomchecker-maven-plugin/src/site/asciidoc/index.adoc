@@ -60,6 +60,9 @@ plugin, for example
 You may also pass additional parameters using the `checker.release` and `checker.strict` properties when invoking the
 `pomchecker:check-maven-central` from the command line without previously applying this plugin to the POM.
 
+You may also define values for `failOnError` (user property `checker.fail.on.error`) and `failOnWarning` (user property
+`checker.fail.on.warning`).
+
 [source]
 [subs="attributes"]
 ----

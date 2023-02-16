@@ -36,12 +36,16 @@ class PomCheckerExtensionImpl implements PomCheckerExtension {
     private final BooleanState bom
     private final BooleanState release
     private final BooleanState strict
+    private final BooleanState failOnError
+    private final BooleanState failOnWarning
 
     PomCheckerExtensionImpl(Project project) {
         bom = SimpleBooleanState.of(project, this, 'pomchecker.bom', false)
         enabled = SimpleBooleanState.of(project, this, 'pomchecker.enabled', true)
         release = SimpleBooleanState.of(project, this, 'pomchecker.release', true)
         strict = SimpleBooleanState.of(project, this, 'pomchecker.strict', true)
+        failOnError = SimpleBooleanState.of(project, this, 'pomchecker.fail.on.error', true)
+        failOnWarning = SimpleBooleanState.of(project, this, 'pomchecker.fai.on.warning', false)
     }
 
     @Override
@@ -64,6 +68,16 @@ class PomCheckerExtensionImpl implements PomCheckerExtension {
         strict.property
     }
 
+    @Override
+    Property<Boolean> getFailOnError() {
+        failOnError.property
+    }
+
+    @Override
+    Property<Boolean> getFailOnWarning() {
+        failOnWarning.property
+    }
+
     Provider<Boolean> getResolvedBom() {
         bom.provider
     }
@@ -78,5 +92,13 @@ class PomCheckerExtensionImpl implements PomCheckerExtension {
 
     Provider<Boolean> getResolvedStrict() {
         strict.provider
+    }
+
+    Provider<Boolean> getResolvedFailOnError() {
+        failOnError.provider
+    }
+
+    Provider<Boolean> getResolvedFailOnWarning() {
+        failOnWarning.provider
     }
 }

@@ -30,15 +30,32 @@ import java.io.PrintWriter;
     mixinStandardHelpOptions = true,
     versionProvider = Versions.class,
     subcommands = {CheckBom.class, CheckMavenCentral.class})
-public class Main implements Runnable {
-    PrintWriter out;
-    PrintWriter err;
+public class Main extends BaseCommand implements Runnable, IO {
+    private PrintWriter out;
+    private PrintWriter err;
 
-    @CommandLine.Spec
-    CommandLine.Model.CommandSpec spec;
+    @Override
+    public PrintWriter getOut() {
+        return out;
+    }
+
+    @Override
+    public void setOut(PrintWriter out) {
+        this.out = out;
+    }
+
+    @Override
+    public PrintWriter getErr() {
+        return err;
+    }
+
+    @Override
+    public void setErr(PrintWriter err) {
+        this.err = err;
+    }
 
     public void run() {
-        Banner.display(out);
+        Banner.display(err);
 
         spec.commandLine().usage(out);
     }

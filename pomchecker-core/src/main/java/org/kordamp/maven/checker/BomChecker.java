@@ -24,14 +24,16 @@ import org.apache.maven.project.MavenProject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.System.lineSeparator;
+
 /**
  * Checks if a POM file is a minimal BOM file.
- *
+ * <p>
  * The following blocks are required:
  * <ul>
  *   <li>&lt;dependencyManagement&gt;</li>
  * </ul>
- *
+ * <p>
  * The following blocks are forbidden:
  * <ul>
  *   <li>&lt;build&gt;</li>
@@ -47,14 +49,33 @@ import java.util.List;
  * @since 1.0.0
  */
 public class BomChecker {
+    public static class Configuration {
+        private boolean failOnError;
+
+        public boolean isFailOnError() {
+            return failOnError;
+        }
+
+        /**
+         * Sets the value for {@code failOnError}.
+         *
+         * @param failOnError if {@code true} fails the build when an error is encountered.
+         */
+        public Configuration withFailOnError(boolean failOnError) {
+            this.failOnError = failOnError;
+            return this;
+        }
+    }
+
     /**
      * Checks the resolved model of the given MaveProject for compliance.
      *
-     * @param log     the logger to use.
-     * @param project the project to be checked.
+     * @param log           the logger to use.
+     * @param project       the project to be checked.
+     * @param configuration configuration required for inspection.
      * @throws PomCheckException if the POM is invalid
      */
-    public static void check(Logger log, MavenProject project) throws PomCheckException {
+    public static void check(Logger log, MavenProject project, Configuration configuration) throws PomCheckException {
         Model model = project.getOriginalModel();
 
         List<String> errors = new ArrayList<>();
@@ -112,14 +133,22 @@ public class BomChecker {
         }
 
         if (!errors.isEmpty()) {
-            StringBuilder b = new StringBuilder("\nThe POM file\n")
+            StringBuilder b = new StringBuilder(lineSeparator())
+                .append("The POM file")
+                .append(lineSeparator())
                 .append(project.getFile().getAbsolutePath())
-                .append("\nis not a valid BOM due to the following reasons:\n");
+                .append(lineSeparator())
+                .append("is not a valid BOM due to the following reasons:")
+                .append(lineSeparator());
             for (String s : errors) {
-                b.append(" * ").append(s).append("\n");
+                b.append(" * ").append(s).append(lineSeparator());
             }
 
-            throw new PomCheckException(b.toString());
+            if (configuration.isFailOnError()) {
+                throw new PomCheckException(b.toString());
+            } else {
+                log.warn(b.toString());
+            }
         } else {
             log.info("BOM {} passes all checks.", project.getFile().getAbsolutePath());
         }

@@ -9,6 +9,10 @@ Minimal BOM files contain the following elements:
  * <version>
  * <dependencyManagement>
 
+.Properties
+
+failOnError:: Fails the build on error. Defaults to `true`.
+
 Sample plugin configuration
 
 [source,xml,options="nowrap"]

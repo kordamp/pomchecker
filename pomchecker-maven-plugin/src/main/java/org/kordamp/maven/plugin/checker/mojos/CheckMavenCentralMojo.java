@@ -42,21 +42,37 @@ public class CheckMavenCentralMojo extends AbstractMojo {
     private MavenProject project;
 
     /**
+     * Fail the build on error.
+     */
+    @Parameter(property = "checker.fail.on.error", defaultValue = "true")
+    private boolean failOnError;
+
+    /**
+     * Fail the build on warning.
+     */
+    @Parameter(property = "checker.fail.on.warning")
+    private boolean failOnWarning;
+
+    /**
      * Checks if version is -SNAPSHOT.
      */
     @Parameter(property = "checker.release", defaultValue = "true")
-    private boolean release = true;
+    private boolean release;
 
     /**
      * Checks if &lt;repositories&gt; and &lt;pluginRepositories&gt; are present.
      */
     @Parameter(property = "checker.strict", defaultValue = "true")
-    private boolean strict = true;
+    private boolean strict;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            MavenCentralChecker.check(new MavenLoggerAdapter(getLog()), project, release, strict);
+            MavenCentralChecker.check(new MavenLoggerAdapter(getLog()), project, new MavenCentralChecker.Configuration()
+                .withRelease(release)
+                .withStrict(strict)
+                .withFailOnError(failOnError)
+                .withFailOnWarning(failOnWarning));
         } catch (PomCheckException e) {
             throw new MojoExecutionException("MavenCentral check failed", e);
         }

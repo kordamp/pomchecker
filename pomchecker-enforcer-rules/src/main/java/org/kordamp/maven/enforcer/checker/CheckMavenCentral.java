@@ -37,14 +37,55 @@ import javax.annotation.Nullable;
  */
 public class CheckMavenCentral implements EnforcerRule {
     private boolean release = true;
-
     private boolean strict = true;
+    private boolean failOnError = true;
+    private boolean failOnWarning;
+
+    public boolean isRelease() {
+        return release;
+    }
+
+    public CheckMavenCentral setRelease(boolean release) {
+        this.release = release;
+        return this;
+    }
+
+    public boolean isStrict() {
+        return strict;
+    }
+
+    public CheckMavenCentral setStrict(boolean strict) {
+        this.strict = strict;
+        return this;
+    }
+
+    public boolean isFailOnError() {
+        return failOnError;
+    }
+
+    public CheckMavenCentral setFailOnError(boolean failOnError) {
+        this.failOnError = failOnError;
+        return this;
+    }
+
+    public boolean isFailOnWarning() {
+        return failOnWarning;
+    }
+
+    public CheckMavenCentral setFailOnWarning(boolean failOnWarning) {
+        this.failOnWarning = failOnWarning;
+        return this;
+    }
 
     @Override
     public void execute(@Nonnull EnforcerRuleHelper helper) throws EnforcerRuleException {
         try {
             MavenProject project = (MavenProject) helper.evaluate("${project}");
-            MavenCentralChecker.check(new MavenLoggerAdapter(helper.getLog()), project, release, strict);
+            MavenCentralChecker.check(new MavenLoggerAdapter(helper.getLog()), project, new MavenCentralChecker.Configuration()
+                .withRelease(release)
+                .withStrict(strict)
+                .withFailOnError(failOnError)
+                .withFailOnWarning(failOnWarning));
         } catch (ExpressionEvaluationException e) {
             throw new EnforcerRuleException("Unable to lookup an expression " + e.getLocalizedMessage(), e);
         } catch (PomCheckException e) {
