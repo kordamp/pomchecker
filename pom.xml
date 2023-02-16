@@ -43,7 +43,7 @@
         <slf4j.version>2.0.6</slf4j.version>
         <picocli.version>4.7.1</picocli.version>
         <sisu.version>0.9.0.M1</sisu.version>
-        <maven.version>3.8.7</maven.version>
+        <maven.version>3.9.0</maven.version>
         <maven.resolver.version>1.9.4</maven.resolver.version>
         <commons.lang3.version>3.12.0</commons.lang3.version>
     </properties>
@@ -293,34 +293,38 @@
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
                 <configuration combine.self="override">
-                    <header>${rootdir}/etc/license.txt</header>
-                    <headerDefinitions>
-                        <headerDefinition>${rootdir}/etc/header-definition.xml</headerDefinition>
-                    </headerDefinitions>
-                    <strictCheck>true</strictCheck>
                     <properties>
                         <author>Andres Almiray</author>
                     </properties>
+                    <strictCheck>true</strictCheck>
                     <mapping>
                         <yml>SCRIPT_STYLE</yml>
                         <toml>SCRIPT_STYLE</toml>
                     </mapping>
-                    <excludes>
-                        <exclude>**/*.adoc</exclude>
-                        <exclude>LICENSE</exclude>
-                        <exclude>.github/**/*</exclude>
-                        <exclude>mvnw</exclude>
-                        <exclude>mvnw.cmd</exclude>
-                        <exclude>.mvn/wrapper/*</exclude>
-                        <exclude>**/.gradle/**/*</exclude>
-                        <exclude>**/gradle/wrapper/*</exclude>
-                        <exclude>**/*.gradle</exclude>
-                        <exclude>**/gradlew</exclude>
-                        <exclude>**/gradlew.bat</exclude>
-                        <exclude>**/build/**/*</exclude>
-                        <exclude>out/**/*</exclude>
-                        <exclude>VERSION</exclude>
-                    </excludes>
+                    <licenseSets>
+                        <licenseSet>
+                            <header>${rootdir}/etc/license.txt</header>
+                            <headerDefinitions>
+                                <headerDefinition>${rootdir}/etc/header-definition.xml</headerDefinition>
+                            </headerDefinitions>
+                            <excludes>
+                                <exclude>**/*.adoc</exclude>
+                                <exclude>LICENSE</exclude>
+                                <exclude>.github/**/*</exclude>
+                                <exclude>mvnw</exclude>
+                                <exclude>mvnw.cmd</exclude>
+                                <exclude>.mvn/wrapper/*</exclude>
+                                <exclude>**/.gradle/**/*</exclude>
+                                <exclude>**/gradle/wrapper/*</exclude>
+                                <exclude>**/*.gradle</exclude>
+                                <exclude>**/gradlew</exclude>
+                                <exclude>**/gradlew.bat</exclude>
+                                <exclude>**/build/**/*</exclude>
+                                <exclude>out/**/*</exclude>
+                                <exclude>VERSION</exclude>
+                            </excludes>
+                        </licenseSet>
+                    </licenseSets>
                 </configuration>
                 <executions>
                     <execution>

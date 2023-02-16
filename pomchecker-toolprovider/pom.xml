@@ -147,7 +147,6 @@
                             <goal>add-module-info</goal>
                         </goals>
                         <configuration>
-                            <jvmVersion>9</jvmVersion>
                             <module>
                                 <moduleInfoFile>src/java9/module-info.java</moduleInfoFile>
                             </module>
