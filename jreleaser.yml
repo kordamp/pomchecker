@@ -28,7 +28,7 @@ project:
     groupId: org.kordamp.maven
     version: 8
   inceptionYear: 2020
-  stereotype: cli
+  stereotype: CLI
 
 release:
   github:
