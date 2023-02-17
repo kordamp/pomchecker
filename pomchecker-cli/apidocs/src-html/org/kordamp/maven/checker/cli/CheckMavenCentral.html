@@ -42,26 +42,46 @@
 <span class="source-line-no">029</span><span id="line-29"> */</span>
 <span class="source-line-no">030</span><span id="line-30">@CommandLine.Command(name = "check-maven-central",</span>
 <span class="source-line-no">031</span><span id="line-31">    description = "Checks if a POM complies with the rules for uploading to Maven Central")</span>
-<span class="source-line-no">032</span><span id="line-32">public class CheckMavenCentral extends AbstractCommand {</span>
-<span class="source-line-no">033</span><span id="line-33">    @CommandLine.Option(names = {"--no-strict"},</span>
-<span class="source-line-no">034</span><span id="line-34">        description = "Checks if &lt;repositories&gt; and &lt;pluginRepositories&gt; are present")</span>
-<span class="source-line-no">035</span><span id="line-35">    boolean strict;</span>
-<span class="source-line-no">036</span><span id="line-36"></span>
-<span class="source-line-no">037</span><span id="line-37">    @CommandLine.Option(names = {"--no-release"},</span>
-<span class="source-line-no">038</span><span id="line-38">        description = "Checks if version is -SNAPSHOT")</span>
-<span class="source-line-no">039</span><span id="line-39">    boolean release;</span>
-<span class="source-line-no">040</span><span id="line-40"></span>
-<span class="source-line-no">041</span><span id="line-41">    @Override</span>
-<span class="source-line-no">042</span><span id="line-42">    protected void execute() {</span>
-<span class="source-line-no">043</span><span id="line-43">        try {</span>
-<span class="source-line-no">044</span><span id="line-44">            logger.info("Maven Central checks: {}", pomFile.toAbsolutePath().toString());</span>
-<span class="source-line-no">045</span><span id="line-45">            MavenProject project = PomParser.createMavenProject(pomFile.toFile());</span>
-<span class="source-line-no">046</span><span id="line-46">            MavenCentralChecker.check(logger, project, !release, !strict);</span>
-<span class="source-line-no">047</span><span id="line-47">        } catch (PomCheckException e) {</span>
-<span class="source-line-no">048</span><span id="line-48">            throw new HaltExecutionException(e);</span>
-<span class="source-line-no">049</span><span id="line-49">        }</span>
-<span class="source-line-no">050</span><span id="line-50">    }</span>
-<span class="source-line-no">051</span><span id="line-51">}</span>
+<span class="source-line-no">032</span><span id="line-32">public class CheckMavenCentral extends AbstractCommand&lt;Main&gt; {</span>
+<span class="source-line-no">033</span><span id="line-33">    @CommandLine.Option(names = {"--strict"},</span>
+<span class="source-line-no">034</span><span id="line-34">        negatable = true,</span>
+<span class="source-line-no">035</span><span id="line-35">        defaultValue = "true", fallbackValue = "true",</span>
+<span class="source-line-no">036</span><span id="line-36">        description = "Checks if &lt;repositories&gt; and &lt;pluginRepositories&gt; are present.")</span>
+<span class="source-line-no">037</span><span id="line-37">    boolean strict;</span>
+<span class="source-line-no">038</span><span id="line-38"></span>
+<span class="source-line-no">039</span><span id="line-39">    @CommandLine.Option(names = {"--release"},</span>
+<span class="source-line-no">040</span><span id="line-40">        negatable = true,</span>
+<span class="source-line-no">041</span><span id="line-41">        defaultValue = "true", fallbackValue = "true",</span>
+<span class="source-line-no">042</span><span id="line-42">        description = "Checks if version is -SNAPSHOT.")</span>
+<span class="source-line-no">043</span><span id="line-43">    boolean release;</span>
+<span class="source-line-no">044</span><span id="line-44"></span>
+<span class="source-line-no">045</span><span id="line-45">    @CommandLine.Option(names = {"--fail-on-error"},</span>
+<span class="source-line-no">046</span><span id="line-46">        negatable = true,</span>
+<span class="source-line-no">047</span><span id="line-47">        defaultValue = "true", fallbackValue = "true",</span>
+<span class="source-line-no">048</span><span id="line-48">        description = "Fails the build on error.")</span>
+<span class="source-line-no">049</span><span id="line-49">    boolean failOnError;</span>
+<span class="source-line-no">050</span><span id="line-50"></span>
+<span class="source-line-no">051</span><span id="line-51">    @CommandLine.Option(names = {"--fail-on-warning"},</span>
+<span class="source-line-no">052</span><span id="line-52">        negatable = true,</span>
+<span class="source-line-no">053</span><span id="line-53">        defaultValue = "true", fallbackValue = "true",</span>
+<span class="source-line-no">054</span><span id="line-54">        description = "Fails the build on warning.")</span>
+<span class="source-line-no">055</span><span id="line-55">    boolean failOnWarning;</span>
+<span class="source-line-no">056</span><span id="line-56"></span>
+<span class="source-line-no">057</span><span id="line-57">    @Override</span>
+<span class="source-line-no">058</span><span id="line-58">    protected void execute() {</span>
+<span class="source-line-no">059</span><span id="line-59">        try {</span>
+<span class="source-line-no">060</span><span id="line-60">            logger.info("Maven Central checks: {}", pomFile.toAbsolutePath().toString());</span>
+<span class="source-line-no">061</span><span id="line-61">            MavenProject project = PomParser.createMavenProject(pomFile.toFile());</span>
+<span class="source-line-no">062</span><span id="line-62">            MavenCentralChecker.check(logger, project, new MavenCentralChecker.Configuration()</span>
+<span class="source-line-no">063</span><span id="line-63">                .withRelease(release)</span>
+<span class="source-line-no">064</span><span id="line-64">                .withStrict(strict)</span>
+<span class="source-line-no">065</span><span id="line-65">                .withFailOnError(failOnError)</span>
+<span class="source-line-no">066</span><span id="line-66">                .withFailOnWarning(failOnWarning));</span>
+<span class="source-line-no">067</span><span id="line-67">        } catch (PomCheckException e) {</span>
+<span class="source-line-no">068</span><span id="line-68">            throw new HaltExecutionException(e);</span>
+<span class="source-line-no">069</span><span id="line-69">        }</span>
+<span class="source-line-no">070</span><span id="line-70">    }</span>
+<span class="source-line-no">071</span><span id="line-71">}</span>
 
 
 

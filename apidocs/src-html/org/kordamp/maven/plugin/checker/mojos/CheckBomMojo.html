@@ -56,20 +56,27 @@
 <span class="source-line-no">043</span><span id="line-43">@Mojo(name = "check-bom")</span>
 <span class="source-line-no">044</span><span id="line-44">public class CheckBomMojo extends AbstractMojo {</span>
 <span class="source-line-no">045</span><span id="line-45">    /**</span>
-<span class="source-line-no">046</span><span id="line-46">     * The project whose model will be checked.</span>
+<span class="source-line-no">046</span><span id="line-46">     * Fail the build on error.</span>
 <span class="source-line-no">047</span><span id="line-47">     */</span>
-<span class="source-line-no">048</span><span id="line-48">    @Parameter(defaultValue = "${project}", readonly = true, required = true)</span>
-<span class="source-line-no">049</span><span id="line-49">    private MavenProject project;</span>
+<span class="source-line-no">048</span><span id="line-48">    @Parameter(property = "checker.fail.on.error", defaultValue = "true")</span>
+<span class="source-line-no">049</span><span id="line-49">    private boolean failOnError;</span>
 <span class="source-line-no">050</span><span id="line-50"></span>
-<span class="source-line-no">051</span><span id="line-51">    @Override</span>
-<span class="source-line-no">052</span><span id="line-52">    public void execute() throws MojoExecutionException, MojoFailureException {</span>
-<span class="source-line-no">053</span><span id="line-53">        try {</span>
-<span class="source-line-no">054</span><span id="line-54">            BomChecker.check(new MavenLoggerAdapter(getLog()), project);</span>
-<span class="source-line-no">055</span><span id="line-55">        } catch (PomCheckException e) {</span>
-<span class="source-line-no">056</span><span id="line-56">            throw new MojoExecutionException("Bom check failed", e);</span>
-<span class="source-line-no">057</span><span id="line-57">        }</span>
-<span class="source-line-no">058</span><span id="line-58">    }</span>
-<span class="source-line-no">059</span><span id="line-59">}</span>
+<span class="source-line-no">051</span><span id="line-51">    /**</span>
+<span class="source-line-no">052</span><span id="line-52">     * The project whose model will be checked.</span>
+<span class="source-line-no">053</span><span id="line-53">     */</span>
+<span class="source-line-no">054</span><span id="line-54">    @Parameter(defaultValue = "${project}", readonly = true, required = true)</span>
+<span class="source-line-no">055</span><span id="line-55">    private MavenProject project;</span>
+<span class="source-line-no">056</span><span id="line-56"></span>
+<span class="source-line-no">057</span><span id="line-57">    @Override</span>
+<span class="source-line-no">058</span><span id="line-58">    public void execute() throws MojoExecutionException, MojoFailureException {</span>
+<span class="source-line-no">059</span><span id="line-59">        try {</span>
+<span class="source-line-no">060</span><span id="line-60">            BomChecker.check(new MavenLoggerAdapter(getLog()), project, new BomChecker.Configuration()</span>
+<span class="source-line-no">061</span><span id="line-61">                .withFailOnError(failOnError));</span>
+<span class="source-line-no">062</span><span id="line-62">        } catch (PomCheckException e) {</span>
+<span class="source-line-no">063</span><span id="line-63">            throw new MojoExecutionException("Bom check failed", e);</span>
+<span class="source-line-no">064</span><span id="line-64">        }</span>
+<span class="source-line-no">065</span><span id="line-65">    }</span>
+<span class="source-line-no">066</span><span id="line-66">}</span>
 
 
 

@@ -55,26 +55,42 @@
 <span class="source-line-no">042</span><span id="line-42">    private MavenProject project;</span>
 <span class="source-line-no">043</span><span id="line-43"></span>
 <span class="source-line-no">044</span><span id="line-44">    /**</span>
-<span class="source-line-no">045</span><span id="line-45">     * Checks if version is -SNAPSHOT.</span>
+<span class="source-line-no">045</span><span id="line-45">     * Fail the build on error.</span>
 <span class="source-line-no">046</span><span id="line-46">     */</span>
-<span class="source-line-no">047</span><span id="line-47">    @Parameter(property = "checker.release", defaultValue = "true")</span>
-<span class="source-line-no">048</span><span id="line-48">    private boolean release = true;</span>
+<span class="source-line-no">047</span><span id="line-47">    @Parameter(property = "checker.fail.on.error", defaultValue = "true")</span>
+<span class="source-line-no">048</span><span id="line-48">    private boolean failOnError;</span>
 <span class="source-line-no">049</span><span id="line-49"></span>
 <span class="source-line-no">050</span><span id="line-50">    /**</span>
-<span class="source-line-no">051</span><span id="line-51">     * Checks if &amp;lt;repositories&amp;gt; and &amp;lt;pluginRepositories&amp;gt; are present.</span>
+<span class="source-line-no">051</span><span id="line-51">     * Fail the build on warning.</span>
 <span class="source-line-no">052</span><span id="line-52">     */</span>
-<span class="source-line-no">053</span><span id="line-53">    @Parameter(property = "checker.strict", defaultValue = "true")</span>
-<span class="source-line-no">054</span><span id="line-54">    private boolean strict = true;</span>
+<span class="source-line-no">053</span><span id="line-53">    @Parameter(property = "checker.fail.on.warning")</span>
+<span class="source-line-no">054</span><span id="line-54">    private boolean failOnWarning;</span>
 <span class="source-line-no">055</span><span id="line-55"></span>
-<span class="source-line-no">056</span><span id="line-56">    @Override</span>
-<span class="source-line-no">057</span><span id="line-57">    public void execute() throws MojoExecutionException, MojoFailureException {</span>
-<span class="source-line-no">058</span><span id="line-58">        try {</span>
-<span class="source-line-no">059</span><span id="line-59">            MavenCentralChecker.check(new MavenLoggerAdapter(getLog()), project, release, strict);</span>
-<span class="source-line-no">060</span><span id="line-60">        } catch (PomCheckException e) {</span>
-<span class="source-line-no">061</span><span id="line-61">            throw new MojoExecutionException("MavenCentral check failed", e);</span>
-<span class="source-line-no">062</span><span id="line-62">        }</span>
-<span class="source-line-no">063</span><span id="line-63">    }</span>
-<span class="source-line-no">064</span><span id="line-64">}</span>
+<span class="source-line-no">056</span><span id="line-56">    /**</span>
+<span class="source-line-no">057</span><span id="line-57">     * Checks if version is -SNAPSHOT.</span>
+<span class="source-line-no">058</span><span id="line-58">     */</span>
+<span class="source-line-no">059</span><span id="line-59">    @Parameter(property = "checker.release", defaultValue = "true")</span>
+<span class="source-line-no">060</span><span id="line-60">    private boolean release;</span>
+<span class="source-line-no">061</span><span id="line-61"></span>
+<span class="source-line-no">062</span><span id="line-62">    /**</span>
+<span class="source-line-no">063</span><span id="line-63">     * Checks if &amp;lt;repositories&amp;gt; and &amp;lt;pluginRepositories&amp;gt; are present.</span>
+<span class="source-line-no">064</span><span id="line-64">     */</span>
+<span class="source-line-no">065</span><span id="line-65">    @Parameter(property = "checker.strict", defaultValue = "true")</span>
+<span class="source-line-no">066</span><span id="line-66">    private boolean strict;</span>
+<span class="source-line-no">067</span><span id="line-67"></span>
+<span class="source-line-no">068</span><span id="line-68">    @Override</span>
+<span class="source-line-no">069</span><span id="line-69">    public void execute() throws MojoExecutionException, MojoFailureException {</span>
+<span class="source-line-no">070</span><span id="line-70">        try {</span>
+<span class="source-line-no">071</span><span id="line-71">            MavenCentralChecker.check(new MavenLoggerAdapter(getLog()), project, new MavenCentralChecker.Configuration()</span>
+<span class="source-line-no">072</span><span id="line-72">                .withRelease(release)</span>
+<span class="source-line-no">073</span><span id="line-73">                .withStrict(strict)</span>
+<span class="source-line-no">074</span><span id="line-74">                .withFailOnError(failOnError)</span>
+<span class="source-line-no">075</span><span id="line-75">                .withFailOnWarning(failOnWarning));</span>
+<span class="source-line-no">076</span><span id="line-76">        } catch (PomCheckException e) {</span>
+<span class="source-line-no">077</span><span id="line-77">            throw new MojoExecutionException("MavenCentral check failed", e);</span>
+<span class="source-line-no">078</span><span id="line-78">        }</span>
+<span class="source-line-no">079</span><span id="line-79">    }</span>
+<span class="source-line-no">080</span><span id="line-80">}</span>
 
 
 

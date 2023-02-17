@@ -1,2 +1,3 @@
 org.kordamp.maven.plugin.checker
 org.kordamp.maven.plugin.checker.mojos
+org.kordamp.maven.pomchecker_maven_plugin

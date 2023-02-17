@@ -56,34 +56,46 @@
 <span class="source-line-no">043</span><span id="line-43"> * @since 1.0.0</span>
 <span class="source-line-no">044</span><span id="line-44"> */</span>
 <span class="source-line-no">045</span><span id="line-45">public class CheckBom implements EnforcerRule {</span>
-<span class="source-line-no">046</span><span id="line-46">    @Override</span>
-<span class="source-line-no">047</span><span id="line-47">    public void execute(@Nonnull EnforcerRuleHelper helper) throws EnforcerRuleException {</span>
-<span class="source-line-no">048</span><span id="line-48">        try {</span>
-<span class="source-line-no">049</span><span id="line-49">            MavenProject project = (MavenProject) helper.evaluate("${project}");</span>
-<span class="source-line-no">050</span><span id="line-50">            BomChecker.check(new MavenLoggerAdapter(helper.getLog()), project);</span>
-<span class="source-line-no">051</span><span id="line-51">        } catch (ExpressionEvaluationException e) {</span>
-<span class="source-line-no">052</span><span id="line-52">            throw new EnforcerRuleException("Unable to lookup an expression " + e.getLocalizedMessage(), e);</span>
-<span class="source-line-no">053</span><span id="line-53">        } catch (PomCheckException e) {</span>
-<span class="source-line-no">054</span><span id="line-54">            throw new EnforcerRuleException(e.getMessage());</span>
-<span class="source-line-no">055</span><span id="line-55">        }</span>
-<span class="source-line-no">056</span><span id="line-56">    }</span>
-<span class="source-line-no">057</span><span id="line-57"></span>
-<span class="source-line-no">058</span><span id="line-58">    @Override</span>
-<span class="source-line-no">059</span><span id="line-59">    public boolean isCacheable() {</span>
-<span class="source-line-no">060</span><span id="line-60">        return false;</span>
-<span class="source-line-no">061</span><span id="line-61">    }</span>
-<span class="source-line-no">062</span><span id="line-62"></span>
-<span class="source-line-no">063</span><span id="line-63">    @Override</span>
-<span class="source-line-no">064</span><span id="line-64">    public boolean isResultValid(@Nonnull EnforcerRule enforcerRule) {</span>
-<span class="source-line-no">065</span><span id="line-65">        return false;</span>
-<span class="source-line-no">066</span><span id="line-66">    }</span>
-<span class="source-line-no">067</span><span id="line-67"></span>
-<span class="source-line-no">068</span><span id="line-68">    @Nullable</span>
-<span class="source-line-no">069</span><span id="line-69">    @Override</span>
-<span class="source-line-no">070</span><span id="line-70">    public String getCacheId() {</span>
-<span class="source-line-no">071</span><span id="line-71">        return "";</span>
-<span class="source-line-no">072</span><span id="line-72">    }</span>
-<span class="source-line-no">073</span><span id="line-73">}</span>
+<span class="source-line-no">046</span><span id="line-46">    private boolean failOnError;</span>
+<span class="source-line-no">047</span><span id="line-47"></span>
+<span class="source-line-no">048</span><span id="line-48">    public boolean isFailOnError() {</span>
+<span class="source-line-no">049</span><span id="line-49">        return failOnError;</span>
+<span class="source-line-no">050</span><span id="line-50">    }</span>
+<span class="source-line-no">051</span><span id="line-51"></span>
+<span class="source-line-no">052</span><span id="line-52">    public CheckBom setFailOnError(boolean failOnError) {</span>
+<span class="source-line-no">053</span><span id="line-53">        this.failOnError = failOnError;</span>
+<span class="source-line-no">054</span><span id="line-54">        return this;</span>
+<span class="source-line-no">055</span><span id="line-55">    }</span>
+<span class="source-line-no">056</span><span id="line-56"></span>
+<span class="source-line-no">057</span><span id="line-57">    @Override</span>
+<span class="source-line-no">058</span><span id="line-58">    public void execute(@Nonnull EnforcerRuleHelper helper) throws EnforcerRuleException {</span>
+<span class="source-line-no">059</span><span id="line-59">        try {</span>
+<span class="source-line-no">060</span><span id="line-60">            MavenProject project = (MavenProject) helper.evaluate("${project}");</span>
+<span class="source-line-no">061</span><span id="line-61">            BomChecker.check(new MavenLoggerAdapter(helper.getLog()), project, new BomChecker.Configuration()</span>
+<span class="source-line-no">062</span><span id="line-62">                .withFailOnError(failOnError));</span>
+<span class="source-line-no">063</span><span id="line-63">        } catch (ExpressionEvaluationException e) {</span>
+<span class="source-line-no">064</span><span id="line-64">            throw new EnforcerRuleException("Unable to lookup an expression " + e.getLocalizedMessage(), e);</span>
+<span class="source-line-no">065</span><span id="line-65">        } catch (PomCheckException e) {</span>
+<span class="source-line-no">066</span><span id="line-66">            throw new EnforcerRuleException(e.getMessage());</span>
+<span class="source-line-no">067</span><span id="line-67">        }</span>
+<span class="source-line-no">068</span><span id="line-68">    }</span>
+<span class="source-line-no">069</span><span id="line-69"></span>
+<span class="source-line-no">070</span><span id="line-70">    @Override</span>
+<span class="source-line-no">071</span><span id="line-71">    public boolean isCacheable() {</span>
+<span class="source-line-no">072</span><span id="line-72">        return false;</span>
+<span class="source-line-no">073</span><span id="line-73">    }</span>
+<span class="source-line-no">074</span><span id="line-74"></span>
+<span class="source-line-no">075</span><span id="line-75">    @Override</span>
+<span class="source-line-no">076</span><span id="line-76">    public boolean isResultValid(@Nonnull EnforcerRule enforcerRule) {</span>
+<span class="source-line-no">077</span><span id="line-77">        return false;</span>
+<span class="source-line-no">078</span><span id="line-78">    }</span>
+<span class="source-line-no">079</span><span id="line-79"></span>
+<span class="source-line-no">080</span><span id="line-80">    @Nullable</span>
+<span class="source-line-no">081</span><span id="line-81">    @Override</span>
+<span class="source-line-no">082</span><span id="line-82">    public String getCacheId() {</span>
+<span class="source-line-no">083</span><span id="line-83">        return "";</span>
+<span class="source-line-no">084</span><span id="line-84">    }</span>
+<span class="source-line-no">085</span><span id="line-85">}</span>
 
 
 

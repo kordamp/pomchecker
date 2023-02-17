@@ -42,248 +42,328 @@
 <span class="source-line-no">029</span><span id="line-29">import java.util.ArrayList;</span>
 <span class="source-line-no">030</span><span id="line-30">import java.util.List;</span>
 <span class="source-line-no">031</span><span id="line-31"></span>
-<span class="source-line-no">032</span><span id="line-32">/**</span>
-<span class="source-line-no">033</span><span id="line-33"> * Checks if a POM complies with the rules for uploading to Maven Central.</span>
-<span class="source-line-no">034</span><span id="line-34"> *</span>
-<span class="source-line-no">035</span><span id="line-35"> * The following blocks are required:</span>
-<span class="source-line-no">036</span><span id="line-36"> * &lt;ul&gt;</span>
-<span class="source-line-no">037</span><span id="line-37"> *   &lt;li&gt;&amp;lt;groupId&amp;gt;&lt;/li&gt;</span>
-<span class="source-line-no">038</span><span id="line-38"> *   &lt;li&gt;&amp;lt;artifactId&amp;gt;&lt;/li&gt;</span>
-<span class="source-line-no">039</span><span id="line-39"> *   &lt;li&gt;&amp;lt;version&amp;gt;&lt;/li&gt;</span>
-<span class="source-line-no">040</span><span id="line-40"> *   &lt;li&gt;&amp;lt;name&amp;gt;&lt;/li&gt;</span>
-<span class="source-line-no">041</span><span id="line-41"> *   &lt;li&gt;&amp;lt;description&amp;gt;&lt;/li&gt;</span>
-<span class="source-line-no">042</span><span id="line-42"> *   &lt;li&gt;&amp;lt;url&amp;gt;&lt;/li&gt;</span>
-<span class="source-line-no">043</span><span id="line-43"> *   &lt;li&gt;&amp;lt;licenses&amp;gt;&lt;/li&gt;</span>
-<span class="source-line-no">044</span><span id="line-44"> *   &lt;li&gt;&amp;lt;scm&amp;gt;&lt;/li&gt;</span>
-<span class="source-line-no">045</span><span id="line-45"> * &lt;/ul&gt;</span>
-<span class="source-line-no">046</span><span id="line-46"> *</span>
-<span class="source-line-no">047</span><span id="line-47"> * All previous blocks may be supplied by a parent POM with the exception of &amp;lt;artifactId&amp;gt;.</span>
-<span class="source-line-no">048</span><span id="line-48"> *</span>
-<span class="source-line-no">049</span><span id="line-49"> * The following blocks are forbidden if {@code strict = true}</span>
-<span class="source-line-no">050</span><span id="line-50"> * &lt;ul&gt;</span>
-<span class="source-line-no">051</span><span id="line-51"> *   &lt;li&gt;&amp;lt;repositories&amp;gt;&lt;/li&gt;</span>
-<span class="source-line-no">052</span><span id="line-52"> *   &lt;li&gt;&amp;lt;pluginRepositories&amp;gt;&lt;/li&gt;</span>
-<span class="source-line-no">053</span><span id="line-53"> * &lt;/ul&gt;</span>
-<span class="source-line-no">054</span><span id="line-54"> *</span>
-<span class="source-line-no">055</span><span id="line-55"> * @see &lt;a href="http://maven.apache.org/repository/guide-central-repository-upload.html"&gt;http://maven.apache.org/repository/guide-central-repository-upload.html&lt;/a&gt;</span>
-<span class="source-line-no">056</span><span id="line-56"> * @see &lt;a href="https://central.sonatype.org/pages/requirements.html"&gt;https://central.sonatype.org/pages/requirements.html&lt;/a&gt;</span>
-<span class="source-line-no">057</span><span id="line-57"> *</span>
-<span class="source-line-no">058</span><span id="line-58"> * @author Andres Almiray</span>
-<span class="source-line-no">059</span><span id="line-59"> * @since 1.0.0</span>
-<span class="source-line-no">060</span><span id="line-60"> */</span>
-<span class="source-line-no">061</span><span id="line-61">public class MavenCentralChecker {</span>
-<span class="source-line-no">062</span><span id="line-62">    /**</span>
-<span class="source-line-no">063</span><span id="line-63">     * Checks the resolved model of the given MaveProject for compliance.</span>
-<span class="source-line-no">064</span><span id="line-64">     *</span>
-<span class="source-line-no">065</span><span id="line-65">     * @param log     the logger to use.</span>
-<span class="source-line-no">066</span><span id="line-66">     * @param project the project to be checked.</span>
-<span class="source-line-no">067</span><span id="line-67">     * @param release if {@code true} checks if version is not -SNAPSHOT.</span>
-<span class="source-line-no">068</span><span id="line-68">     * @param strict  if {@code true} checks that &amp;lt;repositories&amp;gt; and &amp;lt;pluginRepositories&amp;gt; are not present</span>
-<span class="source-line-no">069</span><span id="line-69">     * @throws PomCheckException if the POM is invalid</span>
-<span class="source-line-no">070</span><span id="line-70">     */</span>
-<span class="source-line-no">071</span><span id="line-71">    public static void check(Logger log, MavenProject project, boolean release, boolean strict) throws PomCheckException {</span>
-<span class="source-line-no">072</span><span id="line-72">        Model fullModel = project.getModel();</span>
-<span class="source-line-no">073</span><span id="line-73">        Model originalModel = project.getOriginalModel();</span>
-<span class="source-line-no">074</span><span id="line-74"></span>
-<span class="source-line-no">075</span><span id="line-75">        List&lt;String&gt; errors = new ArrayList&lt;&gt;();</span>
-<span class="source-line-no">076</span><span id="line-76"></span>
-<span class="source-line-no">077</span><span id="line-77">        // sanity checks. redundant?</span>
-<span class="source-line-no">078</span><span id="line-78">        log.debug("Checking &lt;groupId&gt;");</span>
-<span class="source-line-no">079</span><span id="line-79">        if (isBlank(fullModel.getGroupId())) {</span>
-<span class="source-line-no">080</span><span id="line-80">            errors.add("&lt;groupId&gt; can not be blank.");</span>
+<span class="source-line-no">032</span><span id="line-32">import static java.lang.System.lineSeparator;</span>
+<span class="source-line-no">033</span><span id="line-33"></span>
+<span class="source-line-no">034</span><span id="line-34">/**</span>
+<span class="source-line-no">035</span><span id="line-35"> * Checks if a POM complies with the rules for uploading to Maven Central.</span>
+<span class="source-line-no">036</span><span id="line-36"> * &lt;p&gt;</span>
+<span class="source-line-no">037</span><span id="line-37"> * The following blocks are required:</span>
+<span class="source-line-no">038</span><span id="line-38"> * &lt;ul&gt;</span>
+<span class="source-line-no">039</span><span id="line-39"> *   &lt;li&gt;&amp;lt;groupId&amp;gt;&lt;/li&gt;</span>
+<span class="source-line-no">040</span><span id="line-40"> *   &lt;li&gt;&amp;lt;artifactId&amp;gt;&lt;/li&gt;</span>
+<span class="source-line-no">041</span><span id="line-41"> *   &lt;li&gt;&amp;lt;version&amp;gt;&lt;/li&gt;</span>
+<span class="source-line-no">042</span><span id="line-42"> *   &lt;li&gt;&amp;lt;name&amp;gt;&lt;/li&gt;</span>
+<span class="source-line-no">043</span><span id="line-43"> *   &lt;li&gt;&amp;lt;description&amp;gt;&lt;/li&gt;</span>
+<span class="source-line-no">044</span><span id="line-44"> *   &lt;li&gt;&amp;lt;url&amp;gt;&lt;/li&gt;</span>
+<span class="source-line-no">045</span><span id="line-45"> *   &lt;li&gt;&amp;lt;licenses&amp;gt;&lt;/li&gt;</span>
+<span class="source-line-no">046</span><span id="line-46"> *   &lt;li&gt;&amp;lt;scm&amp;gt;&lt;/li&gt;</span>
+<span class="source-line-no">047</span><span id="line-47"> * &lt;/ul&gt;</span>
+<span class="source-line-no">048</span><span id="line-48"> * &lt;p&gt;</span>
+<span class="source-line-no">049</span><span id="line-49"> * All previous blocks may be supplied by a parent POM with the exception of &amp;lt;artifactId&amp;gt;.</span>
+<span class="source-line-no">050</span><span id="line-50"> * &lt;p&gt;</span>
+<span class="source-line-no">051</span><span id="line-51"> * The following blocks are forbidden if {@code strict = true}</span>
+<span class="source-line-no">052</span><span id="line-52"> * &lt;ul&gt;</span>
+<span class="source-line-no">053</span><span id="line-53"> *   &lt;li&gt;&amp;lt;repositories&amp;gt;&lt;/li&gt;</span>
+<span class="source-line-no">054</span><span id="line-54"> *   &lt;li&gt;&amp;lt;pluginRepositories&amp;gt;&lt;/li&gt;</span>
+<span class="source-line-no">055</span><span id="line-55"> * &lt;/ul&gt;</span>
+<span class="source-line-no">056</span><span id="line-56"> *</span>
+<span class="source-line-no">057</span><span id="line-57"> * @author Andres Almiray</span>
+<span class="source-line-no">058</span><span id="line-58"> * @see &lt;a href="http://maven.apache.org/repository/guide-central-repository-upload.html"&gt;http://maven.apache.org/repository/guide-central-repository-upload.html&lt;/a&gt;</span>
+<span class="source-line-no">059</span><span id="line-59"> * @see &lt;a href="https://central.sonatype.org/pages/requirements.html"&gt;https://central.sonatype.org/pages/requirements.html&lt;/a&gt;</span>
+<span class="source-line-no">060</span><span id="line-60"> * @since 1.0.0</span>
+<span class="source-line-no">061</span><span id="line-61"> */</span>
+<span class="source-line-no">062</span><span id="line-62">public class MavenCentralChecker {</span>
+<span class="source-line-no">063</span><span id="line-63">    public static class Configuration {</span>
+<span class="source-line-no">064</span><span id="line-64">        private boolean release;</span>
+<span class="source-line-no">065</span><span id="line-65">        private boolean strict;</span>
+<span class="source-line-no">066</span><span id="line-66">        private boolean failOnError;</span>
+<span class="source-line-no">067</span><span id="line-67">        private boolean failOnWarning;</span>
+<span class="source-line-no">068</span><span id="line-68"></span>
+<span class="source-line-no">069</span><span id="line-69">        public boolean isRelease() {</span>
+<span class="source-line-no">070</span><span id="line-70">            return release;</span>
+<span class="source-line-no">071</span><span id="line-71">        }</span>
+<span class="source-line-no">072</span><span id="line-72"></span>
+<span class="source-line-no">073</span><span id="line-73">        /**</span>
+<span class="source-line-no">074</span><span id="line-74">         * Sets the value for {@code release}.</span>
+<span class="source-line-no">075</span><span id="line-75">         *</span>
+<span class="source-line-no">076</span><span id="line-76">         * @param release if {@code true} checks if version is not -SNAPSHOT.</span>
+<span class="source-line-no">077</span><span id="line-77">         */</span>
+<span class="source-line-no">078</span><span id="line-78">        public Configuration withRelease(boolean release) {</span>
+<span class="source-line-no">079</span><span id="line-79">            this.release = release;</span>
+<span class="source-line-no">080</span><span id="line-80">            return this;</span>
 <span class="source-line-no">081</span><span id="line-81">        }</span>
-<span class="source-line-no">082</span><span id="line-82">        log.debug("Checking &lt;artifactId&gt;");</span>
-<span class="source-line-no">083</span><span id="line-83">        if (isBlank(fullModel.getArtifactId())) {</span>
-<span class="source-line-no">084</span><span id="line-84">            errors.add("&lt;artifactId&gt; can not be blank.");</span>
+<span class="source-line-no">082</span><span id="line-82"></span>
+<span class="source-line-no">083</span><span id="line-83">        public boolean isStrict() {</span>
+<span class="source-line-no">084</span><span id="line-84">            return strict;</span>
 <span class="source-line-no">085</span><span id="line-85">        }</span>
-<span class="source-line-no">086</span><span id="line-86">        log.debug("Checking &lt;version&gt;");</span>
-<span class="source-line-no">087</span><span id="line-87">        if (isBlank(fullModel.getVersion())) {</span>
-<span class="source-line-no">088</span><span id="line-88">            errors.add("&lt;version&gt; can not be blank.");</span>
-<span class="source-line-no">089</span><span id="line-89">        }</span>
-<span class="source-line-no">090</span><span id="line-90"></span>
-<span class="source-line-no">091</span><span id="line-91">        log.debug("Checking &lt;name&gt;");</span>
-<span class="source-line-no">092</span><span id="line-92">        if (isBlank(fullModel.getName())) {</span>
-<span class="source-line-no">093</span><span id="line-93">            String parentName = resolveParentName(project.getFile().getParentFile(), fullModel);</span>
-<span class="source-line-no">094</span><span id="line-94">            if (isBlank(parentName)) {</span>
-<span class="source-line-no">095</span><span id="line-95">                errors.add("&lt;name&gt; can not be blank.");</span>
-<span class="source-line-no">096</span><span id="line-96">            } else {</span>
-<span class="source-line-no">097</span><span id="line-97">                log.warn("&lt;name&gt; is not defined in POM. Will use value from parent: " +</span>
-<span class="source-line-no">098</span><span id="line-98">                    System.lineSeparator() + "\t" + parentName);</span>
-<span class="source-line-no">099</span><span id="line-99">            }</span>
-<span class="source-line-no">100</span><span id="line-100">        }</span>
-<span class="source-line-no">101</span><span id="line-101"></span>
-<span class="source-line-no">102</span><span id="line-102">        log.debug("Checking &lt;description&gt;");</span>
-<span class="source-line-no">103</span><span id="line-103">        if (isBlank(fullModel.getDescription())) {</span>
-<span class="source-line-no">104</span><span id="line-104">            errors.add("&lt;description&gt; can not be blank.");</span>
-<span class="source-line-no">105</span><span id="line-105">        }</span>
-<span class="source-line-no">106</span><span id="line-106">        if (isBlank(originalModel.getDescription())) {</span>
-<span class="source-line-no">107</span><span id="line-107">            log.warn("&lt;description&gt; is not defined in POM. Will use value from parent: " +</span>
-<span class="source-line-no">108</span><span id="line-108">                System.lineSeparator() + "\t" + fullModel.getDescription());</span>
+<span class="source-line-no">086</span><span id="line-86"></span>
+<span class="source-line-no">087</span><span id="line-87">        /**</span>
+<span class="source-line-no">088</span><span id="line-88">         * Sets the value for {@code strict}.</span>
+<span class="source-line-no">089</span><span id="line-89">         *</span>
+<span class="source-line-no">090</span><span id="line-90">         * @param strict if {@code true} checks that &amp;lt;repositories&amp;gt; and &amp;lt;pluginRepositories&amp;gt; are not present</span>
+<span class="source-line-no">091</span><span id="line-91">         */</span>
+<span class="source-line-no">092</span><span id="line-92">        public Configuration withStrict(boolean strict) {</span>
+<span class="source-line-no">093</span><span id="line-93">            this.strict = strict;</span>
+<span class="source-line-no">094</span><span id="line-94">            return this;</span>
+<span class="source-line-no">095</span><span id="line-95">        }</span>
+<span class="source-line-no">096</span><span id="line-96"></span>
+<span class="source-line-no">097</span><span id="line-97">        public boolean isFailOnError() {</span>
+<span class="source-line-no">098</span><span id="line-98">            return failOnError;</span>
+<span class="source-line-no">099</span><span id="line-99">        }</span>
+<span class="source-line-no">100</span><span id="line-100"></span>
+<span class="source-line-no">101</span><span id="line-101">        /**</span>
+<span class="source-line-no">102</span><span id="line-102">         * Sets the value for {@code failOnError}.</span>
+<span class="source-line-no">103</span><span id="line-103">         *</span>
+<span class="source-line-no">104</span><span id="line-104">         * @param failOnError if {@code true} fails the build when an error is encountered.</span>
+<span class="source-line-no">105</span><span id="line-105">         */</span>
+<span class="source-line-no">106</span><span id="line-106">        public Configuration withFailOnError(boolean failOnError) {</span>
+<span class="source-line-no">107</span><span id="line-107">            this.failOnError = failOnError;</span>
+<span class="source-line-no">108</span><span id="line-108">            return this;</span>
 <span class="source-line-no">109</span><span id="line-109">        }</span>
 <span class="source-line-no">110</span><span id="line-110"></span>
-<span class="source-line-no">111</span><span id="line-111">        log.debug("Checking &lt;url&gt;");</span>
-<span class="source-line-no">112</span><span id="line-112">        if (isBlank(fullModel.getUrl())) {</span>
-<span class="source-line-no">113</span><span id="line-113">            errors.add("&lt;url&gt; can not be blank.");</span>
-<span class="source-line-no">114</span><span id="line-114">        }</span>
-<span class="source-line-no">115</span><span id="line-115">        if (isBlank(originalModel.getUrl())) {</span>
-<span class="source-line-no">116</span><span id="line-116">            log.warn("&lt;url&gt; is not defined in POM. Will use computed value from parent: " +</span>
-<span class="source-line-no">117</span><span id="line-117">                System.lineSeparator() + "\t" + fullModel.getUrl());</span>
-<span class="source-line-no">118</span><span id="line-118">        }</span>
-<span class="source-line-no">119</span><span id="line-119"></span>
-<span class="source-line-no">120</span><span id="line-120">        if (release) log.debug("Checking if version is not snapshot");</span>
-<span class="source-line-no">121</span><span id="line-121">        if (release &amp;&amp; fullModel.getVersion().endsWith("-SNAPSHOT")) {</span>
-<span class="source-line-no">122</span><span id="line-122">            errors.add("&lt;version&gt; can not be -SNAPSHOT.");</span>
+<span class="source-line-no">111</span><span id="line-111">        public boolean isFailOnWarning() {</span>
+<span class="source-line-no">112</span><span id="line-112">            return failOnWarning;</span>
+<span class="source-line-no">113</span><span id="line-113">        }</span>
+<span class="source-line-no">114</span><span id="line-114"></span>
+<span class="source-line-no">115</span><span id="line-115">        /**</span>
+<span class="source-line-no">116</span><span id="line-116">         * Sets the value for {@code failOnWarning}.</span>
+<span class="source-line-no">117</span><span id="line-117">         *</span>
+<span class="source-line-no">118</span><span id="line-118">         * @param failOnWarning if {@code true} fails the build when a warning is encountered.</span>
+<span class="source-line-no">119</span><span id="line-119">         */</span>
+<span class="source-line-no">120</span><span id="line-120">        public Configuration withFailOnWarning(boolean failOnWarning) {</span>
+<span class="source-line-no">121</span><span id="line-121">            this.failOnWarning = failOnWarning;</span>
+<span class="source-line-no">122</span><span id="line-122">            return this;</span>
 <span class="source-line-no">123</span><span id="line-123">        }</span>
-<span class="source-line-no">124</span><span id="line-124"></span>
-<span class="source-line-no">125</span><span id="line-125">        log.debug("Checking &lt;licenses&gt;");</span>
-<span class="source-line-no">126</span><span id="line-126">        if (fullModel.getLicenses() != null) {</span>
-<span class="source-line-no">127</span><span id="line-127">            if (!fullModel.getLicenses().isEmpty()) {</span>
-<span class="source-line-no">128</span><span id="line-128">                // verify that all licenses have &lt;name&gt; &amp; &lt;url&gt;</span>
-<span class="source-line-no">129</span><span id="line-129">                for (int i = 0; i &lt; fullModel.getLicenses().size(); i++) {</span>
-<span class="source-line-no">130</span><span id="line-130">                    License license = fullModel.getLicenses().get(i);</span>
-<span class="source-line-no">131</span><span id="line-131">                    if (isBlank(license.getName()) &amp;&amp; isBlank(license.getUrl())) {</span>
-<span class="source-line-no">132</span><span id="line-132">                        errors.add("License " + i + " must define &lt;name&gt; and &lt;url&gt;.");</span>
-<span class="source-line-no">133</span><span id="line-133">                    }</span>
-<span class="source-line-no">134</span><span id="line-134">                }</span>
-<span class="source-line-no">135</span><span id="line-135">            } else {</span>
-<span class="source-line-no">136</span><span id="line-136">                errors.add("&lt;licenses&gt; block is required but was left empty.");</span>
-<span class="source-line-no">137</span><span id="line-137">            }</span>
-<span class="source-line-no">138</span><span id="line-138">        } else {</span>
-<span class="source-line-no">139</span><span id="line-139">            errors.add("&lt;licenses&gt; block is required but was left undefined.");</span>
-<span class="source-line-no">140</span><span id="line-140">        }</span>
-<span class="source-line-no">141</span><span id="line-141"></span>
-<span class="source-line-no">142</span><span id="line-142">        log.debug("Checking &lt;developers&gt;");</span>
-<span class="source-line-no">143</span><span id="line-143">        if (fullModel.getDevelopers() != null) {</span>
-<span class="source-line-no">144</span><span id="line-144">            if (!fullModel.getDevelopers().isEmpty()) {</span>
-<span class="source-line-no">145</span><span id="line-145">                // verify that all developers have at least one of [id, name, organization, organizationUrl]</span>
-<span class="source-line-no">146</span><span id="line-146">                for (int i = 0; i &lt; fullModel.getDevelopers().size(); i++) {</span>
-<span class="source-line-no">147</span><span id="line-147">                    Developer developer = fullModel.getDevelopers().get(i);</span>
-<span class="source-line-no">148</span><span id="line-148">                    if (isBlank(developer.getId()) &amp;&amp;</span>
-<span class="source-line-no">149</span><span id="line-149">                        isBlank(developer.getName()) &amp;&amp;</span>
-<span class="source-line-no">150</span><span id="line-150">                        isBlank(developer.getOrganization()) &amp;&amp;</span>
-<span class="source-line-no">151</span><span id="line-151">                        isBlank(developer.getOrganizationUrl())) {</span>
-<span class="source-line-no">152</span><span id="line-152">                        errors.add("Developer " + i + " must define at least one of &lt;id&gt;, &lt;name&gt;, &lt;organization&gt;, &lt;organizationUrl&gt;.");</span>
-<span class="source-line-no">153</span><span id="line-153">                    }</span>
-<span class="source-line-no">154</span><span id="line-154">                }</span>
-<span class="source-line-no">155</span><span id="line-155">            } else {</span>
-<span class="source-line-no">156</span><span id="line-156">                errors.add("&lt;developers&gt; block is required but was left empty.");</span>
-<span class="source-line-no">157</span><span id="line-157">            }</span>
-<span class="source-line-no">158</span><span id="line-158">        } else {</span>
-<span class="source-line-no">159</span><span id="line-159">            errors.add("&lt;developers&gt; block is required but was left undefined.");</span>
-<span class="source-line-no">160</span><span id="line-160">        }</span>
-<span class="source-line-no">161</span><span id="line-161"></span>
-<span class="source-line-no">162</span><span id="line-162">        log.debug("Checking &lt;scm&gt;");</span>
-<span class="source-line-no">163</span><span id="line-163">        if (fullModel.getScm() == null) {</span>
-<span class="source-line-no">164</span><span id="line-164">            errors.add("The &lt;scm&gt; block is required.");</span>
-<span class="source-line-no">165</span><span id="line-165">        }</span>
-<span class="source-line-no">166</span><span id="line-166"></span>
-<span class="source-line-no">167</span><span id="line-167">        log.debug("Checking &lt;repositories&gt;");</span>
-<span class="source-line-no">168</span><span id="line-168">        if (null != originalModel.getRepositories() &amp;&amp; !originalModel.getRepositories().isEmpty()) {</span>
-<span class="source-line-no">169</span><span id="line-169">            if (strict) {</span>
-<span class="source-line-no">170</span><span id="line-170">                errors.add("The &lt;repositories&gt; block should not be present.");</span>
-<span class="source-line-no">171</span><span id="line-171">            } else {</span>
-<span class="source-line-no">172</span><span id="line-172">                log.warn("The &lt;repositories&gt; block should not be present.");</span>
-<span class="source-line-no">173</span><span id="line-173">            }</span>
-<span class="source-line-no">174</span><span id="line-174">        }</span>
-<span class="source-line-no">175</span><span id="line-175"></span>
-<span class="source-line-no">176</span><span id="line-176">        log.debug("Checking &lt;pluginRepositories&gt;");</span>
-<span class="source-line-no">177</span><span id="line-177">        if (null != originalModel.getPluginRepositories() &amp;&amp; !originalModel.getPluginRepositories().isEmpty()) {</span>
-<span class="source-line-no">178</span><span id="line-178">            if (strict) {</span>
-<span class="source-line-no">179</span><span id="line-179">                errors.add("The &lt;pluginRepositories&gt; block should not be present.");</span>
-<span class="source-line-no">180</span><span id="line-180">            } else {</span>
-<span class="source-line-no">181</span><span id="line-181">                log.warn("The &lt;pluginRepositories&gt; block should not be present.");</span>
-<span class="source-line-no">182</span><span id="line-182">            }</span>
-<span class="source-line-no">183</span><span id="line-183">        }</span>
-<span class="source-line-no">184</span><span id="line-184"></span>
-<span class="source-line-no">185</span><span id="line-185">        if (!errors.isEmpty()) {</span>
-<span class="source-line-no">186</span><span id="line-186">            StringBuilder b = new StringBuilder("\nThe POM file\n")</span>
-<span class="source-line-no">187</span><span id="line-187">                .append(project.getFile().getAbsolutePath())</span>
-<span class="source-line-no">188</span><span id="line-188">                .append("\ncannot be uploaded to Maven Central due to the following reasons:\n");</span>
-<span class="source-line-no">189</span><span id="line-189">            for (String s : errors) {</span>
-<span class="source-line-no">190</span><span id="line-190">                b.append(" * ").append(s).append("\n");</span>
-<span class="source-line-no">191</span><span id="line-191">            }</span>
-<span class="source-line-no">192</span><span id="line-192"></span>
-<span class="source-line-no">193</span><span id="line-193">            throw new PomCheckException(b.toString());</span>
-<span class="source-line-no">194</span><span id="line-194">        } else {</span>
-<span class="source-line-no">195</span><span id="line-195">            log.info("POM {} passes all checks. It can be uploaded to Maven Central.", project.getFile().getAbsolutePath());</span>
-<span class="source-line-no">196</span><span id="line-196">        }</span>
-<span class="source-line-no">197</span><span id="line-197">    }</span>
-<span class="source-line-no">198</span><span id="line-198"></span>
-<span class="source-line-no">199</span><span id="line-199">    private static String resolveParentName(File directory, Model fullModel) {</span>
-<span class="source-line-no">200</span><span id="line-200">        Parent parent = fullModel.getParent();</span>
-<span class="source-line-no">201</span><span id="line-201"></span>
-<span class="source-line-no">202</span><span id="line-202">        while (parent != null) {</span>
-<span class="source-line-no">203</span><span id="line-203">            if (isNotBlank(parent.getRelativePath())) {</span>
-<span class="source-line-no">204</span><span id="line-204">                File pomFile = new File(directory, parent.getRelativePath());</span>
-<span class="source-line-no">205</span><span id="line-205">                if (!pomFile.getName().endsWith("pom.xml")) {</span>
-<span class="source-line-no">206</span><span id="line-206">                    pomFile = new File(pomFile, "pom.xml");</span>
-<span class="source-line-no">207</span><span id="line-207">                }</span>
-<span class="source-line-no">208</span><span id="line-208"></span>
-<span class="source-line-no">209</span><span id="line-209">                if (pomFile.exists()) {</span>
-<span class="source-line-no">210</span><span id="line-210">                    MavenProject parentProject = readProject(pomFile);</span>
-<span class="source-line-no">211</span><span id="line-211">                    Model parentModel = parentProject.getModel();</span>
-<span class="source-line-no">212</span><span id="line-212">                    if (isNotBlank(parentModel.getName())) {</span>
-<span class="source-line-no">213</span><span id="line-213">                        return parentModel.getName();</span>
-<span class="source-line-no">214</span><span id="line-214">                    } else {</span>
-<span class="source-line-no">215</span><span id="line-215">                        directory = pomFile.getParentFile();</span>
-<span class="source-line-no">216</span><span id="line-216">                        parent = parentModel.getParent();</span>
+<span class="source-line-no">124</span><span id="line-124">    }</span>
+<span class="source-line-no">125</span><span id="line-125"></span>
+<span class="source-line-no">126</span><span id="line-126">    /**</span>
+<span class="source-line-no">127</span><span id="line-127">     * Checks the resolved model of the given MavenProject for compliance.</span>
+<span class="source-line-no">128</span><span id="line-128">     *</span>
+<span class="source-line-no">129</span><span id="line-129">     * @param log           the logger to use.</span>
+<span class="source-line-no">130</span><span id="line-130">     * @param project       the project to be checked.</span>
+<span class="source-line-no">131</span><span id="line-131">     * @param configuration configuration required for inspection.</span>
+<span class="source-line-no">132</span><span id="line-132">     * @throws PomCheckException if the POM is invalid</span>
+<span class="source-line-no">133</span><span id="line-133">     */</span>
+<span class="source-line-no">134</span><span id="line-134">    public static void check(Logger log, MavenProject project, Configuration configuration) throws PomCheckException {</span>
+<span class="source-line-no">135</span><span id="line-135">        Model fullModel = project.getModel();</span>
+<span class="source-line-no">136</span><span id="line-136">        Model originalModel = project.getOriginalModel();</span>
+<span class="source-line-no">137</span><span id="line-137"></span>
+<span class="source-line-no">138</span><span id="line-138">        List&lt;String&gt; errors = new ArrayList&lt;&gt;();</span>
+<span class="source-line-no">139</span><span id="line-139">        List&lt;String&gt; warnings = new ArrayList&lt;&gt;();</span>
+<span class="source-line-no">140</span><span id="line-140"></span>
+<span class="source-line-no">141</span><span id="line-141">        // sanity checks. redundant?</span>
+<span class="source-line-no">142</span><span id="line-142">        log.debug("Checking &lt;groupId&gt;");</span>
+<span class="source-line-no">143</span><span id="line-143">        if (isBlank(fullModel.getGroupId())) {</span>
+<span class="source-line-no">144</span><span id="line-144">            errors.add("&lt;groupId&gt; can not be blank.");</span>
+<span class="source-line-no">145</span><span id="line-145">        }</span>
+<span class="source-line-no">146</span><span id="line-146">        log.debug("Checking &lt;artifactId&gt;");</span>
+<span class="source-line-no">147</span><span id="line-147">        if (isBlank(fullModel.getArtifactId())) {</span>
+<span class="source-line-no">148</span><span id="line-148">            errors.add("&lt;artifactId&gt; can not be blank.");</span>
+<span class="source-line-no">149</span><span id="line-149">        }</span>
+<span class="source-line-no">150</span><span id="line-150">        log.debug("Checking &lt;version&gt;");</span>
+<span class="source-line-no">151</span><span id="line-151">        if (isBlank(fullModel.getVersion())) {</span>
+<span class="source-line-no">152</span><span id="line-152">            errors.add("&lt;version&gt; can not be blank.");</span>
+<span class="source-line-no">153</span><span id="line-153">        }</span>
+<span class="source-line-no">154</span><span id="line-154"></span>
+<span class="source-line-no">155</span><span id="line-155">        log.debug("Checking &lt;name&gt;");</span>
+<span class="source-line-no">156</span><span id="line-156">        if (isBlank(fullModel.getName())) {</span>
+<span class="source-line-no">157</span><span id="line-157">            String parentName = resolveParentName(project.getFile().getParentFile(), fullModel);</span>
+<span class="source-line-no">158</span><span id="line-158">            if (isBlank(parentName)) {</span>
+<span class="source-line-no">159</span><span id="line-159">                errors.add("&lt;name&gt; can not be blank.");</span>
+<span class="source-line-no">160</span><span id="line-160">            } else {</span>
+<span class="source-line-no">161</span><span id="line-161">                warnings.add("&lt;name&gt; is not defined in POM. Will use value from parent: " +</span>
+<span class="source-line-no">162</span><span id="line-162">                    lineSeparator() + "\t" + parentName);</span>
+<span class="source-line-no">163</span><span id="line-163">            }</span>
+<span class="source-line-no">164</span><span id="line-164">        }</span>
+<span class="source-line-no">165</span><span id="line-165"></span>
+<span class="source-line-no">166</span><span id="line-166">        log.debug("Checking &lt;description&gt;");</span>
+<span class="source-line-no">167</span><span id="line-167">        if (isBlank(fullModel.getDescription())) {</span>
+<span class="source-line-no">168</span><span id="line-168">            errors.add("&lt;description&gt; can not be blank.");</span>
+<span class="source-line-no">169</span><span id="line-169">        }</span>
+<span class="source-line-no">170</span><span id="line-170">        if (isBlank(originalModel.getDescription())) {</span>
+<span class="source-line-no">171</span><span id="line-171">            warnings.add("&lt;description&gt; is not defined in POM. Will use value from parent: " +</span>
+<span class="source-line-no">172</span><span id="line-172">                lineSeparator() + "\t" + fullModel.getDescription());</span>
+<span class="source-line-no">173</span><span id="line-173">        }</span>
+<span class="source-line-no">174</span><span id="line-174"></span>
+<span class="source-line-no">175</span><span id="line-175">        log.debug("Checking &lt;url&gt;");</span>
+<span class="source-line-no">176</span><span id="line-176">        if (isBlank(fullModel.getUrl())) {</span>
+<span class="source-line-no">177</span><span id="line-177">            errors.add("&lt;url&gt; can not be blank.");</span>
+<span class="source-line-no">178</span><span id="line-178">        }</span>
+<span class="source-line-no">179</span><span id="line-179">        if (isBlank(originalModel.getUrl())) {</span>
+<span class="source-line-no">180</span><span id="line-180">            warnings.add("&lt;url&gt; is not defined in POM. Will use computed value from parent: " +</span>
+<span class="source-line-no">181</span><span id="line-181">                lineSeparator() + "\t" + fullModel.getUrl());</span>
+<span class="source-line-no">182</span><span id="line-182">        }</span>
+<span class="source-line-no">183</span><span id="line-183"></span>
+<span class="source-line-no">184</span><span id="line-184">        if (configuration.isRelease()) log.debug("Checking if version is not snapshot");</span>
+<span class="source-line-no">185</span><span id="line-185">        if (configuration.isRelease() &amp;&amp; fullModel.getVersion().endsWith("-SNAPSHOT")) {</span>
+<span class="source-line-no">186</span><span id="line-186">            errors.add("&lt;version&gt; can not be -SNAPSHOT.");</span>
+<span class="source-line-no">187</span><span id="line-187">        }</span>
+<span class="source-line-no">188</span><span id="line-188"></span>
+<span class="source-line-no">189</span><span id="line-189">        log.debug("Checking &lt;licenses&gt;");</span>
+<span class="source-line-no">190</span><span id="line-190">        if (fullModel.getLicenses() != null) {</span>
+<span class="source-line-no">191</span><span id="line-191">            if (!fullModel.getLicenses().isEmpty()) {</span>
+<span class="source-line-no">192</span><span id="line-192">                // verify that all licenses have &lt;name&gt; &amp; &lt;url&gt;</span>
+<span class="source-line-no">193</span><span id="line-193">                for (int i = 0; i &lt; fullModel.getLicenses().size(); i++) {</span>
+<span class="source-line-no">194</span><span id="line-194">                    License license = fullModel.getLicenses().get(i);</span>
+<span class="source-line-no">195</span><span id="line-195">                    if (isBlank(license.getName()) &amp;&amp; isBlank(license.getUrl())) {</span>
+<span class="source-line-no">196</span><span id="line-196">                        errors.add("License " + i + " must define &lt;name&gt; and &lt;url&gt;.");</span>
+<span class="source-line-no">197</span><span id="line-197">                    }</span>
+<span class="source-line-no">198</span><span id="line-198">                }</span>
+<span class="source-line-no">199</span><span id="line-199">            } else {</span>
+<span class="source-line-no">200</span><span id="line-200">                errors.add("&lt;licenses&gt; block is required but was left empty.");</span>
+<span class="source-line-no">201</span><span id="line-201">            }</span>
+<span class="source-line-no">202</span><span id="line-202">        } else {</span>
+<span class="source-line-no">203</span><span id="line-203">            errors.add("&lt;licenses&gt; block is required but was left undefined.");</span>
+<span class="source-line-no">204</span><span id="line-204">        }</span>
+<span class="source-line-no">205</span><span id="line-205"></span>
+<span class="source-line-no">206</span><span id="line-206">        log.debug("Checking &lt;developers&gt;");</span>
+<span class="source-line-no">207</span><span id="line-207">        if (fullModel.getDevelopers() != null) {</span>
+<span class="source-line-no">208</span><span id="line-208">            if (!fullModel.getDevelopers().isEmpty()) {</span>
+<span class="source-line-no">209</span><span id="line-209">                // verify that all developers have at least one of [id, name, organization, organizationUrl]</span>
+<span class="source-line-no">210</span><span id="line-210">                for (int i = 0; i &lt; fullModel.getDevelopers().size(); i++) {</span>
+<span class="source-line-no">211</span><span id="line-211">                    Developer developer = fullModel.getDevelopers().get(i);</span>
+<span class="source-line-no">212</span><span id="line-212">                    if (isBlank(developer.getId()) &amp;&amp;</span>
+<span class="source-line-no">213</span><span id="line-213">                        isBlank(developer.getName()) &amp;&amp;</span>
+<span class="source-line-no">214</span><span id="line-214">                        isBlank(developer.getOrganization()) &amp;&amp;</span>
+<span class="source-line-no">215</span><span id="line-215">                        isBlank(developer.getOrganizationUrl())) {</span>
+<span class="source-line-no">216</span><span id="line-216">                        errors.add("Developer " + i + " must define at least one of &lt;id&gt;, &lt;name&gt;, &lt;organization&gt;, &lt;organizationUrl&gt;.");</span>
 <span class="source-line-no">217</span><span id="line-217">                    }</span>
-<span class="source-line-no">218</span><span id="line-218">                } else {</span>
-<span class="source-line-no">219</span><span id="line-219">                    // parent should be available from a repository</span>
-<span class="source-line-no">220</span><span id="line-220">                    // TODO: resolve parent</span>
-<span class="source-line-no">221</span><span id="line-221">                    return null;</span>
-<span class="source-line-no">222</span><span id="line-222">                }</span>
-<span class="source-line-no">223</span><span id="line-223">            } else {</span>
-<span class="source-line-no">224</span><span id="line-224">                // check 1 level up</span>
-<span class="source-line-no">225</span><span id="line-225">                File pomFile = new File(directory, "../pom.xml");</span>
-<span class="source-line-no">226</span><span id="line-226">                if (pomFile.exists()) {</span>
-<span class="source-line-no">227</span><span id="line-227">                    MavenProject parentProject = readProject(pomFile);</span>
-<span class="source-line-no">228</span><span id="line-228">                    Model parentModel = parentProject.getModel();</span>
-<span class="source-line-no">229</span><span id="line-229">                    if (isNotBlank(parentModel.getName())) {</span>
-<span class="source-line-no">230</span><span id="line-230">                        return parentModel.getName();</span>
-<span class="source-line-no">231</span><span id="line-231">                    } else {</span>
-<span class="source-line-no">232</span><span id="line-232">                        directory = pomFile.getParentFile();</span>
-<span class="source-line-no">233</span><span id="line-233">                        parent = parentModel.getParent();</span>
-<span class="source-line-no">234</span><span id="line-234">                    }</span>
-<span class="source-line-no">235</span><span id="line-235">                } else {</span>
-<span class="source-line-no">236</span><span id="line-236">                    // parent should be available from a repository</span>
-<span class="source-line-no">237</span><span id="line-237">                    // TODO: resolve parent</span>
-<span class="source-line-no">238</span><span id="line-238">                    return null;</span>
-<span class="source-line-no">239</span><span id="line-239">                }</span>
-<span class="source-line-no">240</span><span id="line-240">            }</span>
-<span class="source-line-no">241</span><span id="line-241">        }</span>
-<span class="source-line-no">242</span><span id="line-242"></span>
-<span class="source-line-no">243</span><span id="line-243">        return null;</span>
-<span class="source-line-no">244</span><span id="line-244">    }</span>
-<span class="source-line-no">245</span><span id="line-245"></span>
-<span class="source-line-no">246</span><span id="line-246">    private static MavenProject readProject(File pom) {</span>
-<span class="source-line-no">247</span><span id="line-247">        try {</span>
-<span class="source-line-no">248</span><span id="line-248">            FileReader reader = new FileReader(pom);</span>
-<span class="source-line-no">249</span><span id="line-249">            MavenXpp3Reader mavenReader = new MavenXpp3Reader();</span>
-<span class="source-line-no">250</span><span id="line-250">            return new MavenProject(mavenReader.read(reader));</span>
-<span class="source-line-no">251</span><span id="line-251">        } catch (Exception e) {</span>
-<span class="source-line-no">252</span><span id="line-252">            throw new IllegalArgumentException(e);</span>
-<span class="source-line-no">253</span><span id="line-253">        }</span>
-<span class="source-line-no">254</span><span id="line-254">    }</span>
-<span class="source-line-no">255</span><span id="line-255"></span>
-<span class="source-line-no">256</span><span id="line-256">    private static boolean isBlank(String str) {</span>
-<span class="source-line-no">257</span><span id="line-257">        if (str == null || str.length() == 0) {</span>
-<span class="source-line-no">258</span><span id="line-258">            return true;</span>
-<span class="source-line-no">259</span><span id="line-259">        }</span>
-<span class="source-line-no">260</span><span id="line-260"></span>
-<span class="source-line-no">261</span><span id="line-261">        for (char c : str.toCharArray()) {</span>
-<span class="source-line-no">262</span><span id="line-262">            if (!Character.isWhitespace(c)) {</span>
-<span class="source-line-no">263</span><span id="line-263">                return false;</span>
-<span class="source-line-no">264</span><span id="line-264">            }</span>
-<span class="source-line-no">265</span><span id="line-265">        }</span>
-<span class="source-line-no">266</span><span id="line-266"></span>
-<span class="source-line-no">267</span><span id="line-267">        return true;</span>
-<span class="source-line-no">268</span><span id="line-268">    }</span>
-<span class="source-line-no">269</span><span id="line-269"></span>
-<span class="source-line-no">270</span><span id="line-270">    private static boolean isNotBlank(String str) {</span>
-<span class="source-line-no">271</span><span id="line-271">        return !isBlank(str);</span>
-<span class="source-line-no">272</span><span id="line-272">    }</span>
-<span class="source-line-no">273</span><span id="line-273">}</span>
+<span class="source-line-no">218</span><span id="line-218">                }</span>
+<span class="source-line-no">219</span><span id="line-219">            } else {</span>
+<span class="source-line-no">220</span><span id="line-220">                errors.add("&lt;developers&gt; block is required but was left empty.");</span>
+<span class="source-line-no">221</span><span id="line-221">            }</span>
+<span class="source-line-no">222</span><span id="line-222">        } else {</span>
+<span class="source-line-no">223</span><span id="line-223">            errors.add("&lt;developers&gt; block is required but was left undefined.");</span>
+<span class="source-line-no">224</span><span id="line-224">        }</span>
+<span class="source-line-no">225</span><span id="line-225"></span>
+<span class="source-line-no">226</span><span id="line-226">        log.debug("Checking &lt;scm&gt;");</span>
+<span class="source-line-no">227</span><span id="line-227">        if (fullModel.getScm() == null) {</span>
+<span class="source-line-no">228</span><span id="line-228">            errors.add("The &lt;scm&gt; block is required.");</span>
+<span class="source-line-no">229</span><span id="line-229">        }</span>
+<span class="source-line-no">230</span><span id="line-230"></span>
+<span class="source-line-no">231</span><span id="line-231">        log.debug("Checking &lt;repositories&gt;");</span>
+<span class="source-line-no">232</span><span id="line-232">        if (null != originalModel.getRepositories() &amp;&amp; !originalModel.getRepositories().isEmpty()) {</span>
+<span class="source-line-no">233</span><span id="line-233">            if (configuration.isStrict()) {</span>
+<span class="source-line-no">234</span><span id="line-234">                errors.add("The &lt;repositories&gt; block should not be present.");</span>
+<span class="source-line-no">235</span><span id="line-235">            } else {</span>
+<span class="source-line-no">236</span><span id="line-236">                warnings.add("The &lt;repositories&gt; block should not be present.");</span>
+<span class="source-line-no">237</span><span id="line-237">            }</span>
+<span class="source-line-no">238</span><span id="line-238">        }</span>
+<span class="source-line-no">239</span><span id="line-239"></span>
+<span class="source-line-no">240</span><span id="line-240">        log.debug("Checking &lt;pluginRepositories&gt;");</span>
+<span class="source-line-no">241</span><span id="line-241">        if (null != originalModel.getPluginRepositories() &amp;&amp; !originalModel.getPluginRepositories().isEmpty()) {</span>
+<span class="source-line-no">242</span><span id="line-242">            if (configuration.isStrict()) {</span>
+<span class="source-line-no">243</span><span id="line-243">                errors.add("The &lt;pluginRepositories&gt; block should not be present.");</span>
+<span class="source-line-no">244</span><span id="line-244">            } else {</span>
+<span class="source-line-no">245</span><span id="line-245">                warnings.add("The &lt;pluginRepositories&gt; block should not be present.");</span>
+<span class="source-line-no">246</span><span id="line-246">            }</span>
+<span class="source-line-no">247</span><span id="line-247">        }</span>
+<span class="source-line-no">248</span><span id="line-248"></span>
+<span class="source-line-no">249</span><span id="line-249">        if (!warnings.isEmpty()) {</span>
+<span class="source-line-no">250</span><span id="line-250">            if (configuration.isFailOnWarning()) {</span>
+<span class="source-line-no">251</span><span id="line-251">                throw new PomCheckException(String.join(lineSeparator(), warnings));</span>
+<span class="source-line-no">252</span><span id="line-252">            } else {</span>
+<span class="source-line-no">253</span><span id="line-253">                warnings.forEach(log::warn);</span>
+<span class="source-line-no">254</span><span id="line-254">            }</span>
+<span class="source-line-no">255</span><span id="line-255">        }</span>
+<span class="source-line-no">256</span><span id="line-256"></span>
+<span class="source-line-no">257</span><span id="line-257">        if (!errors.isEmpty()) {</span>
+<span class="source-line-no">258</span><span id="line-258">            StringBuilder b = new StringBuilder(lineSeparator())</span>
+<span class="source-line-no">259</span><span id="line-259">                .append("The POM file")</span>
+<span class="source-line-no">260</span><span id="line-260">                .append(lineSeparator())</span>
+<span class="source-line-no">261</span><span id="line-261">                .append(project.getFile().getAbsolutePath())</span>
+<span class="source-line-no">262</span><span id="line-262">                .append(lineSeparator())</span>
+<span class="source-line-no">263</span><span id="line-263">                .append("cannot be uploaded to Maven Central due to the following reasons:")</span>
+<span class="source-line-no">264</span><span id="line-264">                .append(lineSeparator());</span>
+<span class="source-line-no">265</span><span id="line-265">            for (String s : errors) {</span>
+<span class="source-line-no">266</span><span id="line-266">                b.append(" * ").append(s).append(lineSeparator());</span>
+<span class="source-line-no">267</span><span id="line-267">            }</span>
+<span class="source-line-no">268</span><span id="line-268"></span>
+<span class="source-line-no">269</span><span id="line-269">            if (configuration.isFailOnError()) {</span>
+<span class="source-line-no">270</span><span id="line-270">                throw new PomCheckException(b.toString());</span>
+<span class="source-line-no">271</span><span id="line-271">            } else {</span>
+<span class="source-line-no">272</span><span id="line-272">                log.warn(b.toString());</span>
+<span class="source-line-no">273</span><span id="line-273">            }</span>
+<span class="source-line-no">274</span><span id="line-274">        } else {</span>
+<span class="source-line-no">275</span><span id="line-275">            log.info("POM {} passes all checks. It can be uploaded to Maven Central.", project.getFile().getAbsolutePath());</span>
+<span class="source-line-no">276</span><span id="line-276">        }</span>
+<span class="source-line-no">277</span><span id="line-277">    }</span>
+<span class="source-line-no">278</span><span id="line-278"></span>
+<span class="source-line-no">279</span><span id="line-279">    private static String resolveParentName(File directory, Model fullModel) {</span>
+<span class="source-line-no">280</span><span id="line-280">        Parent parent = fullModel.getParent();</span>
+<span class="source-line-no">281</span><span id="line-281"></span>
+<span class="source-line-no">282</span><span id="line-282">        while (parent != null) {</span>
+<span class="source-line-no">283</span><span id="line-283">            if (isNotBlank(parent.getRelativePath())) {</span>
+<span class="source-line-no">284</span><span id="line-284">                File pomFile = new File(directory, parent.getRelativePath());</span>
+<span class="source-line-no">285</span><span id="line-285">                if (!pomFile.getName().endsWith("pom.xml")) {</span>
+<span class="source-line-no">286</span><span id="line-286">                    pomFile = new File(pomFile, "pom.xml");</span>
+<span class="source-line-no">287</span><span id="line-287">                }</span>
+<span class="source-line-no">288</span><span id="line-288"></span>
+<span class="source-line-no">289</span><span id="line-289">                if (pomFile.exists()) {</span>
+<span class="source-line-no">290</span><span id="line-290">                    MavenProject parentProject = readProject(pomFile);</span>
+<span class="source-line-no">291</span><span id="line-291">                    Model parentModel = parentProject.getModel();</span>
+<span class="source-line-no">292</span><span id="line-292">                    if (isNotBlank(parentModel.getName())) {</span>
+<span class="source-line-no">293</span><span id="line-293">                        return parentModel.getName();</span>
+<span class="source-line-no">294</span><span id="line-294">                    } else {</span>
+<span class="source-line-no">295</span><span id="line-295">                        directory = pomFile.getParentFile();</span>
+<span class="source-line-no">296</span><span id="line-296">                        parent = parentModel.getParent();</span>
+<span class="source-line-no">297</span><span id="line-297">                    }</span>
+<span class="source-line-no">298</span><span id="line-298">                } else {</span>
+<span class="source-line-no">299</span><span id="line-299">                    // parent should be available from a repository</span>
+<span class="source-line-no">300</span><span id="line-300">                    // TODO: resolve parent</span>
+<span class="source-line-no">301</span><span id="line-301">                    return null;</span>
+<span class="source-line-no">302</span><span id="line-302">                }</span>
+<span class="source-line-no">303</span><span id="line-303">            } else {</span>
+<span class="source-line-no">304</span><span id="line-304">                // check 1 level up</span>
+<span class="source-line-no">305</span><span id="line-305">                File pomFile = new File(directory, "../pom.xml");</span>
+<span class="source-line-no">306</span><span id="line-306">                if (pomFile.exists()) {</span>
+<span class="source-line-no">307</span><span id="line-307">                    MavenProject parentProject = readProject(pomFile);</span>
+<span class="source-line-no">308</span><span id="line-308">                    Model parentModel = parentProject.getModel();</span>
+<span class="source-line-no">309</span><span id="line-309">                    if (isNotBlank(parentModel.getName())) {</span>
+<span class="source-line-no">310</span><span id="line-310">                        return parentModel.getName();</span>
+<span class="source-line-no">311</span><span id="line-311">                    } else {</span>
+<span class="source-line-no">312</span><span id="line-312">                        directory = pomFile.getParentFile();</span>
+<span class="source-line-no">313</span><span id="line-313">                        parent = parentModel.getParent();</span>
+<span class="source-line-no">314</span><span id="line-314">                    }</span>
+<span class="source-line-no">315</span><span id="line-315">                } else {</span>
+<span class="source-line-no">316</span><span id="line-316">                    // parent should be available from a repository</span>
+<span class="source-line-no">317</span><span id="line-317">                    // TODO: resolve parent</span>
+<span class="source-line-no">318</span><span id="line-318">                    return null;</span>
+<span class="source-line-no">319</span><span id="line-319">                }</span>
+<span class="source-line-no">320</span><span id="line-320">            }</span>
+<span class="source-line-no">321</span><span id="line-321">        }</span>
+<span class="source-line-no">322</span><span id="line-322"></span>
+<span class="source-line-no">323</span><span id="line-323">        return null;</span>
+<span class="source-line-no">324</span><span id="line-324">    }</span>
+<span class="source-line-no">325</span><span id="line-325"></span>
+<span class="source-line-no">326</span><span id="line-326">    private static MavenProject readProject(File pom) {</span>
+<span class="source-line-no">327</span><span id="line-327">        try {</span>
+<span class="source-line-no">328</span><span id="line-328">            FileReader reader = new FileReader(pom);</span>
+<span class="source-line-no">329</span><span id="line-329">            MavenXpp3Reader mavenReader = new MavenXpp3Reader();</span>
+<span class="source-line-no">330</span><span id="line-330">            return new MavenProject(mavenReader.read(reader));</span>
+<span class="source-line-no">331</span><span id="line-331">        } catch (Exception e) {</span>
+<span class="source-line-no">332</span><span id="line-332">            throw new IllegalArgumentException(e);</span>
+<span class="source-line-no">333</span><span id="line-333">        }</span>
+<span class="source-line-no">334</span><span id="line-334">    }</span>
+<span class="source-line-no">335</span><span id="line-335"></span>
+<span class="source-line-no">336</span><span id="line-336">    private static boolean isBlank(String str) {</span>
+<span class="source-line-no">337</span><span id="line-337">        if (str == null || str.length() == 0) {</span>
+<span class="source-line-no">338</span><span id="line-338">            return true;</span>
+<span class="source-line-no">339</span><span id="line-339">        }</span>
+<span class="source-line-no">340</span><span id="line-340"></span>
+<span class="source-line-no">341</span><span id="line-341">        for (char c : str.toCharArray()) {</span>
+<span class="source-line-no">342</span><span id="line-342">            if (!Character.isWhitespace(c)) {</span>
+<span class="source-line-no">343</span><span id="line-343">                return false;</span>
+<span class="source-line-no">344</span><span id="line-344">            }</span>
+<span class="source-line-no">345</span><span id="line-345">        }</span>
+<span class="source-line-no">346</span><span id="line-346"></span>
+<span class="source-line-no">347</span><span id="line-347">        return true;</span>
+<span class="source-line-no">348</span><span id="line-348">    }</span>
+<span class="source-line-no">349</span><span id="line-349"></span>
+<span class="source-line-no">350</span><span id="line-350">    private static boolean isNotBlank(String str) {</span>
+<span class="source-line-no">351</span><span id="line-351">        return !isBlank(str);</span>
+<span class="source-line-no">352</span><span id="line-352">    }</span>
+<span class="source-line-no">353</span><span id="line-353">}</span>
 
 
 
