@@ -17,17 +17,14 @@
  */
 package org.kordamp.maven.enforcer.checker;
 
-import org.apache.maven.enforcer.rule.api.EnforcerRule;
+import org.apache.maven.enforcer.rule.api.AbstractEnforcerRule;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
-import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
 import org.kordamp.maven.checker.MavenCentralChecker;
-import org.kordamp.maven.checker.MavenLoggerAdapter;
 import org.kordamp.maven.checker.PomCheckException;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Checks if a POM complies with the rules for uploading to Maven Central.
@@ -35,7 +32,8 @@ import javax.annotation.Nullable;
  * @author Andres Almiray
  * @since 1.0.0
  */
-public class CheckMavenCentral implements EnforcerRule {
+@Named("checkMavenCentral")
+public class CheckMavenCentral extends AbstractEnforcerRule {
     private boolean release = true;
     private boolean strict = true;
     private boolean failOnError = true;
@@ -77,35 +75,19 @@ public class CheckMavenCentral implements EnforcerRule {
         return this;
     }
 
+    @Inject
+    private MavenProject project;
+
     @Override
-    public void execute(@Nonnull EnforcerRuleHelper helper) throws EnforcerRuleException {
+    public void execute() throws EnforcerRuleException {
         try {
-            MavenProject project = (MavenProject) helper.evaluate("${project}");
-            MavenCentralChecker.check(new MavenLoggerAdapter(helper.getLog()), project, new MavenCentralChecker.Configuration()
+            MavenCentralChecker.check(new MavenEnforcerLoggerAdapter(getLog()), project, new MavenCentralChecker.Configuration()
                 .withRelease(release)
                 .withStrict(strict)
                 .withFailOnError(failOnError)
                 .withFailOnWarning(failOnWarning));
-        } catch (ExpressionEvaluationException e) {
-            throw new EnforcerRuleException("Unable to lookup an expression " + e.getLocalizedMessage(), e);
         } catch (PomCheckException e) {
             throw new EnforcerRuleException(e.getMessage());
         }
-    }
-
-    @Override
-    public boolean isCacheable() {
-        return false;
-    }
-
-    @Override
-    public boolean isResultValid(@Nonnull EnforcerRule enforcerRule) {
-        return false;
-    }
-
-    @Nullable
-    @Override
-    public String getCacheId() {
-        return "";
     }
 }
