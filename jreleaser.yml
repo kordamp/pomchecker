@@ -98,12 +98,15 @@ distributions:
       continueOnError: true
     artifacts:
       - path: pomchecker-cli/target/distributions/{{distributionName}}-{{projectVersion}}.zip
+        transform: pomchecker-cli/target/distributions/{{distributionName}}-{{projectEffectiveVersion}}.zip
       - path: pomchecker-cli/target/distributions/{{distributionName}}-{{projectVersion}}.tar.gz
+        transform: pomchecker-cli/target/distributions/{{distributionName}}-{{projectEffectiveVersion}}.tar.gz
 
   pomchecker-cli:
     type: SINGLE_JAR
     artifacts:
       - path: '{{distributionName}}/target/{{distributionName}}-{{projectVersion}}-all.jar'
+        transform: '{{distributionName}}/target/{{distributionName}}-{{projectEffectiveVersion}}-all.jar'
 
   pomchecker-toolprovider:
     type: SINGLE_JAR
@@ -111,3 +114,11 @@ distributions:
       version: 9
     artifacts:
       - path: '{{distributionName}}/target/{{distributionName}}-{{projectVersion}}.jar'
+        transform: '{{distributionName}}/target/{{distributionName}}-{{projectEffectiveVersion}}.jar'
+
+files:
+  artifacts:
+    - path: VERSION
+      extraProperties:
+        skipChecksum: true
+        skipSigning: true
