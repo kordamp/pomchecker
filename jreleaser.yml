@@ -27,6 +27,7 @@ project:
   java:
     groupId: org.kordamp.maven
     version: 8
+    multiProject: true
   inceptionYear: 2020
   stereotype: CLI
 
@@ -87,12 +88,13 @@ distributions:
   pomchecker:
     java:
       mainClass: org.kordamp.maven.checker.cli.Main
+      artifactId: pomchecker-cli
     brew:
       active: RELEASE
     scoop:
       active: RELEASE
     jbang:
-      active: RELEASE
+      active: ALWAYS
     sdkman:
       active: RELEASE
       continueOnError: true
