@@ -44,7 +44,7 @@
         <picocli.version>4.7.1</picocli.version>
         <sisu.version>0.9.0.M1</sisu.version>
         <maven.version>3.9.0</maven.version>
-        <maven.resolver.version>1.9.6</maven.resolver.version>
+        <maven.resolver.version>1.9.7</maven.resolver.version>
         <commons.lang3.version>3.12.0</commons.lang3.version>
         <version.compiler.plugin>3.11.0</version.compiler.plugin>
         <version.deploy.plugin>3.1.0</version.deploy.plugin>
