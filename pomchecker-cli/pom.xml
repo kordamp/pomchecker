@@ -238,6 +238,7 @@
                         </goals>
                         <phase>package</phase>
                         <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
                             <shadedClassifierName>all</shadedClassifierName>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <transformers>

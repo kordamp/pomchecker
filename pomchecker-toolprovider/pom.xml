@@ -138,7 +138,7 @@
             <plugin>
                 <groupId>org.moditect</groupId>
                 <artifactId>moditect-maven-plugin</artifactId>
-                <version>1.0.0.RC2</version>
+                <version>1.0.0.RC3</version>
                 <executions>
                     <execution>
                         <id>add-module-info</id>
@@ -147,6 +147,7 @@
                             <goal>add-module-info</goal>
                         </goals>
                         <configuration>
+                            <overwriteExistingFiles>true</overwriteExistingFiles>
                             <module>
                                 <moduleInfoFile>src/java9/module-info.java</moduleInfoFile>
                             </module>
