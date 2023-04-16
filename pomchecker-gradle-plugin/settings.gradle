@@ -51,7 +51,7 @@ enforce {
         r.dependencies.addAll "org.codehaus.plexus:plexus-utils:$plexusVersion",
             "org.codehaus.plexus:plexus-interpolation:$plexus2Version",
             "commons-lang:commons-lang:$commonsLangVersion",
-            "commons-codec:commons-codec:1.14",
+            "commons-codec:commons-codec:1.15",
             "commons-beanutils:commons-beanutils:1.9.3",
             "commons-logging:commons-logging:$commonsLoggingVersion",
             "commons-collections:commons-collections:$commonsCollectionsVersion",
@@ -89,6 +89,6 @@ enforce {
             "classworlds:classworlds:1.1",
             "org.eclipse.sisu:org.eclipse.sisu.inject:$sisuVersion",
             "org.eclipse.sisu:org.eclipse.sisu.plexus:$sisuVersion",
-            "org.apache.maven.wagon:wagon-provider-api:3.5.2"
+            "org.apache.maven.wagon:wagon-provider-api:3.5.3"
     }
 }
