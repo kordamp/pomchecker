@@ -31,7 +31,7 @@ Checks if a POM file is a minimal BOM file
   -d, --debug                Set log level to debug.
   -D=<key=value>             Sets a System property. Repeatable.
       --[no-]fail-on-error   Fails the build on error.
-      --file=<pomFile>       The POM file to check.
+      --file=<pomFile>       The POM file to check. Defaults to pom.xml.
   -h, --help                 Show this help message and exit.
   -i, --info                 Set log level to info.
   -q, --quiet                Log errors only.
@@ -51,7 +51,7 @@ Checks if a POM complies with the rules for uploading to Maven Central
   -D=<key=value>             Sets a System property. Repeatable.
       --[no-]fail-on-error   Fails the build on error.
       --[no-]fail-on-warning Fails the build on warning.
-      --file=<pomFile>       The POM file to check.
+      --file=<pomFile>       The POM file to check. Defaults to pom.xml.
   -h, --help                 Show this help message and exit.
   -i, --info                 Set log level to info.
   -q, --quiet                Log errors only.
