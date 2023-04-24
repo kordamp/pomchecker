@@ -22,7 +22,9 @@ import org.kordamp.maven.checker.cli.internal.Colorizer;
 import org.kordamp.maven.checker.cli.internal.SimpleLoggerAdapter;
 import picocli.CommandLine;
 
+import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 /**
@@ -50,13 +52,25 @@ abstract class AbstractCommand<C extends IO> extends BaseCommand implements Call
         description = "Log errors only.")
     boolean quiet;
 
-    @CommandLine.Option(names = {"--file"},
-        description = "The POM file to check",
-        required = true)
     Path pomFile;
 
     @CommandLine.ParentCommand
     private C parent;
+
+    @CommandLine.Option(names = {"--file"},
+            defaultValue = CommandLine.Option.NULL_VALUE,
+            description = "The POM file to check. Defaults to pom.xml")
+    void setPomFile(Path pomFile) {
+        Path pomFileWithDefault = pomFile != null ? pomFile : Paths.get("pom.xml");
+
+        if (!pomFileWithDefault.toFile().exists()) {
+            throw new CommandLine.ParameterException(spec.commandLine(),
+                    String.format("Invalid value '%s' for option '--file': The file does not exist.",
+                            pomFileWithDefault));
+        }
+
+        this.pomFile = pomFileWithDefault;
+    }
 
     protected C parent() {
         return parent;
