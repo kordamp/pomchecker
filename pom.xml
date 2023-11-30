@@ -47,7 +47,7 @@
         <sisu.version>0.9.0.M1</sisu.version>
         <maven.version>3.9.1</maven.version>
         <maven.resolver.version>1.9.18</maven.resolver.version>
-        <commons.lang3.version>3.12.0</commons.lang3.version>
+        <commons.lang3.version>3.14.0</commons.lang3.version>
     </properties>
 
     <name>pomchecker</name>
