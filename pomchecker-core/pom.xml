@@ -29,8 +29,6 @@
     </parent>
 
     <artifactId>pomchecker-core</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
 
     <name>pomchecker-core</name>
     <description>POM validation core implementation</description>

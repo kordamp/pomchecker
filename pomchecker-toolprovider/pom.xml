@@ -28,8 +28,6 @@
     </parent>
 
     <artifactId>pomchecker-toolprovider</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
 
     <properties>
         <java.version>9</java.version>
@@ -96,7 +94,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.1</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.kordamp.shade</groupId>
@@ -138,7 +135,7 @@
             <plugin>
                 <groupId>org.moditect</groupId>
                 <artifactId>moditect-maven-plugin</artifactId>
-                <version>1.0.0.RC3</version>
+                <version>1.2.0.Final</version>
                 <executions>
                     <execution>
                         <id>add-module-info</id>

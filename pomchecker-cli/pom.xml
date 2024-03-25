@@ -28,8 +28,6 @@
     </parent>
 
     <artifactId>pomchecker-cli</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
 
     <properties>
         <application.main.class>org.kordamp.maven.checker.cli.Main</application.main.class>
@@ -200,7 +198,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.7.1</version>
                 <configuration>
                     <attach>false</attach>
                     <appendAssemblyId>false</appendAssemblyId>
@@ -223,7 +221,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.1</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.kordamp.shade</groupId>

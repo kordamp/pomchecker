@@ -48,6 +48,16 @@
         <maven.version>3.9.1</maven.version>
         <maven.resolver.version>1.9.18</maven.resolver.version>
         <commons.lang3.version>3.14.0</commons.lang3.version>
+        <version.compiler.plugin>3.13.0</version.compiler.plugin>
+        <version.dependency.plugin>3.6.1</version.dependency.plugin>
+        <version.enforcer.plugin>3.4.1</version.enforcer.plugin>
+        <version.enforcer.rules>1.8.0</version.enforcer.rules>
+        <version.javadoc.plugin>3.6.3</version.javadoc.plugin>
+        <version.jar.plugin>3.3.0</version.jar.plugin>
+        <version.resources.plugin>3.3.1</version.resources.plugin>
+        <version.shade.plugin>3.5.2</version.shade.plugin>
+        <version.source.plugin>3.3.0</version.source.plugin>
+        <version.versions.plugin>2.16.2</version.versions.plugin>
     </properties>
 
     <name>pomchecker</name>
@@ -261,6 +271,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-invoker-plugin</artifactId>
                     <version>3.5.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>${version.shade.plugin}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

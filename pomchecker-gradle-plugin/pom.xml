@@ -28,7 +28,6 @@
     </parent>
 
     <artifactId>pomchecker-gradle-plugin</artifactId>
-    <version>1.11.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -41,7 +40,7 @@
         <gradle.tasks>build</gradle.tasks>
         <maven.main.skip>true</maven.main.skip>
         <maven.test.skip>true</maven.test.skip>
-        <version.exec.plugin>3.1.0</version.exec.plugin>
+        <version.exec.plugin>3.2.0</version.exec.plugin>
     </properties>
 
     <name>pomchecker-gradle-plugin</name>
