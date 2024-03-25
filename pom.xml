@@ -364,6 +364,8 @@
                 <configuration>
                     <linksource>true</linksource>
                     <notimestamp>true</notimestamp>
+                    <source>9</source>
+                    <release>9</release>
                 </configuration>
                 <reportSets>
                     <reportSet>
