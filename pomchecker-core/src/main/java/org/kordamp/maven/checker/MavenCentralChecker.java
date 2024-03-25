@@ -150,6 +150,8 @@ public class MavenCentralChecker {
         log.debug("Checking <version>");
         if (isBlank(fullModel.getVersion())) {
             errors.add("<version> can not be blank.");
+        } else if (fullModel.getVersion().contains("${")) {
+            errors.add("<version> contains an unresolved expression: " + fullModel.getVersion());
         }
 
         log.debug("Checking <name>");
