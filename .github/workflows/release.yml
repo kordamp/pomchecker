@@ -6,6 +6,9 @@ on:
       version:
         description: 'Release version'
         required: true
+      next:
+        description: 'Next version'
+        required: true
 
 jobs:
   release:
@@ -100,14 +103,6 @@ jobs:
             out/jreleaser/trace.log
             out/jreleaser/output.properties
 
-      - name: Reset reproducible timestamp
-        run: |
-          sed -i -e "s@project.build.outputTimestamp>.*</project.build.outputTimestamp@project.build.outputTimestamp>\${git.commit.author.time}</project.build.outputTimestamp@g" pom.xml
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "GitHub Action"
-          git commit -a -m "Reset reproducible timestamp expression"
-          git push origin master
-
       - name: Build site
         run: |
           export GPG_TTY=$(tty)
@@ -120,6 +115,15 @@ jobs:
         with:
           branch: gh-pages
           folder: "${{ runner.temp }}/site"
+
+      - name: Set next version
+        run: |
+          ./mvnw -ntp -B versions:set versions:commit -DnewVersion=${{ github.event.inputs.next }}
+          sed -i -e "s@project.build.outputTimestamp>.*</project.build.outputTimestamp@project.build.outputTimestamp>\${git.commit.author.time}</project.build.outputTimestamp@g" pom.xml
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Action"
+          git commit -a -m "Next version ${{ github.event.inputs.next }}"
+          git push origin master
 
   update-bach-info:
     name: Update bach-info
