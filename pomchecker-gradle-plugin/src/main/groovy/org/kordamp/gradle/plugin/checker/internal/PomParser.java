@@ -53,10 +53,6 @@ public class PomParser {
             CharMatcher.inRange('a', 'z').or(CharMatcher.inRange('0', '9'));
 
     public static MavenProject createMavenProject(File pomFile) {
-        // we may run in maven as well
-        if (Runtimes.INSTANCE.getRuntimes().size() > 1) {
-
-        }
         // HACK: MIMA provides sisu runtime, but we need Maven components as well,
         // that are Plexus still. Hence, we "wrap" and boot Plexus around MIMA, and this
         // awakens MIMA eager singleton activator.
