@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kordamp.maven.checker.cli.internal;
+package org.kordamp.gradle.plugin.checker.internal;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableMap;
