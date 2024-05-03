@@ -4,6 +4,8 @@
 The PomChecker Gradle plugin provides goals to check the contents of a POM file.
 Its tasks will be run after their corresponding `generateMavenPom<PublicationName>publication` task runs.
 
+NOTE: Requires Java 11+ and Gradle 8+.
+
 == Install
 
 [source,groovy]
