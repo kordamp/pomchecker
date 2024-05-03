@@ -19,6 +19,9 @@ package org.kordamp.gradle.plugin.checker.internal;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableMap;
+import eu.maveniverse.maven.mima.context.Context;
+import eu.maveniverse.maven.mima.context.ContextOverrides;
+import eu.maveniverse.maven.mima.context.Runtimes;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.project.MavenProject;
@@ -26,7 +29,6 @@ import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.project.ProjectBuildingResult;
-import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.codehaus.plexus.ContainerConfiguration;
 import org.codehaus.plexus.DefaultContainerConfiguration;
 import org.codehaus.plexus.DefaultPlexusContainer;
@@ -35,24 +37,12 @@ import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
-import org.eclipse.aether.DefaultRepositorySystemSession;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
-import org.eclipse.aether.impl.DefaultServiceLocator;
-import org.eclipse.aether.repository.LocalRepository;
-import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
-import org.eclipse.aether.spi.connector.transport.TransporterFactory;
-import org.eclipse.aether.transport.file.FileTransporterFactory;
-import org.eclipse.aether.transport.http.HttpTransporterFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Properties;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * @author Andres Almiray
@@ -60,32 +50,39 @@ import java.util.Properties;
  */
 public class PomParser {
     private static final CharMatcher LOWER_ALPHA_NUMERIC =
-        CharMatcher.inRange('a', 'z').or(CharMatcher.inRange('0', '9'));
+            CharMatcher.inRange('a', 'z').or(CharMatcher.inRange('0', '9'));
 
     public static MavenProject createMavenProject(File pomFile) {
-        return createMavenProject(pomFile, createDefaultRepositorySystemSession(newRepositorySystem()));
-    }
-
-    private static MavenProject createMavenProject(File pomFile, RepositorySystemSession session) {
-        // MavenCli's way to instantiate PlexusContainer
+        // HACK: MIMA provides sisu runtime, but we need Maven components as well,
+        // that are Plexus still. Hence, we "wrap" and boot Plexus around MIMA, and this
+        // awakens MIMA eager singleton activator.
         ClassWorld classWorld =
-            new ClassWorld("plexus.core", Thread.currentThread().getContextClassLoader());
+                new ClassWorld("plexus.core", Thread.currentThread().getContextClassLoader());
         ContainerConfiguration containerConfiguration =
-            new DefaultContainerConfiguration()
-                .setClassWorld(classWorld)
-                .setRealm(classWorld.getClassRealm("plexus.core"))
-                .setClassPathScanning(PlexusConstants.SCANNING_INDEX)
-                .setAutoWiring(true)
-                .setJSR250Lifecycle(true)
-                .setName("pom-reader");
+                new DefaultContainerConfiguration()
+                        .setClassWorld(classWorld)
+                        .setRealm(classWorld.getClassRealm("plexus.core"))
+                        .setClassPathScanning(PlexusConstants.SCANNING_INDEX)
+                        .setAutoWiring(true)
+                        .setJSR250Lifecycle(true)
+                        .setName("pom-reader");
         try {
             PlexusContainer container = new DefaultPlexusContainer(containerConfiguration);
+            try (Context context = Runtimes.INSTANCE.getRuntime().create(ContextOverrides.create().withUserSettings(true).build())) {
+                return createMavenProject(pomFile, context, container);
+            }
+        } catch (PlexusContainerException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
 
+    private static MavenProject createMavenProject(File pomFile, Context context, PlexusContainer plexusContainer) {
+        try {
             MavenExecutionRequest mavenExecutionRequest = new DefaultMavenExecutionRequest();
             ProjectBuildingRequest projectBuildingRequest =
-                mavenExecutionRequest.getProjectBuildingRequest();
+                    mavenExecutionRequest.getProjectBuildingRequest();
 
-            projectBuildingRequest.setRepositorySession(session);
+            projectBuildingRequest.setRepositorySession(context.repositorySystemSession());
 
             // Profile activation needs properties such as JDK version
             Properties properties = new Properties(); // allowing duplicate entries
@@ -94,64 +91,28 @@ public class PomParser {
             properties.putAll(System.getProperties());
             projectBuildingRequest.setSystemProperties(properties);
 
-            ProjectBuilder projectBuilder = container.lookup(ProjectBuilder.class);
+            ProjectBuilder projectBuilder = plexusContainer.lookup(ProjectBuilder.class);
             ProjectBuildingResult projectBuildingResult =
-                projectBuilder.build(pomFile, projectBuildingRequest);
+                    projectBuilder.build(pomFile, projectBuildingRequest);
             return projectBuildingResult.getProject();
-        } catch (PlexusContainerException | ComponentLookupException | ProjectBuildingException ex) {
+        } catch (ComponentLookupException | ProjectBuildingException ex) {
             throw new IllegalStateException(ex);
-        }
-    }
-
-    private static RepositorySystem newRepositorySystem() {
-        DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
-        locator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
-        locator.addService(TransporterFactory.class, FileTransporterFactory.class);
-        locator.addService(TransporterFactory.class, HttpTransporterFactory.class);
-
-        return locator.getService(RepositorySystem.class);
-    }
-
-    private static DefaultRepositorySystemSession createDefaultRepositorySystemSession(RepositorySystem system) {
-        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
-        LocalRepository localRepository = new LocalRepository(findLocalRepository());
-        session.setLocalRepositoryManager(system.newLocalRepositoryManager(session, localRepository));
-        return session;
-    }
-
-    private static String findLocalRepository() {
-        Path home = Paths.get(System.getProperty("user.home"));
-        Path localRepo = home.resolve(".m2").resolve("repository");
-        if (Files.isDirectory(localRepo)) {
-            return localRepo.toAbsolutePath().toString();
-        } else {
-            return makeTemporaryLocalRepository();
-        }
-    }
-
-    private static String makeTemporaryLocalRepository() {
-        try {
-            File temporaryDirectory = Files.createTempDirectory("m2").toFile();
-            temporaryDirectory.deleteOnExit();
-            return temporaryDirectory.getAbsolutePath();
-        } catch (IOException ex) {
-            return null;
         }
     }
 
     public static ImmutableMap<String, String> detectOsProperties() {
         return ImmutableMap.of(
-            "os.detected.name",
-            osDetectedName(),
-            "os.detected.arch",
-            osDetectedArch(),
-            "os.detected.classifier",
-            osDetectedName() + "-" + osDetectedArch());
+                "os.detected.name",
+                osDetectedName(),
+                "os.detected.arch",
+                osDetectedArch(),
+                "os.detected.classifier",
+                osDetectedName() + "-" + osDetectedArch());
     }
 
     private static String osDetectedName() {
         String osNameNormalized =
-            LOWER_ALPHA_NUMERIC.retainFrom(System.getProperty("os.name").toLowerCase(Locale.ENGLISH));
+                LOWER_ALPHA_NUMERIC.retainFrom(System.getProperty("os.name").toLowerCase(Locale.ENGLISH));
 
         if (osNameNormalized.startsWith("macosx") || osNameNormalized.startsWith("osx")) {
             return "osx";
@@ -165,7 +126,7 @@ public class PomParser {
 
     private static String osDetectedArch() {
         String osArchNormalized =
-            LOWER_ALPHA_NUMERIC.retainFrom(System.getProperty("os.arch").toLowerCase(Locale.ENGLISH));
+                LOWER_ALPHA_NUMERIC.retainFrom(System.getProperty("os.arch").toLowerCase(Locale.ENGLISH));
         switch (osArchNormalized) {
             case "x8664":
             case "amd64":
