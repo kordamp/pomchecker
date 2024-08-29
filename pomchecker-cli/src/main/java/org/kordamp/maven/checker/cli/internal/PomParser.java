@@ -22,6 +22,8 @@ import com.google.common.collect.ImmutableMap;
 import eu.maveniverse.maven.mima.context.Context;
 import eu.maveniverse.maven.mima.context.ContextOverrides;
 import eu.maveniverse.maven.mima.context.Runtimes;
+import org.apache.maven.artifact.repository.MavenArtifactRepository;
+import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
 import org.apache.maven.execution.MavenExecutionRequest;
 import org.apache.maven.project.MavenProject;
@@ -37,12 +39,12 @@ import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+import org.eclipse.aether.repository.RemoteRepository;
 
 import java.io.File;
 import java.util.Locale;
 import java.util.Properties;
-
-import static java.util.Objects.requireNonNull;
+import java.util.stream.Collectors;
 
 /**
  * @author Andres Almiray
@@ -83,7 +85,8 @@ public class PomParser {
                 mavenExecutionRequest.getProjectBuildingRequest();
 
             projectBuildingRequest.setRepositorySession(context.repositorySystemSession());
-
+            projectBuildingRequest.setRemoteRepositories(context.remoteRepositories()
+                    .stream().map(PomParser::toArtifactRepository).collect(Collectors.toList()));
             // Profile activation needs properties such as JDK version
             Properties properties = new Properties(); // allowing duplicate entries
             properties.putAll(projectBuildingRequest.getSystemProperties());
@@ -137,5 +140,13 @@ public class PomParser {
             default:
                 return "x86_32";
         }
+    }
+
+    private static MavenArtifactRepository toArtifactRepository(RemoteRepository remoteRepository) {
+        MavenArtifactRepository mavenArtifactRepository = new MavenArtifactRepository();
+        mavenArtifactRepository.setId(remoteRepository.getId());
+        mavenArtifactRepository.setUrl(remoteRepository.getUrl());
+        mavenArtifactRepository.setLayout(new DefaultRepositoryLayout());
+        return mavenArtifactRepository;
     }
 }
