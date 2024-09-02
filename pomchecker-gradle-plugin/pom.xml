@@ -99,6 +99,7 @@
                         <configuration combine.self="override">
                             <executable>${gradle.executable}</executable>
                             <arguments>
+                                <argument>--no-daemon</argument>
                                 <argument>-Pversion=${project.version}</argument>
                                 <argument>-PreproducibleBuild=true</argument>
                                 <argument>-S</argument>
