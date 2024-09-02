@@ -19,7 +19,6 @@ package org.kordamp.maven.checker;
 
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
-import org.apache.maven.project.MavenProject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +75,7 @@ public class BomChecker {
      * @throws PomCheckException if the POM is invalid
      */
     public static void check(Logger log, MavenProject project, Configuration configuration) throws PomCheckException {
-        Model model = project.getOriginalModel();
+        Model model = project.getRawModel();
 
         List<String> errors = new ArrayList<>();
 
@@ -136,7 +135,7 @@ public class BomChecker {
             StringBuilder b = new StringBuilder(lineSeparator())
                 .append("The POM file")
                 .append(lineSeparator())
-                .append(project.getFile().getAbsolutePath())
+                .append(project.getPomFile().getAbsolutePath())
                 .append(lineSeparator())
                 .append("is not a valid BOM due to the following reasons:")
                 .append(lineSeparator());
@@ -150,7 +149,7 @@ public class BomChecker {
                 log.warn(b.toString());
             }
         } else {
-            log.info("BOM {} passes all checks.", project.getFile().getAbsolutePath());
+            log.info("BOM {} passes all checks.", project.getPomFile().getAbsolutePath());
         }
     }
 }

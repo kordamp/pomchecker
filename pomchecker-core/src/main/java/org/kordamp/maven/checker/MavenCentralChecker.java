@@ -22,7 +22,6 @@ import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.project.MavenProject;
 
 import java.io.File;
 import java.io.FileReader;
@@ -132,31 +131,31 @@ public class MavenCentralChecker {
      * @throws PomCheckException if the POM is invalid
      */
     public static void check(Logger log, MavenProject project, Configuration configuration) throws PomCheckException {
-        Model fullModel = project.getModel();
-        Model originalModel = project.getOriginalModel();
+        Model effectiveModel = project.getEffectiveModel();
+        Model rawModel = project.getRawModel();
 
         List<String> errors = new ArrayList<>();
         List<String> warnings = new ArrayList<>();
 
         // sanity checks. redundant?
         log.debug("Checking <groupId>");
-        if (isBlank(fullModel.getGroupId())) {
+        if (isBlank(effectiveModel.getGroupId())) {
             errors.add("<groupId> can not be blank.");
         }
         log.debug("Checking <artifactId>");
-        if (isBlank(fullModel.getArtifactId())) {
+        if (isBlank(effectiveModel.getArtifactId())) {
             errors.add("<artifactId> can not be blank.");
         }
         log.debug("Checking <version>");
-        if (isBlank(fullModel.getVersion())) {
+        if (isBlank(effectiveModel.getVersion())) {
             errors.add("<version> can not be blank.");
-        } else if (fullModel.getVersion().contains("${")) {
-            errors.add("<version> contains an unresolved expression: " + fullModel.getVersion());
+        } else if (effectiveModel.getVersion().contains("${")) {
+            errors.add("<version> contains an unresolved expression: " + effectiveModel.getVersion());
         }
 
         log.debug("Checking <name>");
-        if (isBlank(fullModel.getName())) {
-            String parentName = resolveParentName(project.getFile().getParentFile(), fullModel);
+        if (isBlank(effectiveModel.getName())) {
+            String parentName = resolveParentName(project.getPomFile().getParentFile(), effectiveModel);
             if (isBlank(parentName)) {
                 errors.add("<name> can not be blank.");
             } else {
@@ -166,34 +165,34 @@ public class MavenCentralChecker {
         }
 
         log.debug("Checking <description>");
-        if (isBlank(fullModel.getDescription())) {
+        if (isBlank(effectiveModel.getDescription())) {
             errors.add("<description> can not be blank.");
         }
-        if (isBlank(originalModel.getDescription())) {
+        if (isBlank(rawModel.getDescription())) {
             warnings.add("<description> is not defined in POM. Will use value from parent: " +
-                lineSeparator() + "\t" + fullModel.getDescription());
+                lineSeparator() + "\t" + effectiveModel.getDescription());
         }
 
         log.debug("Checking <url>");
-        if (isBlank(fullModel.getUrl())) {
+        if (isBlank(effectiveModel.getUrl())) {
             errors.add("<url> can not be blank.");
         }
-        if (isBlank(originalModel.getUrl())) {
+        if (isBlank(rawModel.getUrl())) {
             warnings.add("<url> is not defined in POM. Will use computed value from parent: " +
-                lineSeparator() + "\t" + fullModel.getUrl());
+                lineSeparator() + "\t" + effectiveModel.getUrl());
         }
 
         if (configuration.isRelease()) log.debug("Checking if version is not snapshot");
-        if (configuration.isRelease() && fullModel.getVersion().endsWith("-SNAPSHOT")) {
+        if (configuration.isRelease() && effectiveModel.getVersion().endsWith("-SNAPSHOT")) {
             errors.add("<version> can not be -SNAPSHOT.");
         }
 
         log.debug("Checking <licenses>");
-        if (fullModel.getLicenses() != null) {
-            if (!fullModel.getLicenses().isEmpty()) {
+        if (effectiveModel.getLicenses() != null) {
+            if (!effectiveModel.getLicenses().isEmpty()) {
                 // verify that all licenses have <name> & <url>
-                for (int i = 0; i < fullModel.getLicenses().size(); i++) {
-                    License license = fullModel.getLicenses().get(i);
+                for (int i = 0; i < effectiveModel.getLicenses().size(); i++) {
+                    License license = effectiveModel.getLicenses().get(i);
                     if (isBlank(license.getName()) && isBlank(license.getUrl())) {
                         errors.add("License " + i + " must define <name> and <url>.");
                     }
@@ -206,11 +205,11 @@ public class MavenCentralChecker {
         }
 
         log.debug("Checking <developers>");
-        if (fullModel.getDevelopers() != null) {
-            if (!fullModel.getDevelopers().isEmpty()) {
+        if (effectiveModel.getDevelopers() != null) {
+            if (!effectiveModel.getDevelopers().isEmpty()) {
                 // verify that all developers have at least one of [id, name, organization, organizationUrl]
-                for (int i = 0; i < fullModel.getDevelopers().size(); i++) {
-                    Developer developer = fullModel.getDevelopers().get(i);
+                for (int i = 0; i < effectiveModel.getDevelopers().size(); i++) {
+                    Developer developer = effectiveModel.getDevelopers().get(i);
                     if (isBlank(developer.getId()) &&
                         isBlank(developer.getName()) &&
                         isBlank(developer.getOrganization()) &&
@@ -226,12 +225,12 @@ public class MavenCentralChecker {
         }
 
         log.debug("Checking <scm>");
-        if (fullModel.getScm() == null) {
+        if (effectiveModel.getScm() == null) {
             errors.add("The <scm> block is required.");
         }
 
         log.debug("Checking <repositories>");
-        if (null != originalModel.getRepositories() && !originalModel.getRepositories().isEmpty()) {
+        if (null != rawModel.getRepositories() && !rawModel.getRepositories().isEmpty()) {
             if (configuration.isStrict()) {
                 errors.add("The <repositories> block should not be present.");
             } else {
@@ -240,7 +239,7 @@ public class MavenCentralChecker {
         }
 
         log.debug("Checking <pluginRepositories>");
-        if (null != originalModel.getPluginRepositories() && !originalModel.getPluginRepositories().isEmpty()) {
+        if (null != rawModel.getPluginRepositories() && !rawModel.getPluginRepositories().isEmpty()) {
             if (configuration.isStrict()) {
                 errors.add("The <pluginRepositories> block should not be present.");
             } else {
@@ -260,7 +259,7 @@ public class MavenCentralChecker {
             StringBuilder b = new StringBuilder(lineSeparator())
                 .append("The POM file")
                 .append(lineSeparator())
-                .append(project.getFile().getAbsolutePath())
+                .append(project.getPomFile().getAbsolutePath())
                 .append(lineSeparator())
                 .append("cannot be uploaded to Maven Central due to the following reasons:")
                 .append(lineSeparator());
@@ -274,7 +273,7 @@ public class MavenCentralChecker {
                 log.warn(b.toString());
             }
         } else {
-            log.info("POM {} passes all checks. It can be uploaded to Maven Central.", project.getFile().getAbsolutePath());
+            log.info("POM {} passes all checks. It can be uploaded to Maven Central.", project.getPomFile().getAbsolutePath());
         }
     }
 
@@ -290,7 +289,7 @@ public class MavenCentralChecker {
 
                 if (pomFile.exists()) {
                     MavenProject parentProject = readProject(pomFile);
-                    Model parentModel = parentProject.getModel();
+                    Model parentModel = parentProject.getEffectiveModel();
                     if (isNotBlank(parentModel.getName())) {
                         return parentModel.getName();
                     } else {
@@ -307,7 +306,7 @@ public class MavenCentralChecker {
                 File pomFile = new File(directory, "../pom.xml");
                 if (pomFile.exists()) {
                     MavenProject parentProject = readProject(pomFile);
-                    Model parentModel = parentProject.getModel();
+                    Model parentModel = parentProject.getEffectiveModel();
                     if (isNotBlank(parentModel.getName())) {
                         return parentModel.getName();
                     } else {
@@ -329,14 +328,14 @@ public class MavenCentralChecker {
         try {
             FileReader reader = new FileReader(pom);
             MavenXpp3Reader mavenReader = new MavenXpp3Reader();
-            return new MavenProject(mavenReader.read(reader));
+            return new MavenProject(pom, mavenReader.read(reader), null);
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }
     }
 
     private static boolean isBlank(String str) {
-        if (str == null || str.length() == 0) {
+        if (str == null || str.isEmpty()) {
             return true;
         }
 

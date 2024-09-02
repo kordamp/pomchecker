@@ -17,8 +17,8 @@
  */
 package org.kordamp.maven.checker.cli.internal;
 
-import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.Test;
+import org.kordamp.maven.checker.MavenProject;
 
 import java.io.File;
 import java.net.URL;
@@ -31,6 +31,6 @@ class PomParserTest {
     void parse() throws Exception {
         URL resource = getClass().getClassLoader().getResource("test-pom.xml");
         MavenProject mavenProject = PomParser.createMavenProject(new File(resource.toURI()));
-        assertEquals("quarkus-slack-parent",mavenProject.getArtifactId());
+        assertEquals("quarkus-slack-parent",mavenProject.getEffectiveModel().getArtifactId());
     }
 }

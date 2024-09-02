@@ -45,10 +45,10 @@
         <project.build.outputTimestamp>2024-08-30T09:55:33Z</project.build.outputTimestamp>
         <slf4j.version>2.0.13</slf4j.version>
         <picocli.version>4.7.5</picocli.version>
-        <sisu.version>0.9.0.M2</sisu.version>
-        <maven.version>3.9.6</maven.version>
-        <mima.version>2.4.12</mima.version>
-        <maven.resolver.version>1.9.20</maven.resolver.version>
+        <sisu.version>0.9.0.M3</sisu.version>
+        <maven.version>3.9.9</maven.version>
+        <mima.version>2.4.18</mima.version>
+        <maven.resolver.version>1.9.22</maven.resolver.version>
         <commons.lang3.version>3.14.0</commons.lang3.version>
         <version.compiler.plugin>3.13.0</version.compiler.plugin>
         <version.dependency.plugin>3.6.1</version.dependency.plugin>
@@ -112,7 +112,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>33.2.0-jre</version>
+                <version>33.3.0-jre</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.findbugs</groupId>
@@ -139,6 +139,11 @@
                         <artifactId>guice</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-plugin-api</artifactId>
+                <version>${maven.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
@@ -218,7 +223,7 @@
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-interpolation</artifactId>
-                <version>1.26</version>
+                <version>1.27</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
@@ -228,6 +233,16 @@
             <dependency>
                 <groupId>eu.maveniverse.maven.mima</groupId>
                 <artifactId>context</artifactId>
+                <version>${mima.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>eu.maveniverse.maven.mima.extensions</groupId>
+                <artifactId>mmr</artifactId>
+                <version>${mima.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>eu.maveniverse.maven.mima.runtime</groupId>
+                <artifactId>embedded-maven</artifactId>
                 <version>${mima.version}</version>
             </dependency>
             <dependency>

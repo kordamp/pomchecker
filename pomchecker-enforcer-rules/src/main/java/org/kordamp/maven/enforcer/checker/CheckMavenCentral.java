@@ -81,7 +81,7 @@ public class CheckMavenCentral extends AbstractEnforcerRule {
     @Override
     public void execute() throws EnforcerRuleException {
         try {
-            MavenCentralChecker.check(new MavenEnforcerLoggerAdapter(getLog()), project, new MavenCentralChecker.Configuration()
+            MavenCentralChecker.check(new MavenEnforcerLoggerAdapter(getLog()), new org.kordamp.maven.checker.MavenProject(project.getFile(), project.getOriginalModel(), project.getModel()), new MavenCentralChecker.Configuration()
                 .withRelease(release)
                 .withStrict(strict)
                 .withFailOnError(failOnError)
