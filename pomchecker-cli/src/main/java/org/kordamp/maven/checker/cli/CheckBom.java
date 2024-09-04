@@ -40,7 +40,7 @@ public class CheckBom extends AbstractCommand<Main> {
     protected void execute() {
         try {
             logger.info("BOM checks: {}", pomFile.toAbsolutePath().toString());
-            MavenProject project = PomParser.createMavenProject(pomFile.toFile());
+            MavenProject project = PomParser.createMavenProject(pomFile.toFile(), collectRepositories());
             BomChecker.check(logger, project, new BomChecker.Configuration()
                 .withFailOnError(failOnError));
         } catch (PomCheckException e) {

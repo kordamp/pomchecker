@@ -22,6 +22,8 @@ import com.google.common.collect.ImmutableMap;
 import eu.maveniverse.maven.mima.context.Context;
 import eu.maveniverse.maven.mima.context.ContextOverrides;
 import eu.maveniverse.maven.mima.context.Runtimes;
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
 import org.apache.maven.artifact.repository.MavenArtifactRepository;
 import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
 import org.apache.maven.execution.DefaultMavenExecutionRequest;
@@ -39,11 +41,13 @@ import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
-import org.eclipse.aether.repository.RemoteRepository;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -54,39 +58,47 @@ public class PomParser {
     private static final CharMatcher LOWER_ALPHA_NUMERIC =
         CharMatcher.inRange('a', 'z').or(CharMatcher.inRange('0', '9'));
 
-    public static MavenProject createMavenProject(File pomFile) {
+    public static MavenProject createMavenProject(File pomFile, Set<Path> repositories) {
         // HACK: MIMA provides sisu runtime, but we need Maven components as well,
         // that are Plexus still. Hence, we "wrap" and boot Plexus around MIMA, and this
         // awakens MIMA eager singleton activator.
         ClassWorld classWorld =
-                new ClassWorld("plexus.core", Thread.currentThread().getContextClassLoader());
+            new ClassWorld("plexus.core", Thread.currentThread().getContextClassLoader());
         ContainerConfiguration containerConfiguration =
-                new DefaultContainerConfiguration()
-                        .setClassWorld(classWorld)
-                        .setRealm(classWorld.getClassRealm("plexus.core"))
-                        .setClassPathScanning(PlexusConstants.SCANNING_INDEX)
-                        .setAutoWiring(true)
-                        .setJSR250Lifecycle(true)
-                        .setName("pom-reader");
+            new DefaultContainerConfiguration()
+                .setClassWorld(classWorld)
+                .setRealm(classWorld.getClassRealm("plexus.core"))
+                .setClassPathScanning(PlexusConstants.SCANNING_INDEX)
+                .setAutoWiring(true)
+                .setJSR250Lifecycle(true)
+                .setName("pom-reader");
         try {
             PlexusContainer container = new DefaultPlexusContainer(containerConfiguration);
             try (Context context = Runtimes.INSTANCE.getRuntime().create(ContextOverrides.create().withUserSettings(true).build())) {
-                return createMavenProject(pomFile, context, container);
+                return createMavenProject(pomFile, context, container, repositories);
             }
         } catch (PlexusContainerException ex) {
             throw new IllegalStateException(ex);
         }
     }
 
-    private static MavenProject createMavenProject(File pomFile, Context context, PlexusContainer plexusContainer) {
+    private static MavenProject createMavenProject(File pomFile, Context context, PlexusContainer plexusContainer, Set<Path> repositories) {
         try {
             MavenExecutionRequest mavenExecutionRequest = new DefaultMavenExecutionRequest();
             ProjectBuildingRequest projectBuildingRequest =
                 mavenExecutionRequest.getProjectBuildingRequest();
 
             projectBuildingRequest.setRepositorySession(context.repositorySystemSession());
-            projectBuildingRequest.setRemoteRepositories(context.remoteRepositories()
-                    .stream().map(PomParser::toArtifactRepository).collect(Collectors.toList()));
+
+            List<ArtifactRepository> remoteRepositories = context.remoteRepositories()
+                .stream().map(r -> toArtifactRepository(r.getId(), r.getUrl())).collect(Collectors.toList());
+
+            int i = 0;
+            for (Path repository : repositories) {
+                remoteRepositories.add(toArtifactRepository("pomchecker_repository_" + (i++), repository.toUri().toString()));
+            }
+
+            projectBuildingRequest.setRemoteRepositories(remoteRepositories);
             // Profile activation needs properties such as JDK version
             Properties properties = new Properties(); // allowing duplicate entries
             properties.putAll(projectBuildingRequest.getSystemProperties());
@@ -142,11 +154,14 @@ public class PomParser {
         }
     }
 
-    private static MavenArtifactRepository toArtifactRepository(RemoteRepository remoteRepository) {
-        MavenArtifactRepository mavenArtifactRepository = new MavenArtifactRepository();
-        mavenArtifactRepository.setId(remoteRepository.getId());
-        mavenArtifactRepository.setUrl(remoteRepository.getUrl());
-        mavenArtifactRepository.setLayout(new DefaultRepositoryLayout());
-        return mavenArtifactRepository;
+    private static MavenArtifactRepository toArtifactRepository(String id, String url) {
+        MavenArtifactRepository repository = new MavenArtifactRepository();
+        repository.setId(id);
+        repository.setUrl(url);
+        repository.setLayout(new DefaultRepositoryLayout());
+        ArtifactRepositoryPolicy policy = new ArtifactRepositoryPolicy(true, ArtifactRepositoryPolicy.UPDATE_POLICY_NEVER, ArtifactRepositoryPolicy.CHECKSUM_POLICY_WARN);
+        repository.setSnapshotUpdatePolicy(policy);
+        repository.setReleaseUpdatePolicy(policy);
+        return repository;
     }
 }
