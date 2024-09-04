@@ -58,7 +58,7 @@ public class CheckMavenCentral extends AbstractCommand<Main> {
     protected void execute() {
         try {
             logger.info("Maven Central checks: {}", pomFile.toAbsolutePath().toString());
-            MavenProject project = PomParser.createMavenProject(pomFile.toFile());
+            MavenProject project = PomParser.createMavenProject(pomFile.toFile(), collectRepositories());
             MavenCentralChecker.check(logger, project, new MavenCentralChecker.Configuration()
                 .withRelease(release)
                 .withStrict(strict)

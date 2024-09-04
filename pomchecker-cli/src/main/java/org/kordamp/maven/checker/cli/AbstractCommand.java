@@ -24,6 +24,8 @@ import picocli.CommandLine;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 /**
@@ -71,6 +73,11 @@ abstract class AbstractCommand<C extends IO> extends BaseCommand implements Call
         this.pomFile = pomFileWithDefault;
     }
 
+    @CommandLine.Option(names = {"--repository"},
+        paramLabel = "<repository>",
+        description = "Absolute path to a local Maven repository")
+    String[] repositories;
+
     protected C parent() {
         return parent;
     }
@@ -112,4 +119,14 @@ abstract class AbstractCommand<C extends IO> extends BaseCommand implements Call
     }
 
     protected abstract void execute();
+
+    protected Set<Path> collectRepositories() {
+        Set<Path> set = new LinkedHashSet<>();
+        if (null != repositories) {
+            for (String repository : repositories) {
+                set.add(Paths.get(repository.trim()));
+            }
+        }
+        return set;
+    }
 }

@@ -21,16 +21,29 @@ import org.junit.jupiter.api.Test;
 import org.kordamp.maven.checker.MavenProject;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PomParserTest {
+    void parseSingle() throws Exception {
+        URL resource = getClass().getClassLoader().getResource("test-pom.xml");
+        MavenProject mavenProject = PomParser.createMavenProject(new File(resource.toURI()), Collections.emptySet());
+        assertEquals("quarkus-slack-parent", mavenProject.getEffectiveModel().getArtifactId());
+    }
 
     @Test
-    void parse() throws Exception {
-        URL resource = getClass().getClassLoader().getResource("test-pom.xml");
-        MavenProject mavenProject = PomParser.createMavenProject(new File(resource.toURI()));
-        assertEquals("quarkus-slack-parent",mavenProject.getEffectiveModel().getArtifactId());
+    void parseWithLocalRepository() throws Exception {
+        URL resource = getClass().getClassLoader().getResource("repository/com/acme/child/1.0.0/child-1.0.0.pom");
+        URI uri = getClass().getClassLoader().getResource("repository").toURI();
+        Set<Path> repositories = Collections.singleton(new File(uri).toPath());
+        MavenProject mavenProject = PomParser.createMavenProject(new File(resource.toURI()), repositories);
+        assertEquals("com.acme", mavenProject.getEffectiveModel().getGroupId());
+        assertEquals("child", mavenProject.getEffectiveModel().getArtifactId());
+        assertEquals("1.0.0", mavenProject.getEffectiveModel().getVersion());
     }
 }
