@@ -69,6 +69,7 @@ dependencies {
     compileOnly gradleApi()
 
     api "org.kordamp.maven:pomchecker-core:$version"
+    api "com.google.guava:guava:$guavaVersion"
     api "org.apache.maven:maven-model:$mavenVersion"
     api "eu.maveniverse.maven.mima:context:$mimaVersion"
     api "eu.maveniverse.maven.mima.extensions:mmr:$mimaVersion"
