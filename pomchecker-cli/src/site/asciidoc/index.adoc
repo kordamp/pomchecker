@@ -25,16 +25,18 @@ Commands:
 [source]
 ----
 $ pomchecker check-bom --help
-Usage: pomchecker check-bom [-dhiqVw] [--[no-]fail-on-error] --file=<pomFile>
-                            [-D=<key=value>]...
+Usage: pomchecker check-bom [-dhiqVw] [--[no-]fail-on-error] [--file=<pomFile>]
+                            [-D=<key=value>]... [--repository=<repository>]...
 Checks if a POM file is a minimal BOM file
   -d, --debug                Set log level to debug.
   -D=<key=value>             Sets a System property. Repeatable.
       --[no-]fail-on-error   Fails the build on error.
-      --file=<pomFile>       The POM file to check. Defaults to pom.xml.
+      --file=<pomFile>       The POM file to check. Defaults to pom.xml
   -h, --help                 Show this help message and exit.
   -i, --info                 Set log level to info.
   -q, --quiet                Log errors only.
+      --repository=<repository>
+                             Absolute path to a local Maven repository
   -V, --version              Print version information and exit.
   -w, --warn                 Set log level to warn.
 ----
@@ -44,18 +46,21 @@ Checks if a POM file is a minimal BOM file
 $ pomchecker check-maven-central --help
 Usage: pomchecker check-maven-central [-dhiqVw] [--[no-]fail-on-error] [--[no-]
                                       fail-on-warning] [--[no-]release] [--[no-]
-                                      strict] --file=<pomFile>
+                                      strict] [--file=<pomFile>]
                                       [-D=<key=value>]...
+                                      [--repository=<repository>]...
 Checks if a POM complies with the rules for uploading to Maven Central
   -d, --debug                Set log level to debug.
   -D=<key=value>             Sets a System property. Repeatable.
       --[no-]fail-on-error   Fails the build on error.
       --[no-]fail-on-warning Fails the build on warning.
-      --file=<pomFile>       The POM file to check. Defaults to pom.xml.
+      --file=<pomFile>       The POM file to check. Defaults to pom.xml
   -h, --help                 Show this help message and exit.
   -i, --info                 Set log level to info.
   -q, --quiet                Log errors only.
       --[no-]release         Checks if version is -SNAPSHOT.
+      --repository=<repository>
+                             Absolute path to a local Maven repository
       --[no-]strict          Checks if <repositories> and <pluginRepositories>
                                are present.
   -V, --version              Print version information and exit.
