@@ -22,7 +22,6 @@ import org.kordamp.maven.checker.cli.internal.Colorizer;
 import org.kordamp.maven.checker.cli.internal.SimpleLoggerAdapter;
 import picocli.CommandLine;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedHashSet;

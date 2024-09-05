@@ -70,25 +70,11 @@ dependencies {
 
     api "org.kordamp.maven:pomchecker-core:$version"
     api "com.google.guava:guava:$guavaVersion"
-    api "com.google.inject:guice:$guiceVersion"
-    api "org.apache.maven:maven-artifact:$mavenVersion"
-    api "org.apache.maven:maven-model-builder:$mavenVersion"
-    api "org.apache.maven:maven-compat:$mavenVersion"
-    api "org.apache.maven:maven-core:$mavenVersion"
-    api "org.apache.maven:maven-resolver-provider:$mavenVersion"
-    api "org.apache.maven.resolver:maven-resolver-api:$mavenResolverVersion"
-    api "org.apache.maven.resolver:maven-resolver-util:$mavenResolverVersion"
-    api "org.apache.maven.resolver:maven-resolver-impl:$mavenResolverVersion"
-    api "org.apache.maven.resolver:maven-resolver-spi:$mavenResolverVersion"
-    api "org.apache.maven.resolver:maven-resolver-transport-http:$mavenResolverVersion"
-    api "org.apache.maven.resolver:maven-resolver-transport-file:$mavenResolverVersion"
-    api "org.apache.maven.resolver:maven-resolver-transport-classpath:$mavenResolverVersion"
-    api "org.apache.maven.resolver:maven-resolver-connector-basic:$mavenResolverVersion"
+    api "org.apache.maven:maven-model:$mavenVersion"
     api "eu.maveniverse.maven.mima:context:$mimaVersion"
+    api "eu.maveniverse.maven.mima.extensions:mmr:$mimaVersion"
     api "eu.maveniverse.maven.mima.runtime:standalone-sisu:$mimaVersion"
     api "org.kordamp.gradle:base-gradle-plugin:$kordampPluginVersion"
-    api "org.eclipse.sisu:org.eclipse.sisu.inject:$sisuVersion"
-    api "org.eclipse.sisu:org.eclipse.sisu.plexus:$sisuVersion"
 }
 
 processResources {

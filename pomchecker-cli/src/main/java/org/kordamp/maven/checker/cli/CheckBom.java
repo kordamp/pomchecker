@@ -17,8 +17,8 @@
  */
 package org.kordamp.maven.checker.cli;
 
-import org.apache.maven.project.MavenProject;
 import org.kordamp.maven.checker.BomChecker;
+import org.kordamp.maven.checker.MavenProject;
 import org.kordamp.maven.checker.PomCheckException;
 import org.kordamp.maven.checker.cli.internal.PomParser;
 import picocli.CommandLine;

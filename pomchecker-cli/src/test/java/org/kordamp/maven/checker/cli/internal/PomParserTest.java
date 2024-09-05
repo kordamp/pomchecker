@@ -17,8 +17,8 @@
  */
 package org.kordamp.maven.checker.cli.internal;
 
-import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.Test;
+import org.kordamp.maven.checker.MavenProject;
 
 import java.io.File;
 import java.net.URI;
@@ -33,7 +33,7 @@ class PomParserTest {
     void parseSingle() throws Exception {
         URL resource = getClass().getClassLoader().getResource("test-pom.xml");
         MavenProject mavenProject = PomParser.createMavenProject(new File(resource.toURI()), Collections.emptySet());
-        assertEquals("quarkus-slack-parent", mavenProject.getArtifactId());
+        assertEquals("quarkus-slack-parent", mavenProject.getEffectiveModel().getArtifactId());
     }
 
     @Test
@@ -42,8 +42,8 @@ class PomParserTest {
         URI uri = getClass().getClassLoader().getResource("repository").toURI();
         Set<Path> repositories = Collections.singleton(new File(uri).toPath());
         MavenProject mavenProject = PomParser.createMavenProject(new File(resource.toURI()), repositories);
-        assertEquals("com.acme", mavenProject.getGroupId());
-        assertEquals("child", mavenProject.getArtifactId());
-        assertEquals("1.0.0", mavenProject.getVersion());
+        assertEquals("com.acme", mavenProject.getEffectiveModel().getGroupId());
+        assertEquals("child", mavenProject.getEffectiveModel().getArtifactId());
+        assertEquals("1.0.0", mavenProject.getEffectiveModel().getVersion());
     }
 }

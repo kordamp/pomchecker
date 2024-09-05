@@ -58,7 +58,7 @@ public class CheckBom extends AbstractEnforcerRule {
     @Override
     public void execute() throws EnforcerRuleException {
         try {
-            BomChecker.check(new MavenEnforcerLoggerAdapter(getLog()), project, new BomChecker.Configuration()
+            BomChecker.check(new MavenEnforcerLoggerAdapter(getLog()), new org.kordamp.maven.checker.MavenProject(project.getFile(), project.getOriginalModel(), project.getModel()), new BomChecker.Configuration()
                 .withFailOnError(failOnError));
         } catch (PomCheckException e) {
             throw new EnforcerRuleException(e.getMessage());
