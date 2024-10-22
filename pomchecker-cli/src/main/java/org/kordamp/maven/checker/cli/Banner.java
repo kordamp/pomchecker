@@ -95,7 +95,7 @@ final class Banner {
 
     private static File getMarkerFile(File parent) {
         return new File(parent,
-                INSTANCE.productId +
+            INSTANCE.productId +
                 File.separator +
                 INSTANCE.productVersion +
                 File.separator +

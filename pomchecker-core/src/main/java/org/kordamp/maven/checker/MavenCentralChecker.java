@@ -167,7 +167,7 @@ public class MavenCentralChecker {
                     errors.add("<name> can not be blank.");
                 } else {
                     warnings.add("<name> is not defined in POM. Will use value from parent: " +
-                            lineSeparator() + "\t" + parentName);
+                        lineSeparator() + "\t" + parentName);
                 }
             }
 
@@ -177,7 +177,7 @@ public class MavenCentralChecker {
             }
             if (isBlank(originalModel.getDescription())) {
                 warnings.add("<description> is not defined in POM. Will use value from parent: " +
-                        lineSeparator() + "\t" + fullModel.getDescription());
+                    lineSeparator() + "\t" + fullModel.getDescription());
             }
 
             log.debug("Checking <url>");
@@ -186,7 +186,7 @@ public class MavenCentralChecker {
             }
             if (isBlank(originalModel.getUrl())) {
                 warnings.add("<url> is not defined in POM. Will use computed value from parent: " +
-                        lineSeparator() + "\t" + fullModel.getUrl());
+                    lineSeparator() + "\t" + fullModel.getUrl());
             }
 
             if (configuration.isRelease()) log.debug("Checking if version is not snapshot");
@@ -218,9 +218,9 @@ public class MavenCentralChecker {
                     for (int i = 0; i < fullModel.getDevelopers().size(); i++) {
                         Developer developer = fullModel.getDevelopers().get(i);
                         if (isBlank(developer.getId()) &&
-                                isBlank(developer.getName()) &&
-                                isBlank(developer.getOrganization()) &&
-                                isBlank(developer.getOrganizationUrl())) {
+                            isBlank(developer.getName()) &&
+                            isBlank(developer.getOrganization()) &&
+                            isBlank(developer.getOrganizationUrl())) {
                             errors.add("Developer " + i + " must define at least one of <id>, <name>, <organization>, <organizationUrl>.");
                         }
                     }
@@ -264,12 +264,12 @@ public class MavenCentralChecker {
 
         if (!errors.isEmpty()) {
             StringBuilder b = new StringBuilder(lineSeparator())
-                    .append("The POM file")
-                    .append(lineSeparator())
-                    .append(project.getFile().getAbsolutePath())
-                    .append(lineSeparator())
-                    .append("cannot be uploaded to Maven Central due to the following reasons:")
-                    .append(lineSeparator());
+                .append("The POM file")
+                .append(lineSeparator())
+                .append(project.getFile().getAbsolutePath())
+                .append(lineSeparator())
+                .append("cannot be uploaded to Maven Central due to the following reasons:")
+                .append(lineSeparator());
             for (String s : errors) {
                 b.append(" * ").append(s).append(lineSeparator());
             }

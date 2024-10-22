@@ -21,8 +21,8 @@
 <additionalHeaders>
     <javadoc_style>
         <firstLine>/*</firstLine>
-        <beforeEachLine> * </beforeEachLine>
-        <endLine> */</endLine>
+        <beforeEachLine>*</beforeEachLine>
+        <endLine>*/</endLine>
         <!--afterEachLine></afterEachLine-->
         <!--skipLine></skipLine-->
         <firstLineDetectionPattern>(\s|\t)*/\*.*$</firstLineDetectionPattern>

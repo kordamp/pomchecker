@@ -34,7 +34,7 @@ jobs:
           echo "VERSION=$(echo $version)" >> $GITHUB_OUTPUT
 
   release:
-    needs: [precheck]
+    needs: [ precheck ]
     if: endsWith(${{ needs.precheck.outputs.VERSION }}, '-SNAPSHOT')
     runs-on: ubuntu-latest
     outputs:
@@ -105,7 +105,7 @@ jobs:
 
   update-bach-info:
     name: Update bach-info
-    needs: [precheck, release]
+    needs: [ precheck, release ]
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:

@@ -103,18 +103,18 @@ jobs:
             out/jreleaser/trace.log
             out/jreleaser/output.properties
 
-#      - name: Build site
-#        run: |
-#          export GPG_TTY=$(tty)
-#          ./mvnw -ntp -B --file pom.xml \
-#          -Drepository.url=https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git \
-#          site site:stage -DstagingDirectory="${{ runner.temp }}/site"
-#
-#      - name: Publish site
-#        uses: JamesIves/github-pages-deploy-action@v4
-#        with:
-#          branch: gh-pages
-#          folder: "${{ runner.temp }}/site"
+      #      - name: Build site
+      #        run: |
+      #          export GPG_TTY=$(tty)
+      #          ./mvnw -ntp -B --file pom.xml \
+      #          -Drepository.url=https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git \
+      #          site site:stage -DstagingDirectory="${{ runner.temp }}/site"
+      #
+      #      - name: Publish site
+      #        uses: JamesIves/github-pages-deploy-action@v4
+      #        with:
+      #          branch: gh-pages
+      #          folder: "${{ runner.temp }}/site"
 
       - name: Set next version
         run: |
@@ -127,7 +127,7 @@ jobs:
 
   update-bach-info:
     name: Update bach-info
-    needs: [release]
+    needs: [ release ]
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:

@@ -53,22 +53,22 @@ import java.util.stream.Collectors;
  */
 public class PomParser {
     private static final CharMatcher LOWER_ALPHA_NUMERIC =
-            CharMatcher.inRange('a', 'z').or(CharMatcher.inRange('0', '9'));
+        CharMatcher.inRange('a', 'z').or(CharMatcher.inRange('0', '9'));
 
     public static MavenProject createMavenProject(File pomFile) {
         // HACK: MIMA provides sisu runtime, but we need Maven components as well,
         // that are Plexus still. Hence, we "wrap" and boot Plexus around MIMA, and this
         // awakens MIMA eager singleton activator.
         ClassWorld classWorld =
-                new ClassWorld("plexus.core", Thread.currentThread().getContextClassLoader());
+            new ClassWorld("plexus.core", Thread.currentThread().getContextClassLoader());
         ContainerConfiguration containerConfiguration =
-                new DefaultContainerConfiguration()
-                        .setClassWorld(classWorld)
-                        .setRealm(classWorld.getClassRealm("plexus.core"))
-                        .setClassPathScanning(PlexusConstants.SCANNING_INDEX)
-                        .setAutoWiring(true)
-                        .setJSR250Lifecycle(true)
-                        .setName("pom-reader");
+            new DefaultContainerConfiguration()
+                .setClassWorld(classWorld)
+                .setRealm(classWorld.getClassRealm("plexus.core"))
+                .setClassPathScanning(PlexusConstants.SCANNING_INDEX)
+                .setAutoWiring(true)
+                .setJSR250Lifecycle(true)
+                .setName("pom-reader");
         try {
             PlexusContainer container = new DefaultPlexusContainer(containerConfiguration);
             try (Context context = Runtimes.INSTANCE.getRuntime().create(ContextOverrides.create().withUserSettings(true).build())) {
@@ -83,7 +83,7 @@ public class PomParser {
         try {
             MavenExecutionRequest mavenExecutionRequest = new DefaultMavenExecutionRequest();
             ProjectBuildingRequest projectBuildingRequest =
-                    mavenExecutionRequest.getProjectBuildingRequest();
+                mavenExecutionRequest.getProjectBuildingRequest();
 
             projectBuildingRequest.setRepositorySession(context.repositorySystemSession());
             projectBuildingRequest.setRemoteRepositories(context.remoteRepositories()
@@ -98,7 +98,7 @@ public class PomParser {
 
             ProjectBuilder projectBuilder = plexusContainer.lookup(ProjectBuilder.class);
             ProjectBuildingResult projectBuildingResult =
-                    projectBuilder.build(pomFile, projectBuildingRequest);
+                projectBuilder.build(pomFile, projectBuildingRequest);
             return projectBuildingResult.getProject();
         } catch (ComponentLookupException | ProjectBuildingException ex) {
             throw new IllegalStateException(ex);
@@ -107,17 +107,17 @@ public class PomParser {
 
     public static ImmutableMap<String, String> detectOsProperties() {
         return ImmutableMap.of(
-                "os.detected.name",
-                osDetectedName(),
-                "os.detected.arch",
-                osDetectedArch(),
-                "os.detected.classifier",
-                osDetectedName() + "-" + osDetectedArch());
+            "os.detected.name",
+            osDetectedName(),
+            "os.detected.arch",
+            osDetectedArch(),
+            "os.detected.classifier",
+            osDetectedName() + "-" + osDetectedArch());
     }
 
     private static String osDetectedName() {
         String osNameNormalized =
-                LOWER_ALPHA_NUMERIC.retainFrom(System.getProperty("os.name").toLowerCase(Locale.ENGLISH));
+            LOWER_ALPHA_NUMERIC.retainFrom(System.getProperty("os.name").toLowerCase(Locale.ENGLISH));
 
         if (osNameNormalized.startsWith("macosx") || osNameNormalized.startsWith("osx")) {
             return "osx";
@@ -131,7 +131,7 @@ public class PomParser {
 
     private static String osDetectedArch() {
         String osArchNormalized =
-                LOWER_ALPHA_NUMERIC.retainFrom(System.getProperty("os.arch").toLowerCase(Locale.ENGLISH));
+            LOWER_ALPHA_NUMERIC.retainFrom(System.getProperty("os.arch").toLowerCase(Locale.ENGLISH));
         switch (osArchNormalized) {
             case "x8664":
             case "amd64":
