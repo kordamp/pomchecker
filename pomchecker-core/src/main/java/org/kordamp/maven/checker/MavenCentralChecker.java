@@ -21,6 +21,7 @@ import org.apache.maven.model.Developer;
 import org.apache.maven.model.License;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
+import org.apache.maven.model.Relocation;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.project.MavenProject;
 
@@ -153,101 +154,106 @@ public class MavenCentralChecker {
         } else if (fullModel.getVersion().contains("${")) {
             errors.add("<version> contains an unresolved expression: " + fullModel.getVersion());
         }
-
-        log.debug("Checking <name>");
-        if (isBlank(fullModel.getName())) {
-            String parentName = resolveParentName(project.getFile().getParentFile(), fullModel);
-            if (isBlank(parentName)) {
-                errors.add("<name> can not be blank.");
-            } else {
-                warnings.add("<name> is not defined in POM. Will use value from parent: " +
-                    lineSeparator() + "\t" + parentName);
-            }
-        }
-
-        log.debug("Checking <description>");
-        if (isBlank(fullModel.getDescription())) {
-            errors.add("<description> can not be blank.");
-        }
-        if (isBlank(originalModel.getDescription())) {
-            warnings.add("<description> is not defined in POM. Will use value from parent: " +
-                lineSeparator() + "\t" + fullModel.getDescription());
-        }
-
-        log.debug("Checking <url>");
-        if (isBlank(fullModel.getUrl())) {
-            errors.add("<url> can not be blank.");
-        }
-        if (isBlank(originalModel.getUrl())) {
-            warnings.add("<url> is not defined in POM. Will use computed value from parent: " +
-                lineSeparator() + "\t" + fullModel.getUrl());
-        }
-
-        if (configuration.isRelease()) log.debug("Checking if version is not snapshot");
-        if (configuration.isRelease() && fullModel.getVersion().endsWith("-SNAPSHOT")) {
-            errors.add("<version> can not be -SNAPSHOT.");
-        }
-
-        log.debug("Checking <licenses>");
-        if (fullModel.getLicenses() != null) {
-            if (!fullModel.getLicenses().isEmpty()) {
-                // verify that all licenses have <name> & <url>
-                for (int i = 0; i < fullModel.getLicenses().size(); i++) {
-                    License license = fullModel.getLicenses().get(i);
-                    if (isBlank(license.getName()) && isBlank(license.getUrl())) {
-                        errors.add("License " + i + " must define <name> and <url>.");
-                    }
-                }
-            } else {
-                errors.add("<licenses> block is required but was left empty.");
+        if (isRelocated(fullModel)) {
+            Relocation relocation = fullModel.getDistributionManagement().getRelocation();
+            if (isBlank(relocation.getGroupId()) && isBlank(relocation.getArtifactId()) && isBlank(relocation.getVersion())) {
+                errors.add("<distributionManagement>/<relocation> requires either <groupId>, <artifactId> or <version>.");
             }
         } else {
-            errors.add("<licenses> block is required but was left undefined.");
-        }
+            log.debug("Checking <name>");
+            if (isBlank(fullModel.getName())) {
+                String parentName = resolveParentName(project.getFile().getParentFile(), fullModel);
+                if (isBlank(parentName)) {
+                    errors.add("<name> can not be blank.");
+                } else {
+                    warnings.add("<name> is not defined in POM. Will use value from parent: " +
+                            lineSeparator() + "\t" + parentName);
+                }
+            }
 
-        log.debug("Checking <developers>");
-        if (fullModel.getDevelopers() != null) {
-            if (!fullModel.getDevelopers().isEmpty()) {
-                // verify that all developers have at least one of [id, name, organization, organizationUrl]
-                for (int i = 0; i < fullModel.getDevelopers().size(); i++) {
-                    Developer developer = fullModel.getDevelopers().get(i);
-                    if (isBlank(developer.getId()) &&
-                        isBlank(developer.getName()) &&
-                        isBlank(developer.getOrganization()) &&
-                        isBlank(developer.getOrganizationUrl())) {
-                        errors.add("Developer " + i + " must define at least one of <id>, <name>, <organization>, <organizationUrl>.");
+            log.debug("Checking <description>");
+            if (isBlank(fullModel.getDescription())) {
+                errors.add("<description> can not be blank.");
+            }
+            if (isBlank(originalModel.getDescription())) {
+                warnings.add("<description> is not defined in POM. Will use value from parent: " +
+                        lineSeparator() + "\t" + fullModel.getDescription());
+            }
+
+            log.debug("Checking <url>");
+            if (isBlank(fullModel.getUrl())) {
+                errors.add("<url> can not be blank.");
+            }
+            if (isBlank(originalModel.getUrl())) {
+                warnings.add("<url> is not defined in POM. Will use computed value from parent: " +
+                        lineSeparator() + "\t" + fullModel.getUrl());
+            }
+
+            if (configuration.isRelease()) log.debug("Checking if version is not snapshot");
+            if (configuration.isRelease() && fullModel.getVersion().endsWith("-SNAPSHOT")) {
+                errors.add("<version> can not be -SNAPSHOT.");
+            }
+
+            log.debug("Checking <licenses>");
+            if (fullModel.getLicenses() != null) {
+                if (!fullModel.getLicenses().isEmpty()) {
+                    // verify that all licenses have <name> & <url>
+                    for (int i = 0; i < fullModel.getLicenses().size(); i++) {
+                        License license = fullModel.getLicenses().get(i);
+                        if (isBlank(license.getName()) && isBlank(license.getUrl())) {
+                            errors.add("License " + i + " must define <name> and <url>.");
+                        }
                     }
+                } else {
+                    errors.add("<licenses> block is required but was left empty.");
                 }
             } else {
-                errors.add("<developers> block is required but was left empty.");
+                errors.add("<licenses> block is required but was left undefined.");
             }
-        } else {
-            errors.add("<developers> block is required but was left undefined.");
-        }
 
-        log.debug("Checking <scm>");
-        if (fullModel.getScm() == null) {
-            errors.add("The <scm> block is required.");
-        }
-
-        log.debug("Checking <repositories>");
-        if (null != originalModel.getRepositories() && !originalModel.getRepositories().isEmpty()) {
-            if (configuration.isStrict()) {
-                errors.add("The <repositories> block should not be present.");
+            log.debug("Checking <developers>");
+            if (fullModel.getDevelopers() != null) {
+                if (!fullModel.getDevelopers().isEmpty()) {
+                    // verify that all developers have at least one of [id, name, organization, organizationUrl]
+                    for (int i = 0; i < fullModel.getDevelopers().size(); i++) {
+                        Developer developer = fullModel.getDevelopers().get(i);
+                        if (isBlank(developer.getId()) &&
+                                isBlank(developer.getName()) &&
+                                isBlank(developer.getOrganization()) &&
+                                isBlank(developer.getOrganizationUrl())) {
+                            errors.add("Developer " + i + " must define at least one of <id>, <name>, <organization>, <organizationUrl>.");
+                        }
+                    }
+                } else {
+                    errors.add("<developers> block is required but was left empty.");
+                }
             } else {
-                warnings.add("The <repositories> block should not be present.");
+                errors.add("<developers> block is required but was left undefined.");
+            }
+
+            log.debug("Checking <scm>");
+            if (fullModel.getScm() == null) {
+                errors.add("The <scm> block is required.");
+            }
+
+            log.debug("Checking <repositories>");
+            if (null != originalModel.getRepositories() && !originalModel.getRepositories().isEmpty()) {
+                if (configuration.isStrict()) {
+                    errors.add("The <repositories> block should not be present.");
+                } else {
+                    warnings.add("The <repositories> block should not be present.");
+                }
+            }
+
+            log.debug("Checking <pluginRepositories>");
+            if (null != originalModel.getPluginRepositories() && !originalModel.getPluginRepositories().isEmpty()) {
+                if (configuration.isStrict()) {
+                    errors.add("The <pluginRepositories> block should not be present.");
+                } else {
+                    warnings.add("The <pluginRepositories> block should not be present.");
+                }
             }
         }
-
-        log.debug("Checking <pluginRepositories>");
-        if (null != originalModel.getPluginRepositories() && !originalModel.getPluginRepositories().isEmpty()) {
-            if (configuration.isStrict()) {
-                errors.add("The <pluginRepositories> block should not be present.");
-            } else {
-                warnings.add("The <pluginRepositories> block should not be present.");
-            }
-        }
-
         if (!warnings.isEmpty()) {
             if (configuration.isFailOnWarning()) {
                 throw new PomCheckException(String.join(lineSeparator(), warnings));
@@ -258,12 +264,12 @@ public class MavenCentralChecker {
 
         if (!errors.isEmpty()) {
             StringBuilder b = new StringBuilder(lineSeparator())
-                .append("The POM file")
-                .append(lineSeparator())
-                .append(project.getFile().getAbsolutePath())
-                .append(lineSeparator())
-                .append("cannot be uploaded to Maven Central due to the following reasons:")
-                .append(lineSeparator());
+                    .append("The POM file")
+                    .append(lineSeparator())
+                    .append(project.getFile().getAbsolutePath())
+                    .append(lineSeparator())
+                    .append("cannot be uploaded to Maven Central due to the following reasons:")
+                    .append(lineSeparator());
             for (String s : errors) {
                 b.append(" * ").append(s).append(lineSeparator());
             }
@@ -276,6 +282,16 @@ public class MavenCentralChecker {
         } else {
             log.info("POM {} passes all checks. It can be uploaded to Maven Central.", project.getFile().getAbsolutePath());
         }
+    }
+
+    /**
+     * Checks if the model has been relocated.
+     *
+     * @param model the model to check
+     * @return {@code true} if the model has been relocated.
+     */
+    private static boolean isRelocated(Model model) {
+        return model.getDistributionManagement() != null && model.getDistributionManagement().getRelocation() != null;
     }
 
     private static String resolveParentName(File directory, Model fullModel) {
