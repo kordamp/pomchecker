@@ -155,6 +155,7 @@ public class MavenCentralChecker {
             errors.add("<version> contains an unresolved expression: " + fullModel.getVersion());
         }
         if (isRelocated(fullModel)) {
+            log.debug("Checking <distributionManagement>/<relocation>");
             Relocation relocation = fullModel.getDistributionManagement().getRelocation();
             if (isBlank(relocation.getGroupId()) && isBlank(relocation.getArtifactId()) && isBlank(relocation.getVersion())) {
                 errors.add("<distributionManagement>/<relocation> requires either <groupId>, <artifactId> or <version>.");
