@@ -72,6 +72,8 @@ deploy:
         url: https://s01.oss.sonatype.org/service/local
         closeRepository: true
         releaseRepository: true
+        transitionDelay: 20
+        transitionMaxRetries: 100
         stagingRepositories:
           - target/staging-deploy
 
