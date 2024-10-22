@@ -30,6 +30,8 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PomParserTest {
+
+    @Test
     void parseSingle() throws Exception {
         URL resource = getClass().getClassLoader().getResource("test-pom.xml");
         MavenProject mavenProject = PomParser.createMavenProject(new File(resource.toURI()), Collections.emptySet());
