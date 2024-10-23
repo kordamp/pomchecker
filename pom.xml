@@ -29,7 +29,7 @@
     </parent>
 
     <artifactId>pomchecker</artifactId>
-    <version>1.14.0-SNAPSHOT</version>
+    <version>1.14.0</version>
     <packaging>pom</packaging>
 
     <properties>
@@ -42,7 +42,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.release>8</maven.compiler.release>
         <!-- value comes from property git.commit.author.time -->
-        <project.build.outputTimestamp>2024-10-22T19:02:12Z</project.build.outputTimestamp>
+        <project.build.outputTimestamp>2024-10-23T08:22:02Z</project.build.outputTimestamp>
         <slf4j.version>2.0.13</slf4j.version>
         <picocli.version>4.7.5</picocli.version>
         <sisu.version>0.9.0.M2</sisu.version>
