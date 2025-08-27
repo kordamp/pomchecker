@@ -49,7 +49,7 @@
         <maven.version>3.9.6</maven.version>
         <mima.version>2.4.12</mima.version>
         <maven.resolver.version>1.9.20</maven.resolver.version>
-        <commons.lang3.version>3.14.0</commons.lang3.version>
+        <commons.lang3.version>3.18.0</commons.lang3.version>
         <version.compiler.plugin>3.13.0</version.compiler.plugin>
         <version.dependency.plugin>3.6.1</version.dependency.plugin>
         <version.enforcer.plugin>3.4.1</version.enforcer.plugin>
