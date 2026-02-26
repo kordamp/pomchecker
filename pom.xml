@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.kordamp.maven</groupId>
         <artifactId>kordamp-parent</artifactId>
-        <version>1.5.0</version>
+        <version>1.6.0</version>
     </parent>
 
     <artifactId>pomchecker</artifactId>
@@ -45,21 +45,14 @@
         <project.build.outputTimestamp>${git.commit.author.time}</project.build.outputTimestamp>
         <slf4j.version>2.0.17</slf4j.version>
         <picocli.version>4.7.7</picocli.version>
-        <sisu.version>0.9.0.M2</sisu.version>
-        <maven.version>3.9.6</maven.version>
-        <mima.version>2.4.12</mima.version>
-        <maven.resolver.version>1.9.20</maven.resolver.version>
-        <commons.lang3.version>3.14.0</commons.lang3.version>
-        <version.compiler.plugin>3.13.0</version.compiler.plugin>
-        <version.dependency.plugin>3.6.1</version.dependency.plugin>
-        <version.enforcer.plugin>3.4.1</version.enforcer.plugin>
-        <version.enforcer.rules>1.8.0</version.enforcer.rules>
-        <version.javadoc.plugin>3.6.3</version.javadoc.plugin>
-        <version.jar.plugin>3.3.0</version.jar.plugin>
-        <version.resources.plugin>3.3.1</version.resources.plugin>
-        <version.shade.plugin>3.5.2</version.shade.plugin>
-        <version.source.plugin>3.3.0</version.source.plugin>
-        <version.versions.plugin>2.16.2</version.versions.plugin>
+        <sisu.version>0.9.0.M4</sisu.version>
+        <maven.version>3.9.12</maven.version>
+        <mima.version>2.4.39</mima.version>
+        <guice.version>6.0.0</guice.version>
+        <guava.version>33.5.0-jre</guava.version>
+        <maven.resolver.version>1.9.27</maven.resolver.version>
+        <commons.lang3.version>3.17.0</commons.lang3.version>
+        <version.shade.plugin>3.6.1</version.shade.plugin>
     </properties>
 
     <name>pomchecker</name>
@@ -106,13 +99,20 @@
             </dependency>
             <dependency>
                 <groupId>com.google.inject</groupId>
-                <artifactId>guice</artifactId>
-                <version>6.0.0</version>
+                <artifactId>guice-bom</artifactId>
+                <version>${guice.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>33.4.8-jre</version>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.errorprone</groupId>
+                <artifactId>error_prone_annotations</artifactId>
+                <version>2.47.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.findbugs</groupId>
@@ -133,12 +133,6 @@
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-core</artifactId>
                 <version>${maven.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.inject</groupId>
-                        <artifactId>guice</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.apache.maven</groupId>
@@ -196,6 +190,11 @@
                 <version>${maven.resolver.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.maven.resolver</groupId>
+                <artifactId>maven-resolver-named-locks</artifactId>
+                <version>${maven.resolver.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-settings</artifactId>
                 <version>${maven.version}</version>
@@ -203,27 +202,27 @@
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-classworlds</artifactId>
-                <version>2.8.0</version>
+                <version>2.9.0</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-component-annotations</artifactId>
-                <version>2.1.1</version>
+                <version>2.2.0</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-container-default</artifactId>
-                <version>2.1.1</version>
+                <version>2.2.0</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-interpolation</artifactId>
-                <version>1.26</version>
+                <version>1.29</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.plexus</groupId>
                 <artifactId>plexus-utils</artifactId>
-                <version>3.5.1</version>
+                <version>3.6.0</version>
             </dependency>
             <dependency>
                 <groupId>eu.maveniverse.maven.mima</groupId>
@@ -254,6 +253,11 @@
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-provider-api</artifactId>
                 <version>3.5.3</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>9.9.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

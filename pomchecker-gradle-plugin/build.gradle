@@ -80,7 +80,7 @@ dependencies {
     api "org.apache.maven.resolver:maven-resolver-util:$mavenResolverVersion"
     api "org.apache.maven.resolver:maven-resolver-impl:$mavenResolverVersion"
     api "org.apache.maven.resolver:maven-resolver-spi:$mavenResolverVersion"
-    api "org.apache.maven.resolver:maven-resolver-transport-http:$mavenResolverVersion"
+    api "org.apache.maven.resolver:maven-resolver-transport-http:1.9.27"
     api "org.apache.maven.resolver:maven-resolver-transport-file:$mavenResolverVersion"
     api "org.apache.maven.resolver:maven-resolver-transport-classpath:$mavenResolverVersion"
     api "org.apache.maven.resolver:maven-resolver-connector-basic:$mavenResolverVersion"

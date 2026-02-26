@@ -24,10 +24,11 @@ project:
   authors:
     - Andres Almiray
   license: Apache-2.0
-  java:
-    groupId: org.kordamp.maven
-    version: 8
-    multiProject: true
+  languages:
+    java:
+      groupId: org.kordamp.maven
+      version: 8
+      multiProject: true
   inceptionYear: 2020
   stereotype: CLI
 
@@ -61,26 +62,22 @@ release:
         - search: 'deps: '
 
 signing:
-  active: ALWAYS
-  armored: true
+  pgp:
+    active: ALWAYS
+    armored: true
 
 deploy:
   maven:
-    nexus2:
-      maven-central:
+    mavenCentral:
+      release-deploy:
         active: RELEASE
-        url: https://s01.oss.sonatype.org/service/local
-        closeRepository: true
-        releaseRepository: true
-        transitionDelay: 20
-        transitionMaxRetries: 100
+        url: https://central.sonatype.com/api/v1/publisher
+        maxRetries: 150
+        retryDelay: 30
         stagingRepositories:
           - target/staging-deploy
 
 announce:
-  twitter:
-    active: RELEASE
-    status: 🚀 {{projectName}} {{projectVersion}} has been released! {{releaseNotesUrl}}
   mastodon:
     active: RELEASE
     host: https://mastodon.social
