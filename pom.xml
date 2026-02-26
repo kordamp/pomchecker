@@ -44,7 +44,7 @@
         <!-- value comes from property git.commit.author.time -->
         <project.build.outputTimestamp>${git.commit.author.time}</project.build.outputTimestamp>
         <slf4j.version>2.0.17</slf4j.version>
-        <picocli.version>4.7.5</picocli.version>
+        <picocli.version>4.7.7</picocli.version>
         <sisu.version>0.9.0.M2</sisu.version>
         <maven.version>3.9.6</maven.version>
         <mima.version>2.4.12</mima.version>
