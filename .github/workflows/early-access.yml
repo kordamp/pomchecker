@@ -12,7 +12,7 @@ jobs:
       VERSION: ${{ steps.vars.outputs.VERSION }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Cancel previous run
         uses: styfle/cancel-workflow-action@0.12.1
@@ -20,7 +20,7 @@ jobs:
           access_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ vars.JAVA_VERSION }}
           distribution: ${{ vars.JAVA_DISTRO }}
@@ -30,7 +30,7 @@ jobs:
         id: vars
         shell: bash
         run: |
-          version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          version=$(mvn -ntp help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "VERSION=$(echo $version)" >> $GITHUB_OUTPUT
 
   release:
@@ -43,33 +43,33 @@ jobs:
       DOC_SIZE: ${{ steps.bach.outputs.DOC_SIZE }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ vars.JAVA_VERSION }}
           distribution: ${{ vars.JAVA_DISTRO }}
           cache: maven
 
       - name: Cache Gradle
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}-${{ hashFiles('**/gradle.properties') }}
           restore-keys: ${{ runner.os }}-gradle-
 
       - name: Cache Gradle wrapper
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradlew-${{ hashFiles('**/gradlew') }}
           restore-keys: ${{ runner.os }}-gradlew-
 
       - name: Build
-        run: ./mvnw -ntp -B --file pom.xml verify
+        run: ./mvnw -ntp -B verify
 
       - name: Release
         uses: jreleaser/release-action@v2
@@ -96,7 +96,7 @@ jobs:
 
       - name: JReleaser output
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: jreleaser-release
           path: |
@@ -110,7 +110,7 @@ jobs:
     continue-on-error: true
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: kordamp/bach-info
           ref: 'main'
