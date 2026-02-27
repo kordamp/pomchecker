@@ -32,7 +32,10 @@ import org.kordamp.maven.checker.MavenProject;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,12 +44,6 @@ import java.util.stream.Collectors;
  * @since 1.1.0
  */
 public class PomParser {
-    static {
-        if (System.getProperty("guice_custom_class_loading", "").isEmpty()) {
-            System.setProperty("guice_custom_class_loading", "CHILD");
-        }
-    }
-
     public static MavenProject createMavenProject(File pomFile, Set<Path> repositories) {
         try (Context context = Runtimes.INSTANCE.getRuntime().create(ContextOverrides.create().withUserSettings(true).build())) {
             List<RemoteRepository> remoteRepositories = context.remoteRepositories()
@@ -56,7 +53,13 @@ public class PomParser {
                 remoteRepositories.add(toArtifactRepository("pomchecker_repository_" + (i++), repository.toUri().toString()));
             }
 
-            ModelResponse modelResponse = new MavenModelReader(context)
+            Map<String, String> extendedSystemProperties = new HashMap<>();
+            extendedSystemProperties.putAll(detectOsProperties());
+            extendedSystemProperties.putAll(context.repositorySystemSession().getSystemProperties());
+            ModelResponse modelResponse = new MavenModelReader(
+                    context.customize(context.contextOverrides().toBuilder()
+                            .systemProperties(extendedSystemProperties)
+                            .build()))
                     .readModel(ModelRequest.builder()
                             .setPomFile(pomFile.toPath())
                             .setRepositories(remoteRepositories)
@@ -64,6 +67,40 @@ public class PomParser {
             return new MavenProject(pomFile.toPath(), modelResponse.getEffectiveModel(), modelResponse.getRawModel());
         } catch (ArtifactResolutionException | VersionResolutionException | ArtifactDescriptorException e) {
             throw new IllegalStateException(e);
+        }
+    }
+
+    public static Map<String, String> detectOsProperties() {
+        HashMap<String, String> result = new HashMap<>();
+        result.put("os.detected.name", osDetectedName());
+        result.put("os.detected.arch", osDetectedArch());
+        result.put("os.detected.classifier", osDetectedName() + "-" + osDetectedArch());
+        return result;
+    }
+
+    private static String osDetectedName() {
+        String osNameNormalized = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
+        if (osNameNormalized.startsWith("macosx") || osNameNormalized.startsWith("osx")) {
+            return "osx";
+        } else if (osNameNormalized.startsWith("windows")) {
+            return "windows";
+        }
+        // Since we only load the dependency graph, not actually use the
+        // dependency, it doesn't matter a great deal which one we pick.
+        return "linux";
+    }
+
+    private static String osDetectedArch() {
+        String osArchNormalized = System.getProperty("os.arch").toLowerCase(Locale.ENGLISH);
+        switch (osArchNormalized) {
+            case "x8664":
+            case "amd64":
+            case "ia32e":
+            case "em64t":
+            case "x64":
+                return "x86_64";
+            default:
+                return "x86_32";
         }
     }
 
