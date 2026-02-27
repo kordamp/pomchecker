@@ -36,6 +36,7 @@ release:
   github:
     overwrite: true
     sign: true
+    branch: master
     issues:
       enabled: true
     changelog:
