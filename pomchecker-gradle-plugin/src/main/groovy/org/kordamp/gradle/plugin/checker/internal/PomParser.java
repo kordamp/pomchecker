@@ -52,6 +52,12 @@ import java.util.stream.Collectors;
  * @since 1.1.0
  */
 public class PomParser {
+    static {
+        if (System.getProperty("guice_custom_class_loading", "").isEmpty()) {
+            System.setProperty("guice_custom_class_loading", "CHILD");
+        }
+    }
+
     private static final CharMatcher LOWER_ALPHA_NUMERIC =
         CharMatcher.inRange('a', 'z').or(CharMatcher.inRange('0', '9'));
 
