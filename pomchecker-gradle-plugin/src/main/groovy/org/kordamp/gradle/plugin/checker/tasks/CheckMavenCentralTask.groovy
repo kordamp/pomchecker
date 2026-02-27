@@ -18,7 +18,6 @@
 package org.kordamp.gradle.plugin.checker.tasks
 
 import groovy.transform.CompileStatic
-import org.apache.maven.project.MavenProject
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
@@ -31,6 +30,7 @@ import org.gradle.api.tasks.options.Option
 import org.kordamp.gradle.plugin.checker.internal.GradleLoggerAdapter
 import org.kordamp.gradle.plugin.checker.internal.PomParser
 import org.kordamp.maven.checker.MavenCentralChecker
+import org.kordamp.maven.checker.MavenProject
 
 import javax.inject.Inject
 

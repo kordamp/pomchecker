@@ -17,36 +17,25 @@
  */
 package org.kordamp.maven.checker.cli.internal;
 
-import com.google.common.base.CharMatcher;
-import com.google.common.collect.ImmutableMap;
 import eu.maveniverse.maven.mima.context.Context;
 import eu.maveniverse.maven.mima.context.ContextOverrides;
 import eu.maveniverse.maven.mima.context.Runtimes;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.ArtifactRepositoryPolicy;
-import org.apache.maven.artifact.repository.MavenArtifactRepository;
-import org.apache.maven.artifact.repository.layout.DefaultRepositoryLayout;
-import org.apache.maven.execution.DefaultMavenExecutionRequest;
-import org.apache.maven.execution.MavenExecutionRequest;
-import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.ProjectBuilder;
-import org.apache.maven.project.ProjectBuildingException;
-import org.apache.maven.project.ProjectBuildingRequest;
-import org.apache.maven.project.ProjectBuildingResult;
-import org.codehaus.plexus.ContainerConfiguration;
-import org.codehaus.plexus.DefaultContainerConfiguration;
-import org.codehaus.plexus.DefaultPlexusContainer;
-import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.PlexusContainerException;
-import org.codehaus.plexus.classworlds.ClassWorld;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+import eu.maveniverse.maven.mima.extensions.mmr.MavenModelReader;
+import eu.maveniverse.maven.mima.extensions.mmr.ModelRequest;
+import eu.maveniverse.maven.mima.extensions.mmr.ModelResponse;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.repository.RepositoryPolicy;
+import org.eclipse.aether.resolution.ArtifactDescriptorException;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.resolution.VersionResolutionException;
+import org.kordamp.maven.checker.MavenProject;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Properties;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -55,86 +44,42 @@ import java.util.stream.Collectors;
  * @since 1.1.0
  */
 public class PomParser {
-    static {
-        if (System.getProperty("guice_custom_class_loading", "").isEmpty()) {
-            System.setProperty("guice_custom_class_loading", "CHILD");
-        }
-    }
-
-    private static final CharMatcher LOWER_ALPHA_NUMERIC =
-        CharMatcher.inRange('a', 'z').or(CharMatcher.inRange('0', '9'));
-
     public static MavenProject createMavenProject(File pomFile, Set<Path> repositories) {
-        // HACK: MIMA provides sisu runtime, but we need Maven components as well,
-        // that are Plexus still. Hence, we "wrap" and boot Plexus around MIMA, and this
-        // awakens MIMA eager singleton activator.
-        ClassWorld classWorld =
-            new ClassWorld("plexus.core", Thread.currentThread().getContextClassLoader());
-        ContainerConfiguration containerConfiguration =
-            new DefaultContainerConfiguration()
-                .setClassWorld(classWorld)
-                .setRealm(classWorld.getClassRealm("plexus.core"))
-                .setClassPathScanning(PlexusConstants.SCANNING_INDEX)
-                .setAutoWiring(true)
-                .setJSR250Lifecycle(true)
-                .setName("pom-reader");
-        try {
-            PlexusContainer container = new DefaultPlexusContainer(containerConfiguration);
-            try (Context context = Runtimes.INSTANCE.getRuntime().create(ContextOverrides.create().withUserSettings(true).build())) {
-                return createMavenProject(pomFile, context, container, repositories);
-            }
-        } catch (PlexusContainerException ex) {
-            throw new IllegalStateException(ex);
-        }
-    }
-
-    private static MavenProject createMavenProject(File pomFile, Context context, PlexusContainer plexusContainer, Set<Path> repositories) {
-        try {
-            MavenExecutionRequest mavenExecutionRequest = new DefaultMavenExecutionRequest();
-            ProjectBuildingRequest projectBuildingRequest =
-                mavenExecutionRequest.getProjectBuildingRequest();
-
-            projectBuildingRequest.setRepositorySession(context.repositorySystemSession());
-
-            List<ArtifactRepository> remoteRepositories = context.remoteRepositories()
-                .stream().map(r -> toArtifactRepository(r.getId(), r.getUrl())).collect(Collectors.toList());
-
+        try (Context context = Runtimes.INSTANCE.getRuntime().create(ContextOverrides.create().withUserSettings(true).build())) {
+            List<RemoteRepository> remoteRepositories = context.remoteRepositories()
+                    .stream().map(r -> toArtifactRepository(r.getId(), r.getUrl())).collect(Collectors.toList());
             int i = 0;
             for (Path repository : repositories) {
                 remoteRepositories.add(toArtifactRepository("pomchecker_repository_" + (i++), repository.toUri().toString()));
             }
 
-            projectBuildingRequest.setRemoteRepositories(remoteRepositories);
-            // Profile activation needs properties such as JDK version
-            Properties properties = new Properties(); // allowing duplicate entries
-            properties.putAll(projectBuildingRequest.getSystemProperties());
-            properties.putAll(detectOsProperties());
-            properties.putAll(System.getProperties());
-            projectBuildingRequest.setSystemProperties(properties);
-
-            ProjectBuilder projectBuilder = plexusContainer.lookup(ProjectBuilder.class);
-            ProjectBuildingResult projectBuildingResult =
-                projectBuilder.build(pomFile, projectBuildingRequest);
-            return projectBuildingResult.getProject();
-        } catch (ComponentLookupException | ProjectBuildingException ex) {
-            throw new IllegalStateException(ex);
+            Map<String, String> extendedSystemProperties = new HashMap<>();
+            extendedSystemProperties.putAll(detectOsProperties());
+            extendedSystemProperties.putAll(context.repositorySystemSession().getSystemProperties());
+            ModelResponse modelResponse = new MavenModelReader(
+                    context.customize(context.contextOverrides().toBuilder()
+                            .systemProperties(extendedSystemProperties)
+                            .build()))
+                    .readModel(ModelRequest.builder()
+                            .setPomFile(pomFile.toPath())
+                            .setRepositories(remoteRepositories)
+                            .build());
+            return new MavenProject(pomFile.toPath(), modelResponse.getEffectiveModel(), modelResponse.getRawModel());
+        } catch (ArtifactResolutionException | VersionResolutionException | ArtifactDescriptorException e) {
+            throw new IllegalStateException(e);
         }
     }
 
-    public static ImmutableMap<String, String> detectOsProperties() {
-        return ImmutableMap.of(
-            "os.detected.name",
-            osDetectedName(),
-            "os.detected.arch",
-            osDetectedArch(),
-            "os.detected.classifier",
-            osDetectedName() + "-" + osDetectedArch());
+    public static Map<String, String> detectOsProperties() {
+        HashMap<String, String> result = new HashMap<>();
+        result.put("os.detected.name", osDetectedName());
+        result.put("os.detected.arch", osDetectedArch());
+        result.put("os.detected.classifier", osDetectedName() + "-" + osDetectedArch());
+        return result;
     }
 
     private static String osDetectedName() {
-        String osNameNormalized =
-            LOWER_ALPHA_NUMERIC.retainFrom(System.getProperty("os.name").toLowerCase(Locale.ENGLISH));
-
+        String osNameNormalized = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
         if (osNameNormalized.startsWith("macosx") || osNameNormalized.startsWith("osx")) {
             return "osx";
         } else if (osNameNormalized.startsWith("windows")) {
@@ -146,8 +91,7 @@ public class PomParser {
     }
 
     private static String osDetectedArch() {
-        String osArchNormalized =
-            LOWER_ALPHA_NUMERIC.retainFrom(System.getProperty("os.arch").toLowerCase(Locale.ENGLISH));
+        String osArchNormalized = System.getProperty("os.arch").toLowerCase(Locale.ENGLISH);
         switch (osArchNormalized) {
             case "x8664":
             case "amd64":
@@ -160,14 +104,10 @@ public class PomParser {
         }
     }
 
-    private static MavenArtifactRepository toArtifactRepository(String id, String url) {
-        MavenArtifactRepository repository = new MavenArtifactRepository();
-        repository.setId(id);
-        repository.setUrl(url);
-        repository.setLayout(new DefaultRepositoryLayout());
-        ArtifactRepositoryPolicy policy = new ArtifactRepositoryPolicy(true, ArtifactRepositoryPolicy.UPDATE_POLICY_NEVER, ArtifactRepositoryPolicy.CHECKSUM_POLICY_WARN);
-        repository.setSnapshotUpdatePolicy(policy);
-        repository.setReleaseUpdatePolicy(policy);
-        return repository;
+    private static RemoteRepository toArtifactRepository(String id, String url) {
+        return new RemoteRepository.Builder(id, "default", url)
+                .setReleasePolicy(new RepositoryPolicy(true, RepositoryPolicy.UPDATE_POLICY_NEVER, RepositoryPolicy.CHECKSUM_POLICY_WARN))
+                .setSnapshotPolicy(new RepositoryPolicy(true, RepositoryPolicy.UPDATE_POLICY_NEVER, RepositoryPolicy.CHECKSUM_POLICY_WARN))
+                .build();
     }
 }

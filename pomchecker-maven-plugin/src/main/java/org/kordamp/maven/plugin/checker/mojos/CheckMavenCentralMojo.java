@@ -68,11 +68,13 @@ public class CheckMavenCentralMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            MavenCentralChecker.check(new MavenLoggerAdapter(getLog()), project, new MavenCentralChecker.Configuration()
-                .withRelease(release)
-                .withStrict(strict)
-                .withFailOnError(failOnError)
-                .withFailOnWarning(failOnWarning));
+            MavenCentralChecker.check(new MavenLoggerAdapter(getLog()),
+                    new org.kordamp.maven.checker.MavenProject(project.getFile().toPath(), project.getModel(), project.getOriginalModel()),
+                    new MavenCentralChecker.Configuration()
+                      .withRelease(release)
+                      .withStrict(strict)
+                      .withFailOnError(failOnError)
+                      .withFailOnWarning(failOnWarning));
         } catch (PomCheckException e) {
             throw new MojoExecutionException("MavenCentral check failed", e);
         }
