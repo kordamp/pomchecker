@@ -81,11 +81,13 @@ public class CheckMavenCentral extends AbstractEnforcerRule {
     @Override
     public void execute() throws EnforcerRuleException {
         try {
-            MavenCentralChecker.check(new MavenEnforcerLoggerAdapter(getLog()), project, new MavenCentralChecker.Configuration()
-                .withRelease(release)
-                .withStrict(strict)
-                .withFailOnError(failOnError)
-                .withFailOnWarning(failOnWarning));
+            MavenCentralChecker.check(new MavenEnforcerLoggerAdapter(getLog()),
+                    new org.kordamp.maven.checker.MavenProject(project.getFile().toPath(), project.getModel(), project.getOriginalModel()),
+                    new MavenCentralChecker.Configuration()
+                      .withRelease(release)
+                      .withStrict(strict)
+                      .withFailOnError(failOnError)
+                      .withFailOnWarning(failOnWarning));
         } catch (PomCheckException e) {
             throw new EnforcerRuleException(e.getMessage());
         }

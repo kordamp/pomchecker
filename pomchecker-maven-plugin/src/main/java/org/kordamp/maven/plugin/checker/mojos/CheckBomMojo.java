@@ -57,7 +57,9 @@ public class CheckBomMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
-            BomChecker.check(new MavenLoggerAdapter(getLog()), project, new BomChecker.Configuration()
+            BomChecker.check(new MavenLoggerAdapter(getLog()),
+                    new org.kordamp.maven.checker.MavenProject(project.getFile().toPath(), project.getModel(), project.getOriginalModel()),
+                    new BomChecker.Configuration()
                 .withFailOnError(failOnError));
         } catch (PomCheckException e) {
             throw new MojoExecutionException("Bom check failed", e);
