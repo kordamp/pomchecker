@@ -76,8 +76,13 @@
             <artifactId>context</artifactId>
         </dependency>
         <dependency>
+            <groupId>eu.maveniverse.maven.mima.extensions</groupId>
+            <artifactId>mmr</artifactId>
+        </dependency>
+        <dependency>
             <groupId>eu.maveniverse.maven.mima.runtime</groupId>
             <artifactId>standalone-sisu</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
